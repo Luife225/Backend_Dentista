@@ -1,0 +1,254 @@
+@startuml "Diagrama_Fisico_CORONYX"
+!theme plain
+skinparam roundcorner 8
+skinparam linetype ortho
+skinparam shadowing false
+skinparam classFontSize 12
+skinparam classFontName "Fira Code"
+
+' ====================================================================
+' PALETA DE COLORES POR DOMINIO (100% IDÉNTICA AL INFORME Y HTML)
+' ====================================================================
+!define DOMAIN_SECURITY #E6F4F2
+!define HEADER_SECURITY #1E8C82
+!define DOMAIN_CLINIC   #E8F5E9
+!define HEADER_CLINIC   #059669
+!define DOMAIN_RECORDS  #FFF8E1
+!define HEADER_RECORDS  #D97706
+!define DOMAIN_AI       #F3E8FF
+!define HEADER_AI       #7C3AED
+!define DOMAIN_NOTIF    #F1F5F9
+!define HEADER_NOTIF    #475569
+
+package "Dominio 1: Seguridad y Multi-Sede" <<Rectangle>> {
+  class "clinica" as clinica << (C,HEADER_SECURITY) >> DOMAIN_SECURITY {
+    * id : UUID <<PK>>
+    --
+    nombre : VARCHAR(160)
+    razon_social : VARCHAR(200)
+    zona_horaria : VARCHAR(64)
+    estado : VARCHAR(16)
+    fecha_creacion : TIMESTAMPTZ
+    fecha_actualizacion : TIMESTAMPTZ
+  }
+
+  class "usuario" as usuario << (U,HEADER_SECURITY) >> DOMAIN_SECURITY {
+    * id : UUID <<PK>>
+    --
+    correo : VARCHAR(254) <<UNQ>>
+    clave_hash : VARCHAR(255)
+    nombres : VARCHAR(100)
+    apellidos : VARCHAR(100)
+    estado : VARCHAR(20)
+    correo_verificado_en : TIMESTAMPTZ
+    token_recuperacion_hash : VARCHAR(255)
+    token_recuperacion_expira_en : TIMESTAMPTZ
+    token_recuperacion_usado_en : TIMESTAMPTZ
+    fecha_creacion : TIMESTAMPTZ
+    fecha_actualizacion : TIMESTAMPTZ
+  }
+
+  class "rol" as rol << (R,HEADER_SECURITY) >> DOMAIN_SECURITY {
+    * id : UUID <<PK>>
+    --
+    codigo : VARCHAR(40) <<UNQ>>
+    nombre : VARCHAR(80)
+    descripcion : TEXT
+    permisos_json : JSONB
+    activo : BOOLEAN
+    fecha_creacion : TIMESTAMPTZ
+  }
+
+  class "usuario_clinica" as usuario_clinica << (M,HEADER_SECURITY) >> DOMAIN_SECURITY {
+    * id : UUID <<PK>>
+    --
+    # clinica_id : UUID <<FK>>
+    # usuario_id : UUID <<FK>>
+    # rol_id : UUID <<FK>>
+    # rol_asignado_por : UUID <<FK>>
+    estado : VARCHAR(16)
+    fecha_asignacion : TIMESTAMPTZ
+    fecha_actualizacion : TIMESTAMPTZ
+  }
+}
+
+package "Dominio 2: Pacientes y Citas" <<Rectangle>> {
+  class "paciente" as paciente << (P,HEADER_CLINIC) >> DOMAIN_CLINIC {
+    * id : UUID <<PK>>
+    --
+    # clinica_id : UUID <<FK>>
+    # usuario_id : UUID <<FK>>
+    # medico_actualizo_id : UUID <<FK>>
+    tipo_documento : VARCHAR(20)
+    numero_documento : VARCHAR(30)
+    nombres : VARCHAR(100)
+    apellidos : VARCHAR(100)
+    fecha_nacimiento : DATE
+    telefono : VARCHAR(30)
+    correo : VARCHAR(254)
+    estado : VARCHAR(16)
+    alergias : TEXT
+    antecedentes_medicos : TEXT
+    medicamentos : TEXT
+    fecha_creacion : TIMESTAMPTZ
+    fecha_actualizacion : TIMESTAMPTZ
+  }
+
+  class "cita" as cita << (A,HEADER_CLINIC) >> DOMAIN_CLINIC {
+    * id : UUID <<PK>>
+    --
+    # clinica_id : UUID <<FK>>
+    # paciente_id : UUID <<FK>>
+    # odontologo_id : UUID <<FK>>
+    # creado_por_id : UUID <<FK>>
+    inicio_en : TIMESTAMPTZ
+    fin_en : TIMESTAMPTZ
+    modalidad : VARCHAR(12)
+    estado : VARCHAR(20)
+    estado_asistencia : VARCHAR(16)
+    motivo : VARCHAR(500)
+    enlace_teleconsulta : VARCHAR(500)
+    consultorio : VARCHAR(100)
+    fecha_creacion : TIMESTAMPTZ
+    fecha_actualizacion : TIMESTAMPTZ
+  }
+}
+
+package "Dominio 3: Historia Clínica y Odontograma" <<Rectangle>> {
+  class "atencion_clinica" as atencion_clinica << (E,HEADER_RECORDS) >> DOMAIN_RECORDS {
+    * id : UUID <<PK>>
+    --
+    # clinica_id : UUID <<FK>>
+    # paciente_id : UUID <<FK>>
+    # cita_id : UUID <<FK, UNQ>>
+    # odontologo_id : UUID <<FK>>
+    estado : VARCHAR(16)
+    fecha_creacion : TIMESTAMPTZ
+    fecha_confirmacion : TIMESTAMPTZ
+  }
+
+  class "version_atencion_clinica" as version_atencion_clinica << (V,HEADER_RECORDS) >> DOMAIN_RECORDS {
+    * id : UUID <<PK>>
+    --
+    # clinica_id : UUID <<FK>>
+    # atencion_clinica_id : UUID <<FK>>
+    # version_anterior_id : UUID <<FK>>
+    # firmado_por : UUID <<FK>>
+    numero_version : INTEGER
+    diagnostico : TEXT
+    procedimientos : TEXT
+    recetas_prescripciones : TEXT
+    indicaciones : TEXT
+    evolucion : TEXT
+    texto_pendiente_revision : TEXT
+    esta_confirmado : BOOLEAN
+    fecha_registro : TIMESTAMPTZ
+    fecha_confirmacion : TIMESTAMPTZ
+  }
+
+  class "version_odontograma" as version_odontograma << (O,HEADER_RECORDS) >> DOMAIN_RECORDS {
+    * id : UUID <<PK>>
+    --
+    # clinica_id : UUID <<FK>>
+    # paciente_id : UUID <<FK>>
+    # version_anterior_id : UUID <<FK>>
+    # firmado_por : UUID <<FK>>
+    numero_version : INTEGER
+    estado : VARCHAR(16)
+    fecha_creacion : TIMESTAMPTZ
+    fecha_confirmacion : TIMESTAMPTZ
+  }
+
+  class "hallazgo_odontograma" as hallazgo_odontograma << (H,HEADER_RECORDS) >> DOMAIN_RECORDS {
+    * id : UUID <<PK>>
+    --
+    # clinica_id : UUID <<FK>>
+    # version_odontograma_id : UUID <<FK>>
+    codigo_pieza_dental : VARCHAR(4)
+    codigo_superficie_cara : VARCHAR(12)
+    codigo_condicion : VARCHAR(40)
+    nota_observacion : TEXT
+  }
+}
+
+package "Dominio 4: Archivos e Inteligencia Artificial" <<Rectangle>> {
+  class "archivo_adjunto" as archivo_adjunto << (F,HEADER_AI) >> DOMAIN_AI {
+    * id : UUID <<PK>>
+    --
+    # clinica_id : UUID <<FK>>
+    # paciente_id : UUID <<FK>>
+    # subido_por_usuario_id : UUID <<FK>>
+    # cita_id : UUID <<FK>>
+    # ia_revisado_por : UUID <<FK>>
+    tipo_archivo : VARCHAR(24)
+    clave_almacenamiento : VARCHAR(500) <<UNQ>>
+    nombre_original : VARCHAR(255)
+    tipo_mime : VARCHAR(100)
+    peso_bytes : BIGINT
+    region_anatomica : VARCHAR(80)
+    es_visible_paciente : BOOLEAN
+    ia_nombre_modelo : VARCHAR(100)
+    ia_version_modelo : VARCHAR(80)
+    ia_hallazgos_json : JSONB
+    ia_estado_revision : VARCHAR(16)
+    fecha_creacion : TIMESTAMPTZ
+  }
+}
+
+package "Dominio 5: Notificaciones" <<Rectangle>> {
+  class "notificacion" as notificacion << (N,HEADER_NOTIF) >> DOMAIN_NOTIF {
+    * id : UUID <<PK>>
+    --
+    # clinica_id : UUID <<FK>>
+    # usuario_destinatario_id : UUID <<FK>>
+    tipo_evento : VARCHAR(40)
+    titulo : VARCHAR(160)
+    cuerpo_mensaje : VARCHAR(500)
+    estado : VARCHAR(16)
+    fecha_creacion : TIMESTAMPTZ
+    fecha_lectura : TIMESTAMPTZ
+  }
+}
+
+' ====================================================================
+' RELACIONES Y CARDINALIDADES
+' ====================================================================
+clinica ||--o{ usuario_clinica : "1:N"
+clinica ||--o{ paciente : "1:N"
+clinica ||--o{ cita : "1:N"
+clinica ||--o{ atencion_clinica : "1:N"
+clinica ||--o{ version_atencion_clinica : "1:N"
+clinica ||--o{ version_odontograma : "1:N"
+clinica ||--o{ hallazgo_odontograma : "1:N"
+clinica ||--o{ archivo_adjunto : "1:N"
+clinica ||--o{ notificacion : "1:N"
+
+rol ||--o{ usuario_clinica : "1:N"
+
+usuario ||--o{ usuario_clinica : "1:N (usuario_id, rol_asignado_por)"
+usuario ||--o{ paciente : "0..1:N (portal personal)"
+usuario ||--o{ archivo_adjunto : "1:N (sube)"
+usuario ||--o{ notificacion : "1:N (recibe)"
+
+usuario_clinica ||--o{ cita : "1:N (atiende)"
+usuario_clinica ||--o{ atencion_clinica : "1:N (odontólogo tratante)"
+usuario_clinica ||--o{ version_atencion_clinica : "1:N (firma)"
+usuario_clinica ||--o{ version_odontograma : "1:N (firma)"
+usuario_clinica ||--o{ paciente : "1:N (actualiza)"
+usuario_clinica ||--o{ archivo_adjunto : "1:N (revisa IA)"
+
+paciente ||--o{ cita : "1:N"
+paciente ||--o{ atencion_clinica : "1:N"
+paciente ||--o{ version_odontograma : "1:N"
+paciente ||--o{ archivo_adjunto : "1:N"
+
+cita ||--o| atencion_clinica : "1:0..1 (origina)"
+cita ||--o{ archivo_adjunto : "1:N"
+
+atencion_clinica ||--o{ version_atencion_clinica : "1:N"
+version_atencion_clinica ||--o{ version_atencion_clinica : "1:N (version anterior)"
+
+version_odontograma ||--o{ hallazgo_odontograma : "1:N (piezas FDI)"
+version_odontograma ||--o{ version_odontograma : "1:N (version anterior)"
+
+@enduml

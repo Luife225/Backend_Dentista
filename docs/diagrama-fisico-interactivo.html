@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CORONYX — Diagrama Físico de Base de Datos (12 Tablas Oficiales)</title>
+  <!-- Cytoscape.js para visualización de grafos de alta performance -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.28.1/cytoscape.min.js"></script>
+  <!-- Dagre layout para organización jerárquica automática de entidades -->
+  <script src="https://cdn.jsdelivr.net/npm/dagre@0.8.5/dist/dagre.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/cytoscape-dagre@2.5.0/cytoscape-dagre.min.js"></script>
+  <!-- Fuentes Google: Outfit para UI y Fira Code para datos técnicos -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0d1117;
+      --panel-bg: rgba(22, 27, 34, 0.92);
+      --border-color: #30363d;
+      --text-main: #c9d1d9;
+      --accent: #1E8C82;
+      --accent-glow: #5FC9BE;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: radial-gradient(circle at top right, #161b22, #0d1117 60%);
+      color: var(--text-main);
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+    }
+
+    /* BARRA SUPERIOR */
+    header {
+      position: absolute;
+      top: 14px;
+      left: 20px;
+      right: 20px;
+      z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--panel-bg);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 10px 22px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.45);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand h1 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.5px;
+    }
+
+    .brand span {
+      background: rgba(95, 201, 190, 0.15);
+      color: var(--accent-glow);
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 2px 10px;
+      border-radius: 20px;
+      border: 1px solid rgba(95, 201, 190, 0.3);
+    }
+
+    .controls {
+      display: flex;
+      gap: 8px;
+    }
+
+    button {
+      background: #21262d;
+      color: #c9d1d9;
+      border: 1px solid var(--border-color);
+      padding: 7px 13px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    button:hover {
+      background: #30363d;
+      color: #fff;
+      border-color: #8b949e;
+    }
+
+    button.primary {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent-glow);
+    }
+
+    button.primary:hover {
+      background: #25a195;
+      box-shadow: 0 0 14px rgba(95, 201, 190, 0.45);
+    }
+
+    /* CONTENEDOR DEL GRAFO */
+    #cy {
+      width: 100vw;
+      height: 100vh;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 1;
+    }
+
+    /* PANEL LATERAL DE DETALLE */
+    #detail-panel {
+      position: absolute;
+      top: 80px;
+      right: 20px;
+      width: 410px;
+      max-height: calc(100vh - 120px);
+      background: var(--panel-bg);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 20px;
+      z-index: 10;
+      overflow-y: auto;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+      display: none;
+      animation: slideIn 0.25s ease-out;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    #detail-panel h2 {
+      font-size: 1.25rem;
+      color: #fff;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    #detail-panel .domain-badge {
+      font-size: 0.7rem;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-weight: 600;
+    }
+
+    #detail-panel p.desc {
+      font-size: 0.85rem;
+      color: #8b949e;
+      margin-bottom: 16px;
+      line-height: 1.4;
+    }
+
+    .attr-list {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.76rem;
+    }
+
+    .attr-item {
+      background: rgba(13, 17, 23, 0.7);
+      padding: 6px 10px;
+      border-radius: 6px;
+      border: 1px solid rgba(48, 54, 61, 0.5);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .attr-item .name {
+      color: #e6edf3;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+    }
+
+    .attr-item .type {
+      color: #79c0ff;
+    }
+
+    .tag-pk {
+      background: #d29922;
+      color: #0d1117;
+      font-weight: bold;
+      padding: 1px 4px;
+      border-radius: 3px;
+      font-size: 0.65rem;
+      margin-right: 6px;
+    }
+
+    .tag-fk {
+      background: #a371f7;
+      color: #fff;
+      font-weight: bold;
+      padding: 1px 4px;
+      border-radius: 3px;
+      font-size: 0.65rem;
+      margin-right: 6px;
+    }
+
+    /* LEYENDA */
+    .legend {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      z-index: 10;
+      background: var(--panel-bg);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 9px 16px;
+      display: flex;
+      gap: 16px;
+      font-size: 0.78rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.35);
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .color-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <h1>🦷 CORONYX · Modelo Físico Relacional</h1>
+      <span>12 Tablas Oficiales (PostgreSQL 17 / Supabase)</span>
+    </div>
+    <div class="controls">
+      <button onclick="toggleVista()" id="btn-vista">👁️ Modo: Todas las Columnas</button>
+      <button onclick="cy.fit(null, 50)">⤢ Centrar</button>
+      <button onclick="reordenar()">⚡ Reorganizar</button>
+      <button class="primary" onclick="exportarPNG()">📷 Exportar PNG Alta Resolución</button>
+    </div>
+  </header>
+
+  <div id="cy"></div>
+
+  <div id="detail-panel">
+    <h2><span id="p-title">Tabla</span> <span id="p-badge" class="domain-badge">DOMINIO</span></h2>
+    <p id="p-desc" class="desc">Descripción de la entidad...</p>
+    <h3 style="font-size: 0.85rem; color: #fff; margin-bottom: 8px;">Estructura DDL de Columnas:</h3>
+    <div class="attr-list" id="p-attrs"></div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><span class="color-dot" style="background: #1E8C82;"></span> Seguridad y Multi-Sede (4)</div>
+    <div class="legend-item"><span class="color-dot" style="background: #059669;"></span> Pacientes y Citas (2)</div>
+    <div class="legend-item"><span class="color-dot" style="background: #D97706;"></span> Historia Clínica y Odontograma (4)</div>
+    <div class="legend-item"><span class="color-dot" style="background: #7C3AED;"></span> Archivos e Inteligencia Artificial (1)</div>
+    <div class="legend-item"><span class="color-dot" style="background: #475569;"></span> Notificaciones (1)</div>
+  </div>
+
+  <script>
+    let modoVista = 'FULL';
+
+    // =========================================================================
+    // DICCIONARIO OFICIAL DE LAS 12 TABLAS (100% IDÉNTICO A LA IMAGEN APROBADA POR EL DOCENTE)
+    // =========================================================================
+    const tablasData = {
+      clinica: {
+        nombre: "clinica",
+        icono: "🏥",
+        dominio: "Seguridad y Multi-Sede",
+        color: "#1E8C82",
+        desc: "Tenant principal del sistema multi-inquilino. Todas las transacciones se aíslan por clinica_id (RF-03).",
+        cols: [
+          { name: "id", type: "UUID", pk: true },
+          { name: "nombre", type: "VARCHAR(160)" },
+          { name: "razon_social", type: "VARCHAR(200)" },
+          { name: "zona_horaria", type: "VARCHAR(64)" },
+          { name: "estado", type: "VARCHAR(16)" },
+          { name: "fecha_creacion", type: "TIMESTAMPTZ" },
+          { name: "fecha_actualizacion", type: "TIMESTAMPTZ" }
+        ]
+      },
+      usuario: {
+        nombre: "usuario",
+        icono: "👤",
+        dominio: "Seguridad y Multi-Sede",
+        color: "#1E8C82",
+        desc: "Cuentas universales de acceso. Absorbe directamente los tokens de restablecimiento de contraseña (RF-01).",
+        cols: [
+          { name: "id", type: "UUID", pk: true },
+          { name: "correo", type: "VARCHAR(254) UNQ" },
+          { name: "clave_hash", type: "VARCHAR(255)" },
+          { name: "nombres", type: "VARCHAR(100)" },
+          { name: "apellidos", type: "VARCHAR(100)" },
+          { name: "estado", type: "VARCHAR(20)" },
+          { name: "correo_verificado_en", type: "TIMESTAMPTZ" },
+          { name: "token_recuperacion_hash", type: "VARCHAR(255)" },
+          { name: "token_recuperacion_expira_en", type: "TIMESTAMPTZ" },
+          { name: "token_recuperacion_usado_en", type: "TIMESTAMPTZ" },
+          { name: "fecha_creacion", type: "TIMESTAMPTZ" },
+          { name: "fecha_actualizacion", type: "TIMESTAMPTZ" }
+        ]
+      },
+      rol: {
+        nombre: "rol",
+        icono: "🛡️",
+        dominio: "Seguridad y Multi-Sede",
+        color: "#1E8C82",
+        desc: "Catálogo maestro de roles y gobierno de permisos RBAC granulares en formato JSONB (RF-02).",
+        cols: [
+          { name: "id", type: "UUID", pk: true },
+          { name: "codigo", type: "VARCHAR(40) UNQ" },
+          { name: "nombre", type: "VARCHAR(80)" },
+          { name: "descripcion", type: "TEXT" },
+          { name: "permisos_json", type: "JSONB" },
+          { name: "activo", type: "BOOLEAN" },
+          { name: "fecha_creacion", type: "TIMESTAMPTZ" }
+        ]
+      },
+      usuario_clinica: {
+        nombre: "usuario_clinica",
+        icono: "🔗",
+        dominio: "Seguridad y Multi-Sede",
+        color: "#1E8C82",
+        desc: "Membresía multi-sede que vincula un usuario y una clínica asignándole su rol correspondiente (RF-02, RF-03).",
+        cols: [
+          { name: "id", type: "UUID", pk: true },
+          { name: "clinica_id", type: "UUID", fk: true },
+          { name: "usuario_id", type: "UUID", fk: true },
+          { name: "rol_id", type: "UUID", fk: true },
+          { name: "rol_asignado_por", type: "UUID", fk: true },
+          { name: "estado", type: "VARCHAR(16)" },
+          { name: "fecha_asignacion", type: "TIMESTAMPTZ" },
+          { name: "fecha_actualizacion", type: "TIMESTAMPTZ" }
+        ]
+      },
+      paciente: {
+        nombre: "paciente",
+        icono: "🧑",
+        dominio: "Pacientes y Citas",
+        color: "#059669",
+        desc: "Expediente integral desnormalizado: absorbe datos administrativos y perfil médico confidencial (RF-04).",
+        cols: [
+          { name: "id", type: "UUID", pk: true },
+          { name: "clinica_id", type: "UUID", fk: true },
+          { name: "usuario_id", type: "UUID", fk: true },
+          { name: "medico_actualizo_id", type: "UUID", fk: true },
+          { name: "tipo_documento", type: "VARCHAR(20)" },
+          { name: "numero_documento", type: "VARCHAR(30)" },
+          { name: "nombres", type: "VARCHAR(100)" },
+          { name: "apellidos", type: "VARCHAR(100)" },
+          { name: "fecha_nacimiento", type: "DATE" },
+          { name: "telefono", type: "VARCHAR(30)" },
+          { name: "correo", type: "VARCHAR(254)" },
+          { name: "estado", type: "VARCHAR(16)" },
+          { name: "alergias", type: "TEXT" },
+          { name: "antecedentes_medicos", type: "TEXT" },
+          { name: "medicamentos", type: "TEXT" },
+          { name: "fecha_creacion", type: "TIMESTAMPTZ" },
+          { name: "fecha_actualizacion", type: "TIMESTAMPTZ" }
+        ]
+      },
+      cita: {
+        nombre: "cita",
+        icono: "📅",
+        dominio: "Pacientes y Citas",
+        color: "#059669",
+        desc: "Agenda clínica desnormalizada: controla horarios y absorbe teleconsulta WebRTC virtual (link, sala, estado) (RF-06, RF-07, RF-17).",
+        cols: [
+          { name: "id", type: "UUID", pk: true },
+          { name: "clinica_id", type: "UUID", fk: true },
+          { name: "paciente_id", type: "UUID", fk: true },
+          { name: "odontologo_id", type: "UUID", fk: true },
+          { name: "creado_por_id", type: "UUID", fk: true },
+          { name: "inicio_en", type: "TIMESTAMPTZ" },
+          { name: "fin_en", type: "TIMESTAMPTZ" },
+          { name: "modalidad", type: "VARCHAR(12)" },
+          { name: "estado", type: "VARCHAR(20)" },
+          { name: "estado_asistencia", type: "VARCHAR(16)" },
+          { name: "motivo", type: "VARCHAR(500)" },
+          { name: "enlace_teleconsulta", type: "VARCHAR(500)" },
+          { name: "consultorio", type: "VARCHAR(100)" },
+          { name: "fecha_creacion", type: "TIMESTAMPTZ" },
+          { name: "fecha_actualizacion", type: "TIMESTAMPTZ" }
+        ]
+      },
+      atencion_clinica: {
+        nombre: "atencion_clinica",
+        icono: "🩺",
+        dominio: "Historia Clínica y Odontograma",
+        color: "#D97706",
+        desc: "Cabecera del acto médico que agrupa y conecta el historial de versiones inmutables del tratamiento (RF-08).",
+        cols: [
+          { name: "id", type: "UUID", pk: true },
+          { name: "clinica_id", type: "UUID", fk: true },
+          { name: "paciente_id", type: "UUID", fk: true },
+          { name: "cita_id", type: "UUID UNQ", fk: true },
+          { name: "odontologo_id", type: "UUID", fk: true },
+          { name: "estado", type: "VARCHAR(16)" },
+          { name: "fecha_creacion", type: "TIMESTAMPTZ" },
+          { name: "fecha_confirmacion", type: "TIMESTAMPTZ" }
+        ]
+      },
+      version_atencion_clinica: {
+        nombre: "version_atencion_clinica",
+        icono: "📜",
+        dominio: "Historia Clínica y Odontograma",
+        color: "#D97706",
+        desc: "Ficha clínica legal inmutable: versiona diagnósticos, recetas y notas generadas por asistente de voz IA (RF-10, RF-12, RF-13).",
+        cols: [
+          { name: "id", type: "UUID", pk: true },
+          { name: "clinica_id", type: "UUID", fk: true },
+          { name: "atencion_clinica_id", type: "UUID", fk: true },
+          { name: "version_anterior_id", type: "UUID", fk: true },
+          { name: "firmado_por", type: "UUID", fk: true },
+          { name: "numero_version", type: "INTEGER" },
+          { name: "diagnostico", type: "TEXT" },
+          { name: "procedimientos", type: "TEXT" },
+          { name: "recetas_prescripciones", type: "TEXT" },
+          { name: "indicaciones", type: "TEXT" },
+          { name: "evolucion", type: "TEXT" },
+          { name: "texto_pendiente_revision", type: "TEXT" },
+          { name: "esta_confirmado", type: "BOOLEAN" },
+          { name: "fecha_registro", type: "TIMESTAMPTZ" },
+          { name: "fecha_confirmacion", type: "TIMESTAMPTZ" }
+        ]
+      },
+      version_odontograma: {
+        nombre: "version_odontograma",
+        icono: "🦷",
+        dominio: "Historia Clínica y Odontograma",
+        color: "#D97706",
+        desc: "Historial inmutable del estado dental general a lo largo del tiempo, firmado digitalmente por el odontólogo (RF-09, RF-10).",
+        cols: [
+          { name: "id", type: "UUID", pk: true },
+          { name: "clinica_id", type: "UUID", fk: true },
+          { name: "paciente_id", type: "UUID", fk: true },
+          { name: "version_anterior_id", type: "UUID", fk: true },
+          { name: "firmado_por", type: "UUID", fk: true },
+          { name: "numero_version", type: "INTEGER" },
+          { name: "estado", type: "VARCHAR(16)" },
+          { name: "fecha_creacion", type: "TIMESTAMPTZ" },
+          { name: "fecha_confirmacion", type: "TIMESTAMPTZ" }
+        ]
+      },
+      hallazgo_odontograma: {
+        nombre: "hallazgo_odontograma",
+        icono: "📍",
+        dominio: "Historia Clínica y Odontograma",
+        color: "#D97706",
+        desc: "Marcas anatómicas por pieza dental FDI (11 a 48), superficie dental y condición clínica o tratamiento (RF-09).",
+        cols: [
+          { name: "id", type: "UUID", pk: true },
+          { name: "clinica_id", type: "UUID", fk: true },
+          { name: "version_odontograma_id", type: "UUID", fk: true },
+          { name: "codigo_pieza_dental", type: "VARCHAR(4)" },
+          { name: "codigo_superficie_cara", type: "VARCHAR(12)" },
+          { name: "codigo_condicion", type: "VARCHAR(40)" },
+          { name: "nota_observacion", type: "TEXT" }
+        ]
+      },
+      archivo_adjunto: {
+        nombre: "archivo_adjunto",
+        icono: "📁",
+        dominio: "Archivos e Inteligencia Artificial",
+        color: "#7C3AED",
+        desc: "Multimedia unificado: absorbe radiografías, portal paciente y detecciones IA integradas en JSONB (RF-14, RF-15, RF-16, RF-22).",
+        cols: [
+          { name: "id", type: "UUID", pk: true },
+          { name: "clinica_id", type: "UUID", fk: true },
+          { name: "paciente_id", type: "UUID", fk: true },
+          { name: "subido_por_usuario_id", type: "UUID", fk: true },
+          { name: "cita_id", type: "UUID", fk: true },
+          { name: "ia_revisado_por", type: "UUID", fk: true },
+          { name: "tipo_archivo", type: "VARCHAR(24)" },
+          { name: "clave_almacenamiento", type: "VARCHAR(500) UNQ" },
+          { name: "nombre_original", type: "VARCHAR(255)" },
+          { name: "tipo_mime", type: "VARCHAR(100)" },
+          { name: "peso_bytes", type: "BIGINT" },
+          { name: "region_anatomica", type: "VARCHAR(80)" },
+          { name: "es_visible_paciente", type: "BOOLEAN" },
+          { name: "ia_nombre_modelo", type: "VARCHAR(100)" },
+          { name: "ia_version_modelo", type: "VARCHAR(80)" },
+          { name: "ia_hallazgos_json", type: "JSONB" },
+          { name: "ia_estado_revision", type: "VARCHAR(16)" },
+          { name: "fecha_creacion", type: "TIMESTAMPTZ" }
+        ]
+      },
+      notificacion: {
+        nombre: "notificacion",
+        icono: "🔔",
+        dominio: "Notificaciones",
+        color: "#475569",
+        desc: "Bandeja transaccional por usuario para recordatorios de citas, avisos de teleconsulta y alertas del sistema (RF-19).",
+        cols: [
+          { name: "id", type: "UUID", pk: true },
+          { name: "clinica_id", type: "UUID", fk: true },
+          { name: "usuario_destinatario_id", type: "UUID", fk: true },
+          { name: "tipo_evento", type: "VARCHAR(40)" },
+          { name: "titulo", type: "VARCHAR(160)" },
+          { name: "cuerpo_mensaje", type: "VARCHAR(500)" },
+          { name: "estado", type: "VARCHAR(16)" },
+          { name: "fecha_creacion", type: "TIMESTAMPTZ" },
+          { name: "fecha_lectura", type: "TIMESTAMPTZ" }
+        ]
+      }
+    };
+
+    // =========================================================================
+    // GENERADOR DINÁMICO DE TARJETAS FÍSICAS EN SVG
+    // =========================================================================
+    function generarSvgTarjeta(tablaKey, columnas, domainColor, isSelected) {
+      const tabla = tablasData[tablaKey];
+      const width = 300;
+      const rowHeight = 22;
+      const headerHeight = 36;
+      const footerPadding = 8;
+      const height = headerHeight + (columnas.length * rowHeight) + footerPadding;
+
+      let rowsXml = '';
+      columnas.forEach((col, idx) => {
+        const y = headerHeight + 15 + (idx * rowHeight);
+        let badge = '';
+
+        if (col.pk) {
+          badge = `
+            <rect x="8" y="${y - 11}" width="24" height="14" rx="3" fill="#d29922"/>
+            <text x="20" y="${y}" font-family="'Outfit', sans-serif" font-weight="700" font-size="9" fill="#0d1117" text-anchor="middle">PK</text>
+          `;
+        } else if (col.fk) {
+          badge = `
+            <rect x="8" y="${y - 11}" width="24" height="14" rx="3" fill="#a371f7"/>
+            <text x="20" y="${y}" font-family="'Outfit', sans-serif" font-weight="700" font-size="9" fill="#ffffff" text-anchor="middle">FK</text>
+          `;
+        } else {
+          badge = `<circle cx="20" cy="${y - 3}" r="2" fill="#484f58"/>`;
+        }
+
+        const colNameColor = (col.pk || col.fk) ? '#ffffff' : '#c9d1d9';
+        const colWeight = (col.pk || col.fk) ? '600' : '400';
+        const rowBg = (idx % 2 === 0) ? 'rgba(255,255,255,0.02)' : 'transparent';
+
+        rowsXml += `
+          <rect x="0" y="${y - 14}" width="${width}" height="${rowHeight}" fill="${rowBg}"/>
+          ${badge}
+          <text x="38" y="${y}" font-family="'Fira Code', monospace" font-weight="${colWeight}" font-size="11" fill="${colNameColor}">${col.name}</text>
+          <text x="${width - 12}" y="${y}" font-family="'Fira Code', monospace" font-size="10" fill="#79c0ff" text-anchor="end">${col.type}</text>
+        `;
+      });
+
+      const strokeColor = isSelected ? '#5FC9BE' : '#30363d';
+      const strokeWidth = isSelected ? 3 : 1;
+
+      const svgString = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">
+          <defs>
+            <linearGradient id="grad-${tablaKey}" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="${domainColor}" stop-opacity="0.95"/>
+              <stop offset="100%" stop-color="${domainColor}" stop-opacity="0.65"/>
+            </linearGradient>
+          </defs>
+          <rect x="0" y="0" width="${width}" height="${height}" rx="8" fill="#161b22" stroke="${strokeColor}" stroke-width="${strokeWidth}"/>
+          <path d="M 0,8 A 8,8 0 0 1 8,0 L ${width-8},0 A 8,8 0 0 1 ${width},8 L ${width},${headerHeight} L 0,${headerHeight} Z" fill="url(#grad-${tablaKey})"/>
+          <text x="12" y="23" font-family="'Outfit', sans-serif" font-weight="700" font-size="13" fill="#ffffff">${tabla.icono} ${tabla.nombre}</text>
+          <text x="${width - 12}" y="23" font-family="'Outfit', sans-serif" font-weight="600" font-size="10" fill="rgba(255,255,255,0.75)" text-anchor="end">${columnas.length} cols</text>
+          <line x1="0" y1="${headerHeight}" x2="${width}" y2="${headerHeight}" stroke="#30363d" stroke-width="1"/>
+          ${rowsXml}
+        </svg>
+      `;
+
+      return {
+        url: 'data:image/svg+xml;utf8,' + encodeURIComponent(svgString),
+        width: width,
+        height: height
+      };
+    }
+
+    function obtenerColumnasParaModo(tablaKey) {
+      const tabla = tablasData[tablaKey];
+      if (modoVista === 'KEYS') {
+        return tabla.cols.filter(c => c.pk || c.fk);
+      }
+      return tabla.cols;
+    }
+
+    function construirElementosCytoscape() {
+      const nodes = Object.keys(tablasData).map(key => {
+        const cols = obtenerColumnasParaModo(key);
+        const card = generarSvgTarjeta(key, cols, tablasData[key].color, false);
+        return {
+          data: {
+            id: key,
+            svgUrl: card.url,
+            width: card.width,
+            height: card.height
+          }
+        };
+      });
+
+      const edges = [
+        // Dominio 1: Seguridad y Multi-Sede
+        { data: { source: 'clinica', target: 'usuario_clinica', cardinalidad: '1:N' } },
+        { data: { source: 'usuario', target: 'usuario_clinica', cardinalidad: '1:N' } },
+        { data: { source: 'rol', target: 'usuario_clinica', cardinalidad: '1:N' } },
+        { data: { source: 'usuario', target: 'notificacion', cardinalidad: '1:N' } },
+        { data: { source: 'usuario', target: 'archivo_adjunto', cardinalidad: '1:N (sube)' } },
+        { data: { source: 'usuario', target: 'paciente', cardinalidad: '0..1:N' } },
+
+        // Dominio 2: Pacientes y Citas
+        { data: { source: 'clinica', target: 'paciente', cardinalidad: '1:N' } },
+        { data: { source: 'usuario_clinica', target: 'cita', cardinalidad: '1:N (atiende)' } },
+        { data: { source: 'paciente', target: 'cita', cardinalidad: '1:N' } },
+        { data: { source: 'cita', target: 'atencion_clinica', cardinalidad: '1:0..1' } },
+        { data: { source: 'paciente', target: 'atencion_clinica', cardinalidad: '1:N' } },
+
+        // Dominio 3: Historia Clínica y Odontograma
+        { data: { source: 'atencion_clinica', target: 'version_atencion_clinica', cardinalidad: '1:N' } },
+        { data: { source: 'paciente', target: 'version_odontograma', cardinalidad: '1:N' } },
+        { data: { source: 'version_odontograma', target: 'hallazgo_odontograma', cardinalidad: '1:N' } },
+
+        // Dominio 4: Archivos e Inteligencia Artificial
+        { data: { source: 'paciente', target: 'archivo_adjunto', cardinalidad: '1:N' } },
+        { data: { source: 'cita', target: 'archivo_adjunto', cardinalidad: '1:0..N' } }
+      ];
+
+      return { nodes, edges };
+    }
+
+    // =========================================================================
+    // INICIALIZACIÓN DE CYTOSCAPE
+    // =========================================================================
+    const initialElements = construirElementosCytoscape();
+
+    const cy = cytoscape({
+      container: document.getElementById('cy'),
+      boxSelectionEnabled: false,
+      autounselectify: false,
+      style: [
+        {
+          selector: 'node',
+          style: {
+            'shape': 'round-rectangle',
+            'background-image': 'data(svgUrl)',
+            'background-fit': 'contain',
+            'background-opacity': 0,
+            'border-width': 0,
+            'width': 'data(width)',
+            'height': 'data(height)',
+            'shadow-blur': 18,
+            'shadow-color': 'rgba(0,0,0,0.6)',
+            'shadow-opacity': 0.85
+          }
+        },
+        {
+          selector: 'node:selected',
+          style: {
+            'shadow-color': '#5FC9BE',
+            'shadow-blur': 30
+          }
+        },
+        {
+          selector: 'edge',
+          style: {
+            'width': 2.5,
+            'line-color': '#485764',
+            'target-arrow-color': '#485764',
+            'target-arrow-shape': 'triangle',
+            'curve-style': 'bezier',
+            'label': 'data(cardinalidad)',
+            'font-family': "'Fira Code', monospace",
+            'font-size': '11px',
+            'font-weight': '600',
+            'color': '#8b949e',
+            'text-background-color': '#0d1117',
+            'text-background-opacity': 0.9,
+            'text-background-padding': '4px',
+            'text-background-shape': 'roundrectangle'
+          }
+        },
+        {
+          selector: 'edge:selected',
+          style: {
+            'line-color': '#5FC9BE',
+            'target-arrow-color': '#5FC9BE',
+            'width': 3.5,
+            'color': '#5FC9BE'
+          }
+        }
+      ],
+      elements: initialElements,
+      layout: {
+        name: 'dagre',
+        rankDir: 'LR',
+        nodeSep: 65,
+        rankSep: 110,
+        padding: 60
+      }
+    });
+
+    // =========================================================================
+    // EVENTOS DE INTERACCIÓN
+    // =========================================================================
+    cy.on('tap', 'node', function(evt){
+      const node = evt.target;
+      const key = node.id();
+      const data = tablasData[key];
+      if (!data) return;
+
+      document.getElementById('p-title').innerText = data.icono + ' ' + data.nombre;
+      const badge = document.getElementById('p-badge');
+      badge.innerText = data.dominio;
+      badge.style.background = data.color + '22';
+      badge.style.color = data.color;
+      badge.style.border = '1px solid ' + data.color;
+      document.getElementById('p-desc').innerText = data.desc;
+
+      const attrsDiv = document.getElementById('p-attrs');
+      attrsDiv.innerHTML = '';
+      data.cols.forEach(col => {
+        let tags = '';
+        if (col.pk) tags += '<span class="tag-pk">PK</span>';
+        if (col.fk) tags += '<span class="tag-fk">FK</span>';
+        attrsDiv.innerHTML += `
+          <div class="attr-item">
+            <span class="name">${tags}${col.name}</span>
+            <span class="type">${col.type}</span>
+          </div>
+        `;
+      });
+
+      document.getElementById('detail-panel').style.display = 'block';
+    });
+
+    cy.on('tap', function(evt){
+      if (evt.target === cy){
+        document.getElementById('detail-panel').style.display = 'none';
+      }
+    });
+
+    function reordenar() {
+      cy.layout({
+        name: 'dagre',
+        rankDir: 'LR',
+        nodeSep: 65,
+        rankSep: 110,
+        padding: 60,
+        animate: true,
+        animationDuration: 500
+      }).run();
+    }
+
+    function toggleVista() {
+      modoVista = (modoVista === 'FULL') ? 'KEYS' : 'FULL';
+      document.getElementById('btn-vista').innerText = (modoVista === 'FULL') 
+        ? '👁️ Modo: Todas las Columnas' 
+        : '🔑 Modo: Solo Claves PK/FK';
+
+      cy.batch(() => {
+        Object.keys(tablasData).forEach(key => {
+          const cols = obtenerColumnasParaModo(key);
+          const card = generarSvgTarjeta(key, cols, tablasData[key].color, false);
+          const node = cy.getElementById(key);
+          if (node.length > 0) {
+            node.data('svgUrl', card.url);
+            node.data('width', card.width);
+            node.data('height', card.height);
+          }
+        });
+      });
+
+      reordenar();
+    }
+
+    function exportarPNG() {
+      const png64 = cy.png({ full: true, scale: 3, bg: '#0d1117' });
+      const downloadLink = document.createElement('a');
+      downloadLink.href = png64;
+      downloadLink.download = 'modelo_fisico_coronyx_12_tablas.png';
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+    }
+  </script>
+</body>
+</html>
