@@ -32,4 +32,10 @@ public class AuthController {
         List<UserDto> users = authService.getAllUsers();
         return ResponseEntity.ok(users);
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<java.util.Map<String, String>> handleAuthError(IllegalArgumentException ex) {
+        return ResponseEntity.status(org.springframework.http.HttpStatus.UNAUTHORIZED)
+                .body(java.util.Map.of("message", ex.getMessage()));
+    }
 }
