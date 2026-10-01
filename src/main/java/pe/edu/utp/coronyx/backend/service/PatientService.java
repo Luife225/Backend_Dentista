@@ -9,6 +9,7 @@ import pe.edu.utp.coronyx.backend.repository.ClinicRepository;
 import pe.edu.utp.coronyx.backend.repository.PatientRepository;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -71,6 +72,68 @@ public class PatientService {
 
         Patient saved = patientRepository.save(patient);
         return toDto(saved);
+    }
+
+    @Transactional(readOnly = true)
+    public PatientDto getPatientById(UUID id) {
+        Patient patient = patientRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Paciente no encontrado con ID: " + id));
+        return toDto(patient);
+    }
+
+    @Transactional
+    public PatientDto updatePatient(UUID id, PatientDto dto) {
+        Patient patient = patientRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Paciente no encontrado con ID: " + id));
+
+        // Solo actualizamos los campos editables; clinica_id y fecha_creacion son inmutables
+        if (dto.getNombres() != null && !dto.getNombres().isBlank()) {
+            patient.setNombres(dto.getNombres());
+        }
+        if (dto.getApellidos() != null && !dto.getApellidos().isBlank()) {
+            patient.setApellidos(dto.getApellidos());
+        }
+        if (dto.getTipoDocumento() != null) {
+            patient.setTipoDocumento(dto.getTipoDocumento());
+        }
+        if (dto.getNumeroDocumento() != null) {
+            patient.setNumeroDocumento(dto.getNumeroDocumento());
+        }
+        if (dto.getFechaNacimiento() != null) {
+            patient.setFechaNacimiento(dto.getFechaNacimiento());
+        }
+        if (dto.getTelefono() != null) {
+            patient.setTelefono(dto.getTelefono());
+        }
+        if (dto.getCorreo() != null) {
+            patient.setCorreo(dto.getCorreo());
+        }
+        if (dto.getAlergias() != null) {
+            patient.setAlergias(dto.getAlergias());
+        }
+        if (dto.getAntecedentesMedicos() != null) {
+            patient.setAntecedentesMedicos(dto.getAntecedentesMedicos());
+        }
+        if (dto.getMedicamentos() != null) {
+            patient.setMedicamentos(dto.getMedicamentos());
+        }
+
+        Patient updated = patientRepository.save(patient);
+        return toDto(updated);
+    }
+
+    @Transactional
+    public PatientDto archivePatient(UUID id) {
+        Patient patient = patientRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Paciente no encontrado con ID: " + id));
+
+        if ("ARCHIVADO".equals(patient.getEstado())) {
+            throw new IllegalStateException("El paciente ya se encuentra archivado");
+        }
+
+        patient.setEstado("ARCHIVADO");
+        Patient archived = patientRepository.save(patient);
+        return toDto(archived);
     }
 
     public PatientDto toDto(Patient patient) {
