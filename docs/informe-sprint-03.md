@@ -12,8 +12,15 @@
 **Docente:**  
 Mg. Ing. Junior Alexander Neyra Gonzales  
 
+**Integrantes:**
+- Aguilera Terrones, Alan Rubens
+- Chopitea Aguirre, Luis Felipe
+- Chumbes, Adrián Alejandro
+- Gamboa Velásquez, Luis Francisco
+- Pérez Escobedo, Sebastián Maximiliano
+
 **Versión:** 3.0  
-**Fecha:** Septiembre del 2026  
+**Fecha:** 25 de septiembre del 2026  
 
 ---
 
