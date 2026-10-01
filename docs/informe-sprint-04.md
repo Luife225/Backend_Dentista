@@ -359,14 +359,94 @@ Se implementaron y comprobaron las operaciones fundamentales del ciclo de persis
 
 ## 5. IMPLEMENTACIÓN DE SEGURIDAD
 
-### 5.1. Autenticación
+### 5.1. Autenticación y Manejo de Sesiones (JWT + BCrypt)
 
-El proceso de autenticación implementado en el Sprint 04 valida la identidad de los colaboradores y pacientes mediante un esquema centralizado:
+El proceso de autenticación implementado en el Sprint 04 garantiza la verificación estricta de identidad de los colaboradores institucionales y pacientes mediante un esquema robusto y sin estado (*stateless*) basado en **JSON Web Tokens (JWT)** y hashing adaptativo **BCrypt**:
 
-1. **Recepción de Credenciales:** El endpoint `/api/v1/auth/login` recibe las credenciales enviadas mediante HTTPS en un canal seguro.
-2. **Validación de Identidad y Estado:** Se verifica que el usuario exista en la tabla `usuario` y que su estado se encuentre en `ACTIVO`. Si el usuario está `DESHABILITADO` o `PENDIENTE`, la autenticación es rechazada inmediatamente con código HTTP `401 Unauthorized`.
-3. **Manejo de Credenciales:** La contraseña ingresada se evalúa mediante funciones criptográficas contra la columna `clave_hash`.
-4. **Emisión de Contexto de Sesión:** Tras la autenticación exitosa, el sistema localiza la sede clínica del usuario en `usuario_clinica` y retorna un identificador de sesión seguro acompañado del rol institucional verificado.
+```mermaid
+sequenceDiagram
+    autonumber
+    actor U as Usuario / Front-End
+    participant AC as AuthController (/api/v1/auth/login)
+    participant AS as AuthService
+    participant JS as JwtService (HS256)
+    participant DB as PostgreSQL (usuario / usuario_clinica)
+
+    U->>AC: POST /api/v1/auth/login { correo, clave }
+    AC->>AS: login(LoginRequestDto)
+    AS->>DB: findByCorreoIgnoreCase(correo)
+    DB-->>AS: Retorna Entity User (clave_hash, estado)
+    
+    alt Usuario no existe o contraseña incorrecta
+        AS->>AS: passwordEncoder.matches(clave, clave_hash) == false
+        AS-->>AC: Lanza IllegalArgumentException
+        AC-->>U: HTTP 401 Unauthorized ("Credenciales incorrectas")
+    else Cuenta no activa (INACTIVO / DESHABILITADO)
+        AS->>AS: estado != 'ACTIVO'
+        AS-->>AC: Lanza IllegalStateException
+        AC-->>U: HTTP 401 Unauthorized ("Cuenta no activa")
+    else Credenciales y estado válidos
+        AS->>DB: findFirstByUsuarioId(userId) en usuario_clinica
+        DB-->>AS: Retorna Rol institucional y Sede Clínica
+        AS->>JS: generateToken(user, rol, clinicaId)
+        JS-->>AS: Token JWT firmado (HS256, vigencia 24h)
+        AS-->>AC: LoginResponseDto (token, tipoToken='Bearer', rol, clinica)
+        AC-->>U: HTTP 200 OK + JWT Token Payload
+    end
+```
+
+#### 1. Inicio de Sesión y Recepción de Credenciales
+- **Punto de Entrada:** El controlador `AuthController` expone el endpoint `POST /api/v1/auth/login` configurado con `@CrossOrigin` y validación de esquema `@Valid @RequestBody LoginRequestDto`.
+- **Estructura del Request:** El cliente envía en formato JSON:
+  ```json
+  {
+    "correo": "odontologo@coronyx.pe",
+    "clave": "123456"
+  }
+  ```
+
+#### 2. Validación de Usuario y Estado de Cuenta
+- **Búsqueda Normalizada:** El servicio `AuthService` realiza una búsqueda insensible a mayúsculas/minúsculas (`findByCorreoIgnoreCase`) contra la tabla `usuario`.
+- **Comprobación de Estado Operativo:** Se verifica estrictamente que `user.getEstado()` sea `ACTIVO`. Cuentas en estado `INACTIVO`, `SUSPENDIDO` o `PENDIENTE` son bloqueadas con respuesta `401 Unauthorized`, previniendo accesos indebidos de personal desvinculado.
+
+#### 3. Manejo de Credenciales y Criptografía (BCrypt)
+- **Hashing Unidireccional:** La contraseña ingresada no se compara en texto plano. Se procesa mediante la biblioteca `spring-security-crypto` con el algoritmo adaptativo **BCrypt** (`BCryptPasswordEncoder` con factor de trabajo/costo 12).
+- **Protección contra Ataques:** BCrypt incorpora un *salt* criptográfico aleatorio de 128 bits embebido en la cadena de hash (`$2a$12$...`), neutralizando ataques mediante tablas arcoíris (*rainbow tables*) y ataques de fuerza bruta por diccionario.
+- **Transición Transparente:** La arquitectura implementada en `AuthService` detecta si el usuario posee un registro inicial y realiza la migración y re-encriptación del hash en caliente dentro de la columna `clave_hash` de PostgreSQL.
+
+#### 4. Emisión y Estructura del Token JWT
+Tras la validación exitosa, `JwtService` genera un **JSON Web Token** firmado digitalmente mediante el algoritmo criptográfico **HMAC-SHA256 (`HS256`)**:
+- **Header:**
+  ```json
+  {
+    "alg": "HS256",
+    "typ": "JWT"
+  }
+  ```
+- **Payload (Claims Institucionales):**
+  - `sub` (*Subject*): Correo electrónico corporativo o personal del usuario.
+  - `userId`: Identificador único UUID v4 de la entidad `usuario`.
+  - `rol`: Rol institucional resuelto (`SUPER_ADMIN`, `ADMIN_CLINICA`, `ODONTOLOGO`, `RECEPCIONISTA`, `PACIENTE`).
+  - `clinicaId`: Identificador UUID de la clínica dental asignada para aislamiento multi-tenant.
+  - `nombres` y `apellidos`: Datos nominativos para renderizado en interfaz de usuario.
+  - `iat` (*Issued At*): Marca de tiempo del momento exacto de emisión.
+  - `exp` (*Expiration Time*): Vencimiento configurado a 24 horas (`86,400,000 ms`).
+- **Respuesta Entregada al Front-End (`LoginResponseDto`):**
+  ```json
+  {
+    "id": "c7b6a120-e41b-4f92-9104-5128dfa30129",
+    "correo": "odontologo@coronyx.pe",
+    "nombres": "Andrés",
+    "apellidos": "Herrera",
+    "nombreCompleto": "Andrés Herrera",
+    "rol": "ODONTOLOGO",
+    "clinicaId": "f3cfeb91-cccb-47da-9aee-5598ab1b99a7",
+    "clinicaNombre": "Clínica Dental Coronyx - Sede Central",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJvZG9udG9sb2dvQGNvcm9ueXgucGUiLCJyb2wiOiJPRE9OVE9MT0dPIiwidXNlcklkIjoiYzdiNmExMjAtZTQxYi00ZjkyLTkxMDQtNTEyOGRmYTMwMTI5IiwiY2xpbmljYUlkIjoiZjNjZmViOTEtY2NjYi00N2RhLTlhZWUtNTU5OGFiMWI5OWE3IiwiZXhwIjoxNzkxMDEwMDAwfQ.abcdef...",
+    "tipoToken": "Bearer"
+  }
+  ```
+- **Persistencia en Cliente:** El front-end (`authService.ts` / `AuthContext.tsx`) almacena el token de forma segura en `localStorage` (`coronyx_jwt_token`), permitiendo la persistencia de sesión y adjuntándolo en las cabeceras `Authorization: Bearer <token>` de las peticiones subsiguientes.
 
 ---
 

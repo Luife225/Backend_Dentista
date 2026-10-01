@@ -79,4 +79,23 @@ public class LoginResponseDto {
     public void setClinicaNombre(String clinicaNombre) {
         this.clinicaNombre = clinicaNombre;
     }
+
+    private String token;
+    private String tipoToken = "Bearer";
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public String getTipoToken() {
+        return tipoToken;
+    }
+
+    public void setTipoToken(String tipoToken) {
+        this.tipoToken = tipoToken;
+    }
 }
