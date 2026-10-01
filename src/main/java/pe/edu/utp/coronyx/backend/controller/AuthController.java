@@ -33,8 +33,8 @@ public class AuthController {
         return ResponseEntity.ok(users);
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<java.util.Map<String, String>> handleAuthError(IllegalArgumentException ex) {
+    @ExceptionHandler({IllegalArgumentException.class, IllegalStateException.class})
+    public ResponseEntity<java.util.Map<String, String>> handleAuthError(RuntimeException ex) {
         return ResponseEntity.status(org.springframework.http.HttpStatus.UNAUTHORIZED)
                 .body(java.util.Map.of("message", ex.getMessage()));
     }

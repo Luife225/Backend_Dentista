@@ -1,5 +1,7 @@
 package pe.edu.utp.coronyx.backend.service;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pe.edu.utp.coronyx.backend.dto.LoginRequestDto;
@@ -16,6 +18,7 @@ import pe.edu.utp.coronyx.backend.repository.UserRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,25 +28,46 @@ public class AuthService {
     private final ClinicUserRepository clinicUserRepository;
     private final RoleRepository roleRepository;
     private final ClinicRepository clinicRepository;
+    private final JwtService jwtService;
+    private final PasswordEncoder passwordEncoder;
 
     public AuthService(UserRepository userRepository,
                        ClinicUserRepository clinicUserRepository,
                        RoleRepository roleRepository,
-                       ClinicRepository clinicRepository) {
+                       ClinicRepository clinicRepository,
+                       JwtService jwtService) {
         this.userRepository = userRepository;
         this.clinicUserRepository = clinicUserRepository;
         this.roleRepository = roleRepository;
         this.clinicRepository = clinicRepository;
+        this.jwtService = jwtService;
+        this.passwordEncoder = new BCryptPasswordEncoder(12);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public LoginResponseDto login(LoginRequestDto req) {
         String email = req.getCorreo() != null ? req.getCorreo().trim().toLowerCase() : "";
         User user = userRepository.findByCorreoIgnoreCase(email)
                 .orElseThrow(() -> new IllegalArgumentException("Credenciales incorrectas: no existe un usuario registrado con este correo"));
 
-        // Verificación de clave (coincidencia directa con clave_hash)
-        if (!user.getClaveHash().equals(req.getClave())) {
+        // Verificación de clave con BCrypt (y compatibilidad/migración automática en caliente para semillas iniciales)
+        boolean passwordMatches = false;
+        String storedHash = user.getClaveHash();
+
+        if (storedHash != null) {
+            if (storedHash.startsWith("$2a$") || storedHash.startsWith("$2b$") || storedHash.startsWith("$2y$")) {
+                passwordMatches = passwordEncoder.matches(req.getClave(), storedHash);
+            } else {
+                // Si la semilla previa era texto plano, verificamos y actualizamos de inmediato a hash BCrypt en PostgreSQL
+                passwordMatches = storedHash.equals(req.getClave());
+                if (passwordMatches) {
+                    user.setClaveHash(passwordEncoder.encode(req.getClave()));
+                    userRepository.save(user);
+                }
+            }
+        }
+
+        if (!passwordMatches) {
             throw new IllegalArgumentException("Credenciales incorrectas: la contraseña ingresada no coincide");
         }
 
@@ -59,24 +83,32 @@ public class AuthService {
         resp.setNombreCompleto(user.getNombres() + " " + user.getApellidos());
 
         // Obtener rol y clínica asociada
+        String userRole = "PACIENTE";
+        UUID clinicaId = null;
+
         Optional<ClinicUser> clinicUserOpt = clinicUserRepository.findFirstByUsuarioId(user.getId());
         if (clinicUserOpt.isPresent()) {
             ClinicUser cu = clinicUserOpt.get();
             if (cu.getRol() != null) {
-                resp.setRol(cu.getRol().getCodigo());
+                userRole = cu.getRol().getCodigo();
+                resp.setRol(userRole);
             }
             if (cu.getClinica() != null) {
-                resp.setClinicaId(cu.getClinica().getId());
+                clinicaId = cu.getClinica().getId();
+                resp.setClinicaId(clinicaId);
                 resp.setClinicaNombre(cu.getClinica().getNombre());
             }
         } else {
-            // Si el correo o nombre coincide con superadmin
             if (email.contains("superadmin")) {
-                resp.setRol("SUPER_ADMIN");
-            } else {
-                resp.setRol("PACIENTE");
+                userRole = "SUPER_ADMIN";
             }
+            resp.setRol(userRole);
         }
+
+        // Generación y firma de Token JWT institucional (HS256)
+        String jwtToken = jwtService.generateToken(user, userRole, clinicaId);
+        resp.setToken(jwtToken);
+        resp.setTipoToken("Bearer");
 
         return resp;
     }
