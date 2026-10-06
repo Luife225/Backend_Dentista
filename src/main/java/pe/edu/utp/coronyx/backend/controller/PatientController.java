@@ -55,6 +55,27 @@ public class PatientController {
         return ResponseEntity.ok(patientService.archivePatient(id));
     }
 
+    /** Manejo de errores de validación Bean Validation (@Valid) → 400 */
+    @ExceptionHandler(org.springframework.web.bind.MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, Object>> handleValidationExceptions(
+            org.springframework.web.bind.MethodArgumentNotValidException ex) {
+        Map<String, String> fieldErrors = new java.util.HashMap<>();
+        ex.getBindingResult().getFieldErrors().forEach(error ->
+                fieldErrors.put(error.getField(), error.getDefaultMessage()));
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
+                "message", "Error de validación en los campos enviados",
+                "errors", fieldErrors
+        ));
+    }
+
+    /** Manejo de argumentos inválidos o reglas de negocio violadas → 400 */
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Map<String, String>> handleIllegalArgument(IllegalArgumentException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Map.of("message", ex.getMessage()));
+    }
+
     /** Manejo de paciente no encontrado → 404 */
     @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity<Map<String, String>> handleNotFound(NoSuchElementException ex) {
