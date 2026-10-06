@@ -125,6 +125,7 @@ public class AuthService {
 
             Optional<ClinicUser> cuOpt = clinicUserRepository.findFirstByUsuarioId(u.getId());
             if (cuOpt.isPresent() && cuOpt.get().getRol() != null) {
+                dto.setUsuarioClinicaId(cuOpt.get().getId());
                 dto.setRol(cuOpt.get().getRol().getCodigo());
                 if (cuOpt.get().getClinica() != null) {
                     dto.setClinicaNombre(cuOpt.get().getClinica().getNombre());

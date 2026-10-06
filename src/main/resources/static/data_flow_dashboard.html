@@ -1,0 +1,1224 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Coronyx SaaS - Arquitectura de Base de Datos y Flujo Clínico</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-main: #0b1329;
+      --bg-surface: #111e38;
+      --bg-card: #162649;
+      --bg-card-hover: #1c305c;
+      --border-color: #243b6b;
+      --primary: #0ea5e9;
+      --primary-light: #38bdf8;
+      --teal: #10b981;
+      --amber: #f59e0b;
+      --purple: #8b5cf6;
+      --rose: #f43f5e;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --code-bg: #090e1f;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --shadow-lg: 0 12px 30px -10px rgba(0, 0, 0, 0.5);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      line-height: 1.5;
+      padding-bottom: 80px;
+    }
+
+    header {
+      background: linear-gradient(180deg, #111e38 0%, #0b1329 100%);
+      border-bottom: 1px solid var(--border-color);
+      padding: 36px 40px 24px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+    }
+
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .brand-title {
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #fff;
+    }
+
+    .brand-badge {
+      font-size: 11px;
+      text-transform: uppercase;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(14, 165, 233, 0.15);
+      color: var(--primary-light);
+      border: 1px solid rgba(14, 165, 233, 0.3);
+    }
+
+    .saas-proof {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #6ee7b7;
+      padding: 6px 14px;
+      border-radius: var(--radius-md);
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Role Selector Pills */
+    .role-bar {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    .role-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .role-btn:hover {
+      background: var(--bg-card-hover);
+      color: var(--text-main);
+      border-color: var(--primary-light);
+    }
+
+    .role-btn.active {
+      background: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary-light);
+      box-shadow: 0 0 16px rgba(14, 165, 233, 0.4);
+    }
+
+    .container {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 30px 40px;
+    }
+
+    /* Architecture Info Banner */
+    .saas-banner {
+      background: linear-gradient(135deg, rgba(22, 38, 73, 0.9) 0%, rgba(14, 165, 233, 0.1) 100%);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 24px 28px;
+      margin-bottom: 36px;
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 24px;
+    }
+
+    .saas-banner h2 {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #fff;
+    }
+
+    .saas-banner p {
+      color: var(--text-muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .saas-metrics {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      justify-content: center;
+      background: rgba(9, 14, 31, 0.6);
+      padding: 16px 20px;
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(36, 59, 107, 0.6);
+    }
+
+    .metric-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+    }
+
+    .metric-row span:first-child { color: var(--text-dim); }
+    .metric-row span:last-child { color: var(--text-main); font-weight: 600; }
+
+    /* Visual Data Flow Steps */
+    .flow-section {
+      margin-bottom: 40px;
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .flow-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .flow-step-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      position: relative;
+    }
+
+    .flow-step-card:hover, .flow-step-card.selected {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+      background: var(--bg-card);
+    }
+
+    .step-number {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--primary-light);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+
+    .step-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+
+    .step-tables {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--teal);
+    }
+
+    /* Domain Table Cards */
+    .domain-block {
+      margin-bottom: 36px;
+    }
+
+    .domain-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 8px;
+    }
+
+    .domain-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--primary-light);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .table-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      margin-bottom: 20px;
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+      transition: opacity 0.3s ease;
+    }
+
+    .table-card.hidden {
+      display: none;
+    }
+
+    .table-header {
+      background: var(--bg-card);
+      padding: 14px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-color);
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .table-name {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 15px;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .table-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .roles-tag-list {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .role-tag {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .role-super { background: rgba(244, 63, 94, 0.2); color: #fda4af; border: 1px solid rgba(244, 63, 94, 0.4); }
+    .role-admin { background: rgba(245, 158, 11, 0.2); color: #fde68a; border: 1px solid rgba(245, 158, 11, 0.4); }
+    .role-odo { background: rgba(14, 165, 233, 0.2); color: #7dd3fc; border: 1px solid rgba(14, 165, 233, 0.4); }
+    .role-rec { background: rgba(16, 185, 129, 0.2); color: #a7f3d0; border: 1px solid rgba(16, 185, 129, 0.4); }
+    .role-pac { background: rgba(139, 92, 246, 0.2); color: #c4b5fd; border: 1px solid rgba(139, 92, 246, 0.4); }
+
+    /* Table Styles */
+    .table-wrapper {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12.5px;
+      text-align: left;
+    }
+
+    th {
+      background: #0d172e;
+      color: var(--text-dim);
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 11px;
+      letter-spacing: 0.5px;
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border-color);
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(36, 59, 107, 0.4);
+      color: var(--text-main);
+      vertical-align: middle;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: rgba(28, 48, 92, 0.5);
+    }
+
+    .uuid-pill {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      background: rgba(14, 165, 233, 0.1);
+      color: var(--primary-light);
+      padding: 2px 6px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: inline-block;
+      white-space: nowrap;
+    }
+
+    .uuid-pill:hover {
+      background: rgba(14, 165, 233, 0.25);
+    }
+
+    .fk-ref {
+      color: var(--teal);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .status-active { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+    .status-confirmed { background: rgba(14, 165, 233, 0.2); color: #38bdf8; }
+    .status-pending { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+    .status-archived { background: rgba(100, 116, 139, 0.25); color: #94a3b8; }
+
+    .json-code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      background: var(--code-bg);
+      padding: 4px 8px;
+      border-radius: 4px;
+      color: #e2e8f0;
+      max-width: 320px;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      margin-top: 50px;
+      font-size: 13px;
+      color: var(--text-dim);
+    }
+
+    @media (max-width: 900px) {
+      .saas-banner { grid-template-columns: 1fr; }
+      .container { padding: 20px; }
+      header { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="header-top">
+      <div>
+        <div class="brand-title">
+          🦷 Coronyx Dental
+          <span class="brand-badge">SaaS Multi-Tenant</span>
+        </div>
+        <div style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">
+          Visualizador Dinámico de Datos Verídicos y Flujo de Negocio (PostgreSQL 17)
+        </div>
+      </div>
+      <div class="saas-proof">
+        <span>🔒 Aislamiento por Clínica (`clinica_id`) Activo</span>
+      </div>
+    </div>
+
+    <!-- Filter by Role -->
+    <div style="margin-bottom: 8px; font-size: 12px; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px;">
+      Filtrar Tablas y Permisos por Rol:
+    </div>
+    <div class="role-bar">
+      <button class="role-btn active" onclick="filterByRole('ALL')">🌐 Todas las Tablas (12)</button>
+      <button class="role-btn" onclick="filterByRole('SUPER_ADMIN')">👑 Super Admin</button>
+      <button class="role-btn" onclick="filterByRole('ADMIN_CLINICA')">🏢 Administrador Clínica</button>
+      <button class="role-btn" onclick="filterByRole('ODONTOLOGO')">🩺 Odontólogo</button>
+      <button class="role-btn" onclick="filterByRole('RECEPCIONISTA')">📋 Recepcionista</button>
+      <button class="role-btn" onclick="filterByRole('PACIENTE')">👤 Paciente</button>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <!-- SaaS Architecture Answer Banner -->
+    <div class="saas-banner">
+      <div>
+        <h2>¿Tu Base de Datos tiene la arquitectura de un SaaS? ¡SÍ, al 100%!</h2>
+        <p>
+          Tu base de datos implementa el patrón <strong>Multi-Tenant con Aislamiento Lógico por Tenant (SaaS Compartido)</strong>. 
+          Cada clínica dental es un <em>Tenant</em> único (tabla <code>clinica</code>), y todas las entidades operativas 
+          (<code>paciente</code>, <code>cita</code>, <code>atencion_clinica</code>, <code>version_odontograma</code>, etc.) 
+          tienen la llave foránea <code>clinica_id</code> obligatoria con restricción única compuesta (<code>uq_paciente_clinica</code>).
+          Esto garantiza que la Clínica "A" <strong>jamás</strong> pueda ver citas ni pacientes de la Clínica "B".
+        </p>
+      </div>
+      <div class="saas-metrics">
+        <div class="metric-row"><span>Modelo SaaS:</span><span>Multi-Tenant DB Compartida</span></div>
+        <div class="metric-row"><span>Segregación:</span><span>Tenant Key (clinica_id)</span></div>
+        <div class="metric-row"><span>Seguridad RBAC:</span><span>Roles + Permisos JSONB</span></div>
+        <div class="metric-row"><span>Integridad Histórica:</span><span>Atenciones Versionadas</span></div>
+      </div>
+    </div>
+
+    <!-- Data Flow Sequence -->
+    <div class="flow-section">
+      <div class="section-title">
+        <span>🔄 Flujo de Datos del Negocio Odontológico (De inicio a fin)</span>
+      </div>
+      <div class="flow-grid">
+        <div class="flow-step-card" onclick="highlightDomain('dominio-1')">
+          <div class="step-number">Paso 1</div>
+          <div class="step-title">Creación de Sede & Personal</div>
+          <div class="step-tables">clinica, usuario, rol, usuario_clinica</div>
+        </div>
+        <div class="flow-step-card" onclick="highlightDomain('dominio-2-paciente')">
+          <div class="step-number">Paso 2</div>
+          <div class="step-title">Admisión del Paciente</div>
+          <div class="step-tables">paciente (17 cols)</div>
+        </div>
+        <div class="flow-step-card" onclick="highlightDomain('dominio-2-cita')">
+          <div class="step-number">Paso 3</div>
+          <div class="step-title">Agendamiento de Cita</div>
+          <div class="step-tables">cita (Horario y Odontólogo)</div>
+        </div>
+        <div class="flow-step-card" onclick="highlightDomain('dominio-3-atencion')">
+          <div class="step-number">Paso 4</div>
+          <div class="step-title">Consulta & Receta</div>
+          <div class="step-tables">atencion_clinica, version_atencion</div>
+        </div>
+        <div class="flow-step-card" onclick="highlightDomain('dominio-3-odontograma')">
+          <div class="step-number">Paso 5</div>
+          <div class="step-title">Odontograma por Piezas</div>
+          <div class="step-tables">version_odontograma, hallazgo</div>
+        </div>
+        <div class="flow-step-card" onclick="highlightDomain('dominio-4-ia')">
+          <div class="step-number">Paso 6</div>
+          <div class="step-title">Radiografía & Diagnóstico IA</div>
+          <div class="step-tables">archivo_adjunto (JSONB IA)</div>
+        </div>
+        <div class="flow-step-card" onclick="highlightDomain('dominio-5-notif')">
+          <div class="step-number">Paso 7</div>
+          <div class="step-title">Notificación Automática</div>
+          <div class="step-tables">notificacion (SMS/WhatsApp)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- DOMINIO 1: SEGURIDAD, ACCESO Y MULTI-SEDE -->
+    <!-- ========================================================================= -->
+    <div class="domain-block" id="dominio-1">
+      <div class="domain-header">
+        <div class="domain-title">🏢 Dominio 1: Multi-Sede y Control de Acceso (RBAC)</div>
+        <span style="font-size: 12px; color: var(--text-dim);">Tablas maestras de la plataforma SaaS</span>
+      </div>
+
+      <!-- Tabla 1: clinica -->
+      <div class="table-card" data-roles="SUPER_ADMIN,ADMIN_CLINICA">
+        <div class="table-header">
+          <div>
+            <div class="table-name">1. clinica <span style="font-size: 11px; color: var(--text-dim);">(7 columnas)</span></div>
+            <div class="table-desc">Entidad raíz del SaaS. Representa cada clínica dental o sucursal.</div>
+          </div>
+          <div class="roles-tag-list">
+            <span class="role-tag role-super">SUPER_ADMIN</span>
+            <span class="role-tag role-admin">ADMIN_CLINICA</span>
+          </div>
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>id (UUID)</th>
+                <th>nombre</th>
+                <th>razon_social</th>
+                <th>zona_horaria</th>
+                <th>estado</th>
+                <th>fecha_creacion</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="uuid-pill" title="Copiar UUID">c1111111-aaaa-bbbb-cccc-000000000001</span></td>
+                <td><strong>Clínica Dental Coronyx - Sede Central</strong></td>
+                <td>Coronyx Dental S.A.C. (RUC 20608912345)</td>
+                <td>America/Lima</td>
+                <td><span class="status-badge status-active">ABIERTO</span></td>
+                <td>2026-10-01 08:00:00 -05</td>
+              </tr>
+              <tr>
+                <td><span class="uuid-pill" title="Copiar UUID">c2222222-aaaa-bbbb-cccc-000000000002</span></td>
+                <td><strong>Coronyx Dental - Sede Miraflores</strong></td>
+                <td>Coronyx Dental S.A.C.</td>
+                <td>America/Lima</td>
+                <td><span class="status-badge status-active">ABIERTO</span></td>
+                <td>2026-10-02 09:30:00 -05</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Tabla 2: usuario -->
+      <div class="table-card" data-roles="SUPER_ADMIN,ADMIN_CLINICA">
+        <div class="table-header">
+          <div>
+            <div class="table-name">2. usuario <span style="font-size: 11px; color: var(--text-dim);">(12 columnas)</span></div>
+            <div class="table-desc">Cuentas globales de acceso al sistema con correo y clave hash.</div>
+          </div>
+          <div class="roles-tag-list">
+            <span class="role-tag role-super">SUPER_ADMIN</span>
+            <span class="role-tag role-admin">ADMIN_CLINICA</span>
+          </div>
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>id (UUID)</th>
+                <th>correo</th>
+                <th>nombres y apellidos</th>
+                <th>estado</th>
+                <th>correo_verificado_en</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="uuid-pill">u1111111-0000-0000-0000-000000000001</span></td>
+                <td><strong>odontologo@coronyx.pe</strong></td>
+                <td>Andrés Herrera</td>
+                <td><span class="status-badge status-active">ACTIVO</span></td>
+                <td>2026-10-01 08:30:00 -05</td>
+              </tr>
+              <tr>
+                <td><span class="uuid-pill">u2222222-0000-0000-0000-000000000002</span></td>
+                <td><strong>recepcion@coronyx.pe</strong></td>
+                <td>Paula Suárez</td>
+                <td><span class="status-badge status-active">ACTIVO</span></td>
+                <td>2026-10-01 08:35:00 -05</td>
+              </tr>
+              <tr>
+                <td><span class="uuid-pill">u3333333-0000-0000-0000-000000000003</span></td>
+                <td><strong>admin@coronyx.pe</strong></td>
+                <td>Carlos Administrador</td>
+                <td><span class="status-badge status-active">ACTIVO</span></td>
+                <td>2026-10-01 08:00:00 -05</td>
+              </tr>
+              <tr>
+                <td><span class="uuid-pill">u4444444-0000-0000-0000-000000000004</span></td>
+                <td><strong>paciente@coronyx.pe</strong></td>
+                <td>Luis Paciente</td>
+                <td><span class="status-badge status-active">ACTIVO</span></td>
+                <td>2026-10-02 11:20:00 -05</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Tabla 3: rol -->
+      <div class="table-card" data-roles="SUPER_ADMIN,ADMIN_CLINICA">
+        <div class="table-header">
+          <div>
+            <div class="table-name">3. rol <span style="font-size: 11px; color: var(--text-dim);">(6 columnas)</span></div>
+            <div class="table-desc">Definición de roles maestros y permisos granulares en formato JSONB.</div>
+          </div>
+          <div class="roles-tag-list">
+            <span class="role-tag role-super">SUPER_ADMIN</span>
+          </div>
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>id</th>
+                <th>codigo</th>
+                <th>nombre</th>
+                <th>permisos_json (JSONB)</th>
+                <th>activo</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="uuid-pill">r111-super</span></td>
+                <td><code>SUPER_ADMIN</code></td>
+                <td>Super Administrador</td>
+                <td><div class="json-code">["ALL_PRIVILEGES", "CLINICA_MANAGE", "USER_MANAGE", "GLOBAL_VIEW"]</div></td>
+                <td>true</td>
+              </tr>
+              <tr>
+                <td><span class="uuid-pill">r222-admin</span></td>
+                <td><code>ADMIN_CLINICA</code></td>
+                <td>Administrador de Clínica</td>
+                <td><div class="json-code">["CLINICA_MANAGE", "USER_MANAGE", "REPORT_VIEW", "PATIENT_VIEW", "APPOINTMENT_MANAGE"]</div></td>
+                <td>true</td>
+              </tr>
+              <tr>
+                <td><span class="uuid-pill">r333-odo</span></td>
+                <td><code>ODONTOLOGO</code></td>
+                <td>Odontólogo Especialista</td>
+                <td><div class="json-code">["PATIENT_VIEW", "APPOINTMENT_VIEW", "CLINICAL_WRITE", "ODONTOGRAM_WRITE", "AI_REVIEW"]</div></td>
+                <td>true</td>
+              </tr>
+              <tr>
+                <td><span class="uuid-pill">r444-rec</span></td>
+                <td><code>RECEPCIONISTA</code></td>
+                <td>Recepcionista</td>
+                <td><div class="json-code">["PATIENT_MANAGE", "APPOINTMENT_MANAGE"]</div></td>
+                <td>true</td>
+              </tr>
+              <tr>
+                <td><span class="uuid-pill">r555-pac</span></td>
+                <td><code>PACIENTE</code></td>
+                <td>Paciente</td>
+                <td><div class="json-code">["MY_APPOINTMENTS_VIEW", "MY_RECORDS_VIEW"]</div></td>
+                <td>true</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Tabla 4: usuario_clinica -->
+      <div class="table-card" data-roles="SUPER_ADMIN,ADMIN_CLINICA">
+        <div class="table-header">
+          <div>
+            <div class="table-name">4. usuario_clinica <span style="font-size: 11px; color: var(--text-dim);">(8 columnas)</span></div>
+            <div class="table-desc">Asociación Multi-Tenant: Une al usuario con una clínica y le asigna su rol dentro de esa sede.</div>
+          </div>
+          <div class="roles-tag-list">
+            <span class="role-tag role-super">SUPER_ADMIN</span>
+            <span class="role-tag role-admin">ADMIN_CLINICA</span>
+          </div>
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>id (UUID)</th>
+                <th>clinica_id (FK)</th>
+                <th>usuario_id (FK)</th>
+                <th>rol_id (FK)</th>
+                <th>estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="uuid-pill">uc-01</span></td>
+                <td><span class="fk-ref">c111 (Sede Central)</span></td>
+                <td><span class="fk-ref">u111 (Dr. Andrés Herrera)</span></td>
+                <td><span class="role-tag role-odo">ODONTOLOGO</span></td>
+                <td><span class="status-badge status-active">ACTIVO</span></td>
+              </tr>
+              <tr>
+                <td><span class="uuid-pill">uc-02</span></td>
+                <td><span class="fk-ref">c111 (Sede Central)</span></td>
+                <td><span class="fk-ref">u222 (Paula Suárez)</span></td>
+                <td><span class="role-tag role-rec">RECEPCIONISTA</span></td>
+                <td><span class="status-badge status-active">ACTIVO</span></td>
+              </tr>
+              <tr>
+                <td><span class="uuid-pill">uc-03</span></td>
+                <td><span class="fk-ref">c111 (Sede Central)</span></td>
+                <td><span class="fk-ref">u333 (Carlos Admin)</span></td>
+                <td><span class="role-tag role-admin">ADMIN_CLINICA</span></td>
+                <td><span class="status-badge status-active">ACTIVO</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- DOMINIO 2: GESTIÓN DE PACIENTES Y CITAS -->
+    <!-- ========================================================================= -->
+    <div class="domain-block" id="dominio-2-paciente">
+      <div class="domain-header">
+        <div class="domain-title">👤 Dominio 2: Admisión de Pacientes y Agendamiento</div>
+        <span style="font-size: 12px; color: var(--text-dim);">Fichas clínicas y turnos odontológicos</span>
+      </div>
+
+      <!-- Tabla 5: paciente -->
+      <div class="table-card" data-roles="SUPER_ADMIN,ADMIN_CLINICA,ODONTOLOGO,RECEPCIONISTA">
+        <div class="table-header">
+          <div>
+            <div class="table-name">5. paciente <span style="font-size: 11px; color: #38bdf8;">(Tus 17 columnas de PostgreSQL)</span></div>
+            <div class="table-desc">Registro médico del paciente perteneciente a una clínica específica.</div>
+          </div>
+          <div class="roles-tag-list">
+            <span class="role-tag role-admin">ADMIN_CLINICA</span>
+            <span class="role-tag role-odo">ODONTOLOGO</span>
+            <span class="role-tag role-rec">RECEPCIONISTA</span>
+          </div>
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>id</th>
+                <th>clinica_id</th>
+                <th>tipo_doc</th>
+                <th>num_doc</th>
+                <th>nombres</th>
+                <th>apellidos</th>
+                <th>fec_nac</th>
+                <th>telefono</th>
+                <th>correo</th>
+                <th>estado</th>
+                <th>alergias</th>
+                <th>antecedentes_medicos</th>
+                <th>medicamentos</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="uuid-pill">p-0001-carlos</span></td>
+                <td><span class="fk-ref">c111 (Central)</span></td>
+                <td><strong>DNI</strong></td>
+                <td><code>74829104</code></td>
+                <td>Juan Carlos</td>
+                <td>Pérez Morales</td>
+                <td>1995-04-12</td>
+                <td>+51 987654321</td>
+                <td>juan.perez@gmail.com</td>
+                <td><span class="status-badge status-active">ACTIVO</span></td>
+                <td><span style="color: #f87171;">Penicilina</span></td>
+                <td>Hipertensión arterial controlada</td>
+                <td>Losartán 50mg c/24h</td>
+              </tr>
+              <tr>
+                <td><span class="uuid-pill">p-0002-maria</span></td>
+                <td><span class="fk-ref">c111 (Central)</span></td>
+                <td><strong>CE</strong></td>
+                <td><code>002891924</code></td>
+                <td>María Elena</td>
+                <td>Quispe Ramos</td>
+                <td>1988-11-23</td>
+                <td>+51 912345678</td>
+                <td>m.quispe@outlook.com</td>
+                <td><span class="status-badge status-active">ACTIVO</span></td>
+                <td>Ninguna conocida</td>
+                <td>Gastritis crónica leve</td>
+                <td>Omeprazol condicional</td>
+              </tr>
+              <tr>
+                <td><span class="uuid-pill">p-0003-colombia</span></td>
+                <td><span class="fk-ref">c111 (Central)</span></td>
+                <td><strong>CC</strong></td>
+                <td><code>1020456789</code></td>
+                <td>Santiago</td>
+                <td>Giraldo Botero</td>
+                <td>2001-07-05</td>
+                <td>+57 3108923456</td>
+                <td>sgiraldo@hotmail.com</td>
+                <td><span class="status-badge status-active">ACTIVO</span></td>
+                <td>Aspirina</td>
+                <td>Ninguno</td>
+                <td>Ninguno</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Tabla 6: cita -->
+      <div class="table-card" id="dominio-2-cita" data-roles="SUPER_ADMIN,ADMIN_CLINICA,ODONTOLOGO,RECEPCIONISTA,PACIENTE">
+        <div class="table-header">
+          <div>
+            <div class="table-name">6. cita <span style="font-size: 11px; color: var(--text-dim);">(15 columnas)</span></div>
+            <div class="table-desc">Citas odontológicas programadas entre el paciente y el especialista.</div>
+          </div>
+          <div class="roles-tag-list">
+            <span class="role-tag role-odo">ODONTOLOGO</span>
+            <span class="role-tag role-rec">RECEPCIONISTA</span>
+            <span class="role-tag role-pac">PACIENTE</span>
+          </div>
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>id</th>
+                <th>paciente_id</th>
+                <th>odontologo_id</th>
+                <th>inicio_en</th>
+                <th>fin_en</th>
+                <th>modalidad</th>
+                <th>estado</th>
+                <th>estado_asistencia</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="uuid-pill">cita-801</span></td>
+                <td><span class="fk-ref">p-0001 (Juan Carlos Pérez)</span></td>
+                <td><span class="fk-ref">uc-01 (Dr. Andrés Herrera)</span></td>
+                <td>2026-10-04 10:00:00</td>
+                <td>2026-10-04 11:00:00</td>
+                <td>PRESENCIAL</td>
+                <td><span class="status-badge status-confirmed">CONFIRMADA</span></td>
+                <td><span class="status-badge status-active">ASISTIO</span></td>
+              </tr>
+              <tr>
+                <td><span class="uuid-pill">cita-802</span></td>
+                <td><span class="fk-ref">p-0002 (María Elena Quispe)</span></td>
+                <td><span class="fk-ref">uc-01 (Dr. Andrés Herrera)</span></td>
+                <td>2026-10-04 11:30:00</td>
+                <td>2026-10-04 12:15:00</td>
+                <td>PRESENCIAL</td>
+                <td><span class="status-badge status-pending">PROGRAMADA</span></td>
+                <td>-</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- DOMINIO 3: HISTORIA CLÍNICA Y ODONTOGRAMA -->
+    <!-- ========================================================================= -->
+    <div class="domain-block" id="dominio-3-atencion">
+      <div class="domain-header">
+        <div class="domain-title">🩺 Dominio 3: Atención Clínica y Odontograma Versionado</div>
+        <span style="font-size: 12px; color: var(--text-dim);">Evolución médica y estado gráfico de cada pieza dental</span>
+      </div>
+
+      <!-- Tabla 7: atencion_clinica -->
+      <div class="table-card" data-roles="SUPER_ADMIN,ADMIN_CLINICA,ODONTOLOGO">
+        <div class="table-header">
+          <div>
+            <div class="table-name">7. atencion_clinica <span style="font-size: 11px; color: var(--text-dim);">(8 columnas)</span></div>
+            <div class="table-desc">Sesión médica del paciente vinculada a la cita.</div>
+          </div>
+          <div class="roles-tag-list">
+            <span class="role-tag role-odo">ODONTOLOGO</span>
+          </div>
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>id</th>
+                <th>paciente_id</th>
+                <th>cita_id</th>
+                <th>odontologo_id</th>
+                <th>estado</th>
+                <th>fecha_creacion</th>
+                <th>fecha_confirmacion</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="uuid-pill">atenc-901</span></td>
+                <td><span class="fk-ref">p-0001 (Juan Carlos)</span></td>
+                <td><span class="fk-ref">cita-801</span></td>
+                <td><span class="fk-ref">uc-01 (Dr. Herrera)</span></td>
+                <td><span class="status-badge status-confirmed">CONFIRMADO</span></td>
+                <td>2026-10-04 10:05:00</td>
+                <td>2026-10-04 10:55:00</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Tabla 8: version_atencion_clinica -->
+      <div class="table-card" data-roles="SUPER_ADMIN,ADMIN_CLINICA,ODONTOLOGO,PACIENTE">
+        <div class="table-header">
+          <div>
+            <div class="table-name">8. version_atencion_clinica <span style="font-size: 11px; color: var(--text-dim);">(15 columnas)</span></div>
+            <div class="table-desc">Diagnósticos, evolución, recetas prescritas e indicaciones inmutables con firma digital.</div>
+          </div>
+          <div class="roles-tag-list">
+            <span class="role-tag role-odo">ODONTOLOGO</span>
+            <span class="role-tag role-pac">PACIENTE (Receta)</span>
+          </div>
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>id</th>
+                <th>atencion_id</th>
+                <th>versión</th>
+                <th>diagnostico</th>
+                <th>procedimientos</th>
+                <th>recetas_prescripciones</th>
+                <th>firmado_por</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="uuid-pill">vat-01</span></td>
+                <td><span class="fk-ref">atenc-901</span></td>
+                <td><strong>v1</strong></td>
+                <td>Caries dentinaria profunda en pieza 36 con pulpitis irreversible sintomática.</td>
+                <td>Apertura cameral, pulpectomía cameral, colocación de cura medicada provisional con Eugenato.</td>
+                <td><strong>Amoxicilina 500mg:</strong> 1 cápsula c/8h x 7 días.<br><strong>Ibuprofeno 400mg:</strong> 1 tableta c/8h si hay dolor.</td>
+                <td><span class="fk-ref">Dr. Andrés Herrera</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Tabla 9: version_odontograma -->
+      <div class="table-card" id="dominio-3-odontograma" data-roles="SUPER_ADMIN,ADMIN_CLINICA,ODONTOLOGO,PACIENTE">
+        <div class="table-header">
+          <div>
+            <div class="table-name">9. version_odontograma <span style="font-size: 11px; color: var(--text-dim);">(9 columnas)</span></div>
+            <div class="table-desc">Fotografía histórica del estado dental del paciente a lo largo del tiempo.</div>
+          </div>
+          <div class="roles-tag-list">
+            <span class="role-tag role-odo">ODONTOLOGO</span>
+          </div>
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>id</th>
+                <th>paciente_id</th>
+                <th>firmado_por</th>
+                <th>numero_version</th>
+                <th>estado</th>
+                <th>fecha_confirmacion</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="uuid-pill">v-odo-101</span></td>
+                <td><span class="fk-ref">p-0001 (Juan Carlos)</span></td>
+                <td><span class="fk-ref">Dr. Andrés Herrera</span></td>
+                <td><strong>Versión 1</strong> (Inicial)</td>
+                <td><span class="status-badge status-confirmed">CONFIRMADO</span></td>
+                <td>2026-10-04 10:30:00</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Tabla 10: hallazgo_odontograma -->
+      <div class="table-card" data-roles="SUPER_ADMIN,ADMIN_CLINICA,ODONTOLOGO">
+        <div class="table-header">
+          <div>
+            <div class="table-name">10. hallazgo_odontograma <span style="font-size: 11px; color: var(--text-dim);">(7 columnas)</span></div>
+            <div class="table-desc">Detalle específico por diente (sistema FDI: 11 al 48), cara dental y condición clínica.</div>
+          </div>
+          <div class="roles-tag-list">
+            <span class="role-tag role-odo">ODONTOLOGO</span>
+          </div>
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>id</th>
+                <th>version_odontograma_id</th>
+                <th>codigo_pieza_dental</th>
+                <th>codigo_superficie_cara</th>
+                <th>codigo_condicion</th>
+                <th>nota_observacion</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="uuid-pill">h-01</span></td>
+                <td><span class="fk-ref">v-odo-101</span></td>
+                <td><strong>Pieza 36</strong> (Primer Molar Inferior Izq.)</td>
+                <td>OCLUSAL</td>
+                <td><span style="color: #f87171; font-weight: 700;">CARIES_PROFUNDA</span></td>
+                <td>Caries activa con cavitación visible de grado 3</td>
+              </tr>
+              <tr>
+                <td><span class="uuid-pill">h-02</span></td>
+                <td><span class="fk-ref">v-odo-101</span></td>
+                <td><strong>Pieza 18</strong> (Tercer Molar Sup. Der.)</td>
+                <td>GENERAL</td>
+                <td><span style="color: #94a3b8; font-weight: 700;">AUSENTE</span></td>
+                <td>Exodoncia previa referida por el paciente hace 2 años</td>
+              </tr>
+              <tr>
+                <td><span class="uuid-pill">h-03</span></td>
+                <td><span class="fk-ref">v-odo-101</span></td>
+                <td><strong>Pieza 21</strong> (Incisivo Central Sup. Izq.)</td>
+                <td>MESIAL</td>
+                <td><span style="color: #38bdf8; font-weight: 700;">OBTURACION_RESINA</span></td>
+                <td>Resina estética en buen estado marginal</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- DOMINIO 4: ARCHIVOS E INTELIGENCIA ARTIFICIAL -->
+    <!-- ========================================================================= -->
+    <div class="domain-block" id="dominio-4-ia">
+      <div class="domain-header">
+        <div class="domain-title">🤖 Dominio 4: Archivos y Asistencia con IA</div>
+        <span style="font-size: 12px; color: var(--text-dim);">Rayos X y análisis automático con visión computacional</span>
+      </div>
+
+      <!-- Tabla 11: archivo_adjunto -->
+      <div class="table-card" data-roles="SUPER_ADMIN,ADMIN_CLINICA,ODONTOLOGO,PACIENTE">
+        <div class="table-header">
+          <div>
+            <div class="table-name">11. archivo_adjunto <span style="font-size: 11px; color: var(--text-dim);">(18 columnas)</span></div>
+            <div class="table-desc">Imágenes diagnósticas, modelos IA utilizados y hallazgos automáticos en JSONB.</div>
+          </div>
+          <div class="roles-tag-list">
+            <span class="role-tag role-odo">ODONTOLOGO</span>
+            <span class="role-tag role-pac">PACIENTE (Si es visible)</span>
+          </div>
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>id</th>
+                <th>paciente_id</th>
+                <th>tipo_archivo</th>
+                <th>nombre_original</th>
+                <th>ia_nombre_modelo</th>
+                <th>ia_hallazgos_json (JSONB)</th>
+                <th>ia_estado_revision</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="uuid-pill">file-x01</span></td>
+                <td><span class="fk-ref">p-0001 (Juan Carlos)</span></td>
+                <td>RADIOGRAFIA</td>
+                <td>rx_periapical_pieza36.jpg</td>
+                <td><code>DentAI-Caries-v2.4</code></td>
+                <td><div class="json-code">{
+  "lesiones": [
+    {"pieza": "36", "probabilidad": 0.96, "severidad": "PROFUNDA", "proximidad_pulpar": "ALTA"}
+  ]
+}</div></td>
+                <td><span class="status-badge status-active">ACEPTADO</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- DOMINIO 5: NOTIFICACIONES TRANSACCIONALES -->
+    <!-- ========================================================================= -->
+    <div class="domain-block" id="dominio-5-notif">
+      <div class="domain-header">
+        <div class="domain-title">🔔 Dominio 5: Notificaciones Transaccionales</div>
+        <span style="font-size: 12px; color: var(--text-dim);">Alertas automatizadas a usuarios y pacientes</span>
+      </div>
+
+      <!-- Tabla 12: notificacion -->
+      <div class="table-card" data-roles="SUPER_ADMIN,ADMIN_CLINICA,ODONTOLOGO,RECEPCIONISTA,PACIENTE">
+        <div class="table-header">
+          <div>
+            <div class="table-name">12. notificacion <span style="font-size: 11px; color: var(--text-dim);">(9 columnas)</span></div>
+            <div class="table-desc">Mensajes automáticos por eventos de citas, recetas y recordatorios.</div>
+          </div>
+          <div class="roles-tag-list">
+            <span class="role-tag role-rec">RECEPCIONISTA</span>
+            <span class="role-tag role-pac">PACIENTE</span>
+          </div>
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>id</th>
+                <th>destinatario_id</th>
+                <th>tipo_evento</th>
+                <th>titulo</th>
+                <th>cuerpo_mensaje</th>
+                <th>estado</th>
+                <th>fecha_creacion</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="uuid-pill">notif-01</span></td>
+                <td><span class="fk-ref">u444 (Luis Paciente)</span></td>
+                <td><code>RECORDATORIO_CITA</code></td>
+                <td>Recordatorio de Cita Mañana</td>
+                <td>Estimado Juan Carlos, le recordamos su cita odontológica mañana a las 10:00 AM en Sede Central.</td>
+                <td><span class="status-badge status-active">LEIDO</span></td>
+                <td>2026-10-03 18:00:00</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      Coronyx Dental SaaS &copy; 2026 &bull; Diseñado para UTP Coronyx Backend &bull; PostgreSQL 17 Multi-Clínica
+    </footer>
+  </div>
+
+  <script>
+    function filterByRole(role) {
+      // Update active button
+      document.querySelectorAll('.role-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+
+      const cards = document.querySelectorAll('.table-card');
+      cards.forEach(card => {
+        if (role === 'ALL') {
+          card.classList.remove('hidden');
+        } else {
+          const allowedRoles = card.getAttribute('data-roles') || '';
+          if (allowedRoles.includes(role)) {
+            card.classList.remove('hidden');
+          } else {
+            card.classList.add('hidden');
+          }
+        }
+      });
+    }
+
+    function highlightDomain(elementId) {
+      const el = document.getElementById(elementId);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        el.style.transition = 'all 0.5s ease';
+        el.style.boxShadow = '0 0 25px rgba(14, 165, 233, 0.4)';
+        setTimeout(() => {
+          el.style.boxShadow = 'none';
+        }, 2000);
+      }
+    }
+  </script>
+</body>
+</html>
