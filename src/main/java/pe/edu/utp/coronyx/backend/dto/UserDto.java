@@ -5,6 +5,7 @@ import java.util.UUID;
 public class UserDto {
 
     private UUID id;
+    private UUID usuarioClinicaId;
     private String correo;
     private String nombres;
     private String apellidos;
@@ -21,6 +22,14 @@ public class UserDto {
 
     public void setId(UUID id) {
         this.id = id;
+    }
+
+    public UUID getUsuarioClinicaId() {
+        return usuarioClinicaId;
+    }
+
+    public void setUsuarioClinicaId(UUID usuarioClinicaId) {
+        this.usuarioClinicaId = usuarioClinicaId;
     }
 
     public String getCorreo() {

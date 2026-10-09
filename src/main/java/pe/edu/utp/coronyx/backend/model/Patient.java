@@ -78,6 +78,18 @@ public class Patient {
     @Column(name = "medicamentos", columnDefinition = "TEXT")
     private String medicamentos;
 
+    @Size(max = 100)
+    @Column(name = "ciudad", length = 100)
+    private String ciudad;
+
+    @Size(max = 20)
+    @Column(name = "tipo_sangre", length = 20)
+    private String tipoSangre = "POR DETERMINAR";
+
+    @Size(max = 80)
+    @Column(name = "seguro", length = 80)
+    private String seguro = "PARTICULAR";
+
     @NotNull
     @Column(name = "fecha_creacion", nullable = false, updatable = false)
     private OffsetDateTime fechaCreacion;
@@ -232,6 +244,30 @@ public class Patient {
 
     public void setMedicamentos(String medicamentos) {
         this.medicamentos = medicamentos;
+    }
+
+    public String getCiudad() {
+        return ciudad;
+    }
+
+    public void setCiudad(String ciudad) {
+        this.ciudad = ciudad;
+    }
+
+    public String getTipoSangre() {
+        return tipoSangre;
+    }
+
+    public void setTipoSangre(String tipoSangre) {
+        this.tipoSangre = tipoSangre;
+    }
+
+    public String getSeguro() {
+        return seguro;
+    }
+
+    public void setSeguro(String seguro) {
+        this.seguro = seguro;
     }
 
     public OffsetDateTime getFechaCreacion() {
