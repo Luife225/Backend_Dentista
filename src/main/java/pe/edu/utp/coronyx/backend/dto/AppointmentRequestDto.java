@@ -6,19 +6,22 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 import java.time.OffsetDateTime;
-import java.util.UUID;
 
 public class AppointmentRequestDto {
 
-    private UUID clinicaId;
+    @Pattern(regexp = "^[1-9]\\d*$", message = "El ID de la clínica debe ser un número entero positivo")
+    private String clinicaId;
 
-    @NotNull(message = "El ID del paciente es obligatorio")
-    private UUID pacienteId;
+    @NotBlank(message = "El ID del paciente es obligatorio")
+    @Pattern(regexp = "^[1-9]\\d*$", message = "El ID del paciente debe ser un número entero positivo")
+    private String pacienteId;
 
-    @NotNull(message = "El ID del odontólogo (usuario_clinica) es obligatorio")
-    private UUID odontologoId;
+    @NotBlank(message = "El ID del odontólogo (usuario_clinica) es obligatorio")
+    @Pattern(regexp = "^[1-9]\\d*$", message = "El ID del odontólogo debe ser un número entero positivo")
+    private String odontologoId;
 
-    private UUID creadoPorId;
+    @Pattern(regexp = "^[1-9]\\d*$", message = "El ID del creador debe ser un número entero positivo")
+    private String creadoPorId;
 
     @NotNull(message = "La fecha y hora de inicio es obligatoria")
     private OffsetDateTime inicioEn;
@@ -42,35 +45,35 @@ public class AppointmentRequestDto {
     public AppointmentRequestDto() {
     }
 
-    public UUID getClinicaId() {
+    public String getClinicaId() {
         return clinicaId;
     }
 
-    public void setClinicaId(UUID clinicaId) {
+    public void setClinicaId(String clinicaId) {
         this.clinicaId = clinicaId;
     }
 
-    public UUID getPacienteId() {
+    public String getPacienteId() {
         return pacienteId;
     }
 
-    public void setPacienteId(UUID pacienteId) {
+    public void setPacienteId(String pacienteId) {
         this.pacienteId = pacienteId;
     }
 
-    public UUID getOdontologoId() {
+    public String getOdontologoId() {
         return odontologoId;
     }
 
-    public void setOdontologoId(UUID odontologoId) {
+    public void setOdontologoId(String odontologoId) {
         this.odontologoId = odontologoId;
     }
 
-    public UUID getCreadoPorId() {
+    public String getCreadoPorId() {
         return creadoPorId;
     }
 
-    public void setCreadoPorId(UUID creadoPorId) {
+    public void setCreadoPorId(String creadoPorId) {
         this.creadoPorId = creadoPorId;
     }
 

@@ -5,9 +5,8 @@ import org.springframework.stereotype.Repository;
 import pe.edu.utp.coronyx.backend.model.Role;
 
 import java.util.Optional;
-import java.util.UUID;
 
 @Repository
-public interface RoleRepository extends JpaRepository<Role, UUID> {
+public interface RoleRepository extends JpaRepository<Role, Long> {
     Optional<Role> findByCodigo(String codigo);
 }

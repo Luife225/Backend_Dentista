@@ -551,7 +551,7 @@
           <table>
             <thead>
               <tr>
-                <th>id (UUID)</th>
+                <th>id (BIGINT)</th>
                 <th>nombre</th>
                 <th>razon_social</th>
                 <th>zona_horaria</th>
@@ -561,7 +561,7 @@
             </thead>
             <tbody>
               <tr>
-                <td><span class="uuid-pill" title="Copiar UUID">c1111111-aaaa-bbbb-cccc-000000000001</span></td>
+                <td><span class="uuid-pill" title="BIGINT Identity">1</span></td>
                 <td><strong>Clínica Dental Coronyx - Sede Central</strong></td>
                 <td>Coronyx Dental S.A.C. (RUC 20608912345)</td>
                 <td>America/Lima</td>
@@ -569,7 +569,7 @@
                 <td>2026-10-01 08:00:00 -05</td>
               </tr>
               <tr>
-                <td><span class="uuid-pill" title="Copiar UUID">c2222222-aaaa-bbbb-cccc-000000000002</span></td>
+                <td><span class="uuid-pill" title="BIGINT Identity">2</span></td>
                 <td><strong>Coronyx Dental - Sede Miraflores</strong></td>
                 <td>Coronyx Dental S.A.C.</td>
                 <td>America/Lima</td>
@@ -597,7 +597,7 @@
           <table>
             <thead>
               <tr>
-                <th>id (UUID)</th>
+                <th>id (BIGINT)</th>
                 <th>correo</th>
                 <th>nombres y apellidos</th>
                 <th>estado</th>
@@ -606,14 +606,14 @@
             </thead>
             <tbody>
               <tr>
-                <td><span class="uuid-pill">u1111111-0000-0000-0000-000000000001</span></td>
+                <td><span class="uuid-pill">1</span></td>
                 <td><strong>odontologo@coronyx.pe</strong></td>
                 <td>Andrés Herrera</td>
                 <td><span class="status-badge status-active">ACTIVO</span></td>
                 <td>2026-10-01 08:30:00 -05</td>
               </tr>
               <tr>
-                <td><span class="uuid-pill">u2222222-0000-0000-0000-000000000002</span></td>
+                <td><span class="uuid-pill">2</span></td>
                 <td><strong>recepcion@coronyx.pe</strong></td>
                 <td>Paula Suárez</td>
                 <td><span class="status-badge status-active">ACTIVO</span></td>
@@ -717,7 +717,7 @@
           <table>
             <thead>
               <tr>
-                <th>id (UUID)</th>
+                <th>id (BIGINT)</th>
                 <th>clinica_id (FK)</th>
                 <th>usuario_id (FK)</th>
                 <th>rol_id (FK)</th>
@@ -726,16 +726,16 @@
             </thead>
             <tbody>
               <tr>
-                <td><span class="uuid-pill">uc-01</span></td>
-                <td><span class="fk-ref">c111 (Sede Central)</span></td>
-                <td><span class="fk-ref">u111 (Dr. Andrés Herrera)</span></td>
+                <td><span class="uuid-pill">1</span></td>
+                <td><span class="fk-ref">1 (Sede Central)</span></td>
+                <td><span class="fk-ref">1 (Dr. Andrés Herrera)</span></td>
                 <td><span class="role-tag role-odo">ODONTOLOGO</span></td>
                 <td><span class="status-badge status-active">ACTIVO</span></td>
               </tr>
               <tr>
-                <td><span class="uuid-pill">uc-02</span></td>
-                <td><span class="fk-ref">c111 (Sede Central)</span></td>
-                <td><span class="fk-ref">u222 (Paula Suárez)</span></td>
+                <td><span class="uuid-pill">2</span></td>
+                <td><span class="fk-ref">1 (Sede Central)</span></td>
+                <td><span class="fk-ref">2 (Paula Suárez)</span></td>
                 <td><span class="role-tag role-rec">RECEPCIONISTA</span></td>
                 <td><span class="status-badge status-active">ACTIVO</span></td>
               </tr>

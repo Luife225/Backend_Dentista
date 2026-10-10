@@ -13,7 +13,6 @@ import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 @Service
 public class JwtService {
@@ -31,16 +30,26 @@ public class JwtService {
 
     /**
      * Genera un token JWT firmado con algoritmo HMAC-SHA256 (HS256)
-     * conteniendo los claims institucionales del usuario, rol y sede clínica.
+     * conteniendo los claims institucionales con IDs serializados como cadenas decimales positivas.
+     * Diferencia claramente usuarioId de usuarioClinicaId (membresía de clínica).
      */
-    public String generateToken(User user, String rol, UUID clinicaId) {
+    public String generateToken(User user, String rol, Long clinicaId, Long usuarioClinicaId, Long pacienteId) {
         Map<String, Object> extraClaims = new HashMap<>();
-        extraClaims.put("userId", user.getId().toString());
+        String userIdStr = user.getId().toString();
+        extraClaims.put("userId", userIdStr);
+        extraClaims.put("usuarioId", userIdStr);
         extraClaims.put("nombres", user.getNombres());
         extraClaims.put("apellidos", user.getApellidos());
         extraClaims.put("rol", rol);
+
+        if (usuarioClinicaId != null) {
+            extraClaims.put("usuarioClinicaId", usuarioClinicaId.toString());
+        }
         if (clinicaId != null) {
             extraClaims.put("clinicaId", clinicaId.toString());
+        }
+        if (pacienteId != null) {
+            extraClaims.put("pacienteId", pacienteId.toString());
         }
 
         long now = System.currentTimeMillis();
@@ -51,6 +60,14 @@ public class JwtService {
                 .setExpiration(new Date(now + expirationMs))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
+    }
+
+    public String generateToken(User user, String rol, Long clinicaId, Long usuarioClinicaId) {
+        return generateToken(user, rol, clinicaId, usuarioClinicaId, null);
+    }
+
+    public String generateToken(User user, String rol, Long clinicaId) {
+        return generateToken(user, rol, clinicaId, null, null);
     }
 
     /**
@@ -72,12 +89,31 @@ public class JwtService {
     }
 
     /**
-     * Valida si el token no ha expirado
+     * Valida si el token no ha expirado y cumple con el corte de tokens heredados con UUID.
+     * Cualquier token con IDs en formato UUID es rechazado tajantemente, exigiendo nuevo inicio de sesión.
      */
     public boolean isTokenValid(String token) {
         try {
             Claims claims = extractAllClaims(token);
-            return !claims.getExpiration().before(new Date());
+            if (claims.getExpiration().before(new Date())) {
+                return false;
+            }
+
+            // Regla de corte F01: rechazar tokens con identificadores heredados UUID
+            String userId = claims.get("userId", String.class);
+            if (userId != null && !userId.matches("^[1-9]\\d*$")) {
+                return false; // Token heredado con UUID u otro formato incompatible
+            }
+            String usuarioClinicaId = claims.get("usuarioClinicaId", String.class);
+            if (usuarioClinicaId != null && !usuarioClinicaId.matches("^[1-9]\\d*$")) {
+                return false;
+            }
+            String clinicaId = claims.get("clinicaId", String.class);
+            if (clinicaId != null && !clinicaId.matches("^[1-9]\\d*$")) {
+                return false;
+            }
+
+            return true;
         } catch (Exception e) {
             return false;
         }

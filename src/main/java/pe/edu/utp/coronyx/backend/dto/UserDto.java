@@ -1,11 +1,9 @@
 package pe.edu.utp.coronyx.backend.dto;
 
-import java.util.UUID;
-
 public class UserDto {
 
-    private UUID id;
-    private UUID usuarioClinicaId;
+    private String id;
+    private String usuarioClinicaId;
     private String correo;
     private String nombres;
     private String apellidos;
@@ -16,19 +14,19 @@ public class UserDto {
     public UserDto() {
     }
 
-    public UUID getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public UUID getUsuarioClinicaId() {
+    public String getUsuarioClinicaId() {
         return usuarioClinicaId;
     }
 
-    public void setUsuarioClinicaId(UUID usuarioClinicaId) {
+    public void setUsuarioClinicaId(String usuarioClinicaId) {
         this.usuarioClinicaId = usuarioClinicaId;
     }
 
