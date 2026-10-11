@@ -39,8 +39,9 @@ build/
 *.dump
 
 ### Private Credentials & Configurations ###
-src/main/resources/application.yml
-!src/main/resources/application.example.yml
+.env
+.env.*
+!.env.example
 
 ### Tests & Temporary Scripts ###
 test_*.mjs
