@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CORONYX — Diagrama Físico de Base de Datos (Modelo objetivo BIGINT · 15 tablas · 35 FK)</title>
+  <title>CORONYX — Diagrama Físico de Base de Datos (Modelo objetivo BIGINT · 15 tablas · 39 FK)</title>
   <!-- Cytoscape.js para visualización de grafos de alta performance -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.28.1/cytoscape.min.js"></script>
   <!-- Dagre layout para organización jerárquica automática de entidades -->
@@ -256,7 +256,7 @@
   <header>
     <div class="brand" title="Esquema implementado V10 con Flyway en PostgreSQL. Claves primarias y foráneas BIGINT identity validadas.">
       <h1>🦷 CORONYX · Modelo Físico Relacional</h1>
-      <span>Esquema Implementado V10 · BIGINT IDENTITY · 15 tablas · 35 FK</span>
+      <span>Esquema Implementado V10 · BIGINT IDENTITY · 15 tablas · 39 FK</span>
     </div>
     <div class="controls">
       <button onclick="toggleVista()" id="btn-vista">👁️ Modo: Todas las Columnas</button>
@@ -287,7 +287,7 @@
     let modoVista = 'FULL';
 
     // =========================================================================
-    // DICCIONARIO DEL MODELO IMPLEMENTADO V10 · BIGINT IDENTITY · 15 TABLAS · 35 FK
+    // DICCIONARIO DEL MODELO IMPLEMENTADO V10 · BIGINT IDENTITY · 15 TABLAS · 39 FK
     // =========================================================================
     const tablasData = {
       "clinica": {
@@ -1554,7 +1554,7 @@
       const png64 = cy.png({ full: true, scale: 3, bg: '#0d1117' });
       const downloadLink = document.createElement('a');
       downloadLink.href = png64;
-      downloadLink.download = 'modelo_objetivo_coronyx_bigint_15_tablas_35_fk.png';
+      downloadLink.download = 'modelo_objetivo_coronyx_bigint_15_tablas_39_fk.png';
       document.body.appendChild(downloadLink);
       downloadLink.click();
       document.body.removeChild(downloadLink);
