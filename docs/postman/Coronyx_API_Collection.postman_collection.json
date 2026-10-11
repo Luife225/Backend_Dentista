@@ -1,0 +1,3043 @@
+{
+  "info": {
+    "_postman_id": "coronyx-dental-api-v1-collection",
+    "name": "Coronyx Dental - Colección Oficial API",
+    "description": "Colección completa de endpoints REST para el sistema odontológico Coronyx.\nIncluye autenticación JWT con auto-guardado de token, gestión clínica, pacientes, citas, disponibilidad, atenciones clínicas con versionado inmutable, odontograma interactivo, adjuntos médicos y notificaciones operativas.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://backenddentista-production.up.railway.app",
+      "type": "string",
+      "description": "URL base del servidor backend (Producción en Railway o http://localhost:8080 en local)"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string",
+      "description": "Token JWT activo utilizado por los endpoints con Bearer Auth. Se actualiza automáticamente al hacer Login."
+    },
+    {
+      "key": "token_admin",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "token_doctor1",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "token_doctor2",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "token_recepcion",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "token_paciente",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "pacienteId",
+      "value": "1",
+      "type": "string",
+      "description": "ID del paciente para pruebas (1: Marina Ríos)"
+    },
+    {
+      "key": "citaId",
+      "value": "1",
+      "type": "string",
+      "description": "ID de cita para pruebas"
+    },
+    {
+      "key": "odontologoId",
+      "value": "2",
+      "type": "string",
+      "description": "ID del odontólogo en usuario_clinica (2: Dra. Camila Soto, 3: Dr. Andrés Vega)"
+    },
+    {
+      "key": "atencionId",
+      "value": "1",
+      "type": "string",
+      "description": "ID de atención clínica para pruebas"
+    },
+    {
+      "key": "versionId",
+      "value": "1",
+      "type": "string",
+      "description": "ID de versión clínica o de odontograma"
+    },
+    {
+      "key": "adjuntoId",
+      "value": "28",
+      "type": "string",
+      "description": "ID de adjunto médico cargado (ej. 28: radiografía simulada)"
+    },
+    {
+      "key": "clinicaId",
+      "value": "1",
+      "type": "string",
+      "description": "ID de la clínica / sede central"
+    },
+    {
+      "key": "usuarioId",
+      "value": "1",
+      "type": "string",
+      "description": "ID de usuario o membresía"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Autenticación & Sesión (Auth)",
+      "item": [
+        {
+          "name": "1. Login - Administrador (Elena Demo)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Inicia sesión con la cuenta de Administrador de Clínica. Al responder 200 OK, el token JWT se guarda automáticamente en las variables de la colección.",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"admin@coronyx-demo.example\",\n  \"clave\": \"mrx5tCsvwz2oA1!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var data = pm.response.json();",
+                  "    if (data.token) {",
+                  "        pm.collectionVariables.set('token', data.token);",
+                  "        if (data.rol === 'ADMIN_CLINICA') {",
+                  "            pm.collectionVariables.set('token_admin', data.token);",
+                  "        } else if (data.rol === 'ODONTOLOGO') {",
+                  "            if (data.correo && data.correo.includes('odontologo1')) {",
+                  "                pm.collectionVariables.set('token_doctor1', data.token);",
+                  "            } else {",
+                  "                pm.collectionVariables.set('token_doctor2', data.token);",
+                  "            }",
+                  "        } else if (data.rol === 'RECEPCIONISTA') {",
+                  "            pm.collectionVariables.set('token_recepcion', data.token);",
+                  "        } else if (data.rol === 'PACIENTE') {",
+                  "            pm.collectionVariables.set('token_paciente', data.token);",
+                  "        }",
+                  "        console.log('✅ Token JWT actualizado en {{token}} para el rol: ' + data.rol);",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "2. Login - Odontóloga 1 (Dra. Camila Soto)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Inicia sesión con Odontólogo 1 (Dra. Camila Soto). Gestiona la historia clínica completa de Marina Ríos.",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"odontologo1@coronyx-demo.example\",\n  \"clave\": \"xWEcm8o%DzQMA1!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var data = pm.response.json();",
+                  "    if (data.token) {",
+                  "        pm.collectionVariables.set('token', data.token);",
+                  "        if (data.rol === 'ADMIN_CLINICA') {",
+                  "            pm.collectionVariables.set('token_admin', data.token);",
+                  "        } else if (data.rol === 'ODONTOLOGO') {",
+                  "            if (data.correo && data.correo.includes('odontologo1')) {",
+                  "                pm.collectionVariables.set('token_doctor1', data.token);",
+                  "            } else {",
+                  "                pm.collectionVariables.set('token_doctor2', data.token);",
+                  "            }",
+                  "        } else if (data.rol === 'RECEPCIONISTA') {",
+                  "            pm.collectionVariables.set('token_recepcion', data.token);",
+                  "        } else if (data.rol === 'PACIENTE') {",
+                  "            pm.collectionVariables.set('token_paciente', data.token);",
+                  "        }",
+                  "        console.log('✅ Token JWT actualizado en {{token}} para el rol: ' + data.rol);",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "3. Login - Odontólogo 2 (Dr. Andrés Vega)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Inicia sesión con Odontólogo 2 (Dr. Andrés Vega).",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"odontologo2@coronyx-demo.example\",\n  \"clave\": \"wXHp#g5pX8@sA1!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var data = pm.response.json();",
+                  "    if (data.token) {",
+                  "        pm.collectionVariables.set('token', data.token);",
+                  "        if (data.rol === 'ADMIN_CLINICA') {",
+                  "            pm.collectionVariables.set('token_admin', data.token);",
+                  "        } else if (data.rol === 'ODONTOLOGO') {",
+                  "            if (data.correo && data.correo.includes('odontologo1')) {",
+                  "                pm.collectionVariables.set('token_doctor1', data.token);",
+                  "            } else {",
+                  "                pm.collectionVariables.set('token_doctor2', data.token);",
+                  "            }",
+                  "        } else if (data.rol === 'RECEPCIONISTA') {",
+                  "            pm.collectionVariables.set('token_recepcion', data.token);",
+                  "        } else if (data.rol === 'PACIENTE') {",
+                  "            pm.collectionVariables.set('token_paciente', data.token);",
+                  "        }",
+                  "        console.log('✅ Token JWT actualizado en {{token}} para el rol: ' + data.rol);",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "4. Login - Recepcionista (Rosa Demo)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Inicia sesión con el rol de Recepcionista para gestionar citas, horarios y solicitudes.",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"recepcion@coronyx-demo.example\",\n  \"clave\": \"FjTxGE7b!ZGrA1!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var data = pm.response.json();",
+                  "    if (data.token) {",
+                  "        pm.collectionVariables.set('token', data.token);",
+                  "        if (data.rol === 'ADMIN_CLINICA') {",
+                  "            pm.collectionVariables.set('token_admin', data.token);",
+                  "        } else if (data.rol === 'ODONTOLOGO') {",
+                  "            if (data.correo && data.correo.includes('odontologo1')) {",
+                  "                pm.collectionVariables.set('token_doctor1', data.token);",
+                  "            } else {",
+                  "                pm.collectionVariables.set('token_doctor2', data.token);",
+                  "            }",
+                  "        } else if (data.rol === 'RECEPCIONISTA') {",
+                  "            pm.collectionVariables.set('token_recepcion', data.token);",
+                  "        } else if (data.rol === 'PACIENTE') {",
+                  "            pm.collectionVariables.set('token_paciente', data.token);",
+                  "        }",
+                  "        console.log('✅ Token JWT actualizado en {{token}} para el rol: ' + data.rol);",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "5. Login - Paciente (Marina Ríos Demo)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Inicia sesión como Paciente para interactuar con el portal de paciente (citas, solicitudes y 11 documentos compartidos).",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"paciente1@coronyx-demo.example\",\n  \"clave\": \"2YLao94#KhN9A1!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var data = pm.response.json();",
+                  "    if (data.token) {",
+                  "        pm.collectionVariables.set('token', data.token);",
+                  "        if (data.rol === 'ADMIN_CLINICA') {",
+                  "            pm.collectionVariables.set('token_admin', data.token);",
+                  "        } else if (data.rol === 'ODONTOLOGO') {",
+                  "            if (data.correo && data.correo.includes('odontologo1')) {",
+                  "                pm.collectionVariables.set('token_doctor1', data.token);",
+                  "            } else {",
+                  "                pm.collectionVariables.set('token_doctor2', data.token);",
+                  "            }",
+                  "        } else if (data.rol === 'RECEPCIONISTA') {",
+                  "            pm.collectionVariables.set('token_recepcion', data.token);",
+                  "        } else if (data.rol === 'PACIENTE') {",
+                  "            pm.collectionVariables.set('token_paciente', data.token);",
+                  "        }",
+                  "        console.log('✅ Token JWT actualizado en {{token}} para el rol: ' + data.rol);",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "6. Obtener Perfil de Usuario Autenticado (/auth/me)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "me"
+              ]
+            },
+            "description": "Devuelve la información de sesión, rol y datos de clínica del token JWT activo."
+          },
+          "response": []
+        },
+        {
+          "name": "7. Listar Usuarios de la Clínica (/auth/users)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/users",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "users"
+              ]
+            },
+            "description": "Lista todos los usuarios activos de la clínica. Requiere rol de administración o personal de clínica."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "2. Clínica & Configuración (Clinic)",
+      "item": [
+        {
+          "name": "Obtener Perfil de la Clínica",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/clinic/profile",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "clinic",
+                "profile"
+              ]
+            },
+            "description": "Obtiene los datos institucionales de la clínica (nombre, razón social, RUC, teléfono, dirección en Trujillo, zona horaria)."
+          },
+          "response": []
+        },
+        {
+          "name": "Actualizar Datos de la Clínica",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/clinic/profile",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "clinic",
+                "profile"
+              ]
+            },
+            "description": "Actualiza la información de la clínica. La ciudad debe ser Trujillo según las reglas de negocio.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Sede Central Coronyx\",\n  \"razonSocial\": \"Coronyx Odontología Especializada S.A.C.\",\n  \"zonaHoraria\": \"America/Lima\",\n  \"ruc\": \"20601234567\",\n  \"telefono\": \"+51 44 284560\",\n  \"correo\": \"contacto@coronyx-demo.example\",\n  \"ciudad\": \"Trujillo\",\n  \"direccion\": \"Av. España 1234, Trujillo, La Libertad\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "3. Personal & Usuarios (Clinic Users)",
+      "item": [
+        {
+          "name": "Listar Personal de la Clínica",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/clinic/users",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "clinic",
+                "users"
+              ]
+            },
+            "description": "Lista cuentas y membresías del personal (odontólogos, recepcionistas, administradores). Exclusivo ADMIN_CLINICA."
+          },
+          "response": []
+        },
+        {
+          "name": "Obtener Usuario por ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/clinic/users/{{usuarioId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "clinic",
+                "users",
+                "{{usuarioId}}"
+              ],
+              "variable": [
+                {
+                  "key": "usuarioId",
+                  "value": "2",
+                  "description": "ID o parámetro de ruta usuarioId"
+                }
+              ]
+            },
+            "description": "Consulta el detalle y rol de una membresía de usuario específica."
+          },
+          "response": []
+        },
+        {
+          "name": "Crear Nuevo Usuario de Clínica",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/clinic/users",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "clinic",
+                "users"
+              ]
+            },
+            "description": "Da de alta una nueva cuenta de usuario y le asigna una membresía en la clínica activa.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"doctor.nuevo@coronyx-demo.example\",\n  \"clave\": \"Temporal2026!\",\n  \"nombres\": \"Carlos\",\n  \"apellidos\": \"Mendoza Ruiz\",\n  \"rol\": \"ODONTOLOGO\",\n  \"estado\": \"ACTIVO\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Actualizar Datos y Rol de Usuario",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/clinic/users/{{usuarioId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "clinic",
+                "users",
+                "{{usuarioId}}"
+              ],
+              "variable": [
+                {
+                  "key": "usuarioId",
+                  "value": "2",
+                  "description": "ID o parámetro de ruta usuarioId"
+                }
+              ]
+            },
+            "description": "Edita nombres, apellidos, rol o estado del usuario en la clínica.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombres\": \"Camila\",\n  \"apellidos\": \"Soto Demo\",\n  \"rol\": \"ODONTOLOGO\",\n  \"estado\": \"ACTIVO\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Cambiar Estado de Usuario (Activar/Desactivar)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/clinic/users/{{usuarioId}}/status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "clinic",
+                "users",
+                "{{usuarioId}}",
+                "status"
+              ],
+              "variable": [
+                {
+                  "key": "usuarioId",
+                  "value": "2",
+                  "description": "ID o parámetro de ruta usuarioId"
+                }
+              ]
+            },
+            "description": "Cambia el estado de una membresía (ACTIVO o INACTIVO).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"ACTIVO\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "4. Pacientes (Patients)",
+      "item": [
+        {
+          "name": "Listar Todos los Pacientes",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/patients",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "patients"
+              ]
+            },
+            "description": "Lista los pacientes registrados en la clínica activa."
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Pacientes (Proyección Administrativa)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/patients/admin",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "patients",
+                "admin"
+              ]
+            },
+            "description": "Proyección ligera y optimizada para recepción y administración."
+          },
+          "response": []
+        },
+        {
+          "name": "Consultar Paciente por ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/patients/{{pacienteId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "patients",
+                "{{pacienteId}}"
+              ],
+              "variable": [
+                {
+                  "key": "pacienteId",
+                  "value": "1",
+                  "description": "ID o parámetro de ruta pacienteId"
+                }
+              ]
+            },
+            "description": "Obtiene la ficha clínica y datos completos del paciente (ej. 1: Marina Ríos Demo)."
+          },
+          "response": []
+        },
+        {
+          "name": "Registrar Nuevo Paciente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/patients",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "patients"
+              ]
+            },
+            "description": "Registra un nuevo paciente en la clínica. La ciudad debe ser Trujillo.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombres\": \"Alejandro\",\n  \"apellidos\": \"Navarro Castro\",\n  \"tipoDocumento\": \"DNI\",\n  \"numeroDocumento\": \"48921475\",\n  \"fechaNacimiento\": \"1994-06-20\",\n  \"telefono\": \"+51 944 123 789\",\n  \"correo\": \"alejandro.navarro@example.com\",\n  \"ciudad\": \"Trujillo\",\n  \"direccion\": \"Urb. California Mz. B Lt. 12, Trujillo\",\n  \"tipoSangre\": \"O+\",\n  \"seguro\": \"PARTICULAR\",\n  \"alergias\": \"Penicilina\",\n  \"antecedentesMedicos\": \"Ninguno de relevancia\",\n  \"medicamentos\": \"Ninguno\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Actualizar Ficha de Paciente",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/patients/{{pacienteId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "patients",
+                "{{pacienteId}}"
+              ],
+              "variable": [
+                {
+                  "key": "pacienteId",
+                  "value": "1",
+                  "description": "ID o parámetro de ruta pacienteId"
+                }
+              ]
+            },
+            "description": "Actualiza los datos demográficos y antecedentes del paciente.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombres\": \"Marina\",\n  \"apellidos\": \"Ríos Demo\",\n  \"tipoDocumento\": \"DNI\",\n  \"numeroDocumento\": \"45892134\",\n  \"fechaNacimiento\": \"1992-05-14\",\n  \"telefono\": \"+51 944 321 654\",\n  \"correo\": \"paciente1@coronyx-demo.example\",\n  \"ciudad\": \"Trujillo\",\n  \"direccion\": \"Av. Larco 450, Dpto 301, Trujillo\",\n  \"tipoSangre\": \"O+\",\n  \"seguro\": \"PARTICULAR\",\n  \"alergias\": \"Ninguna conocida\",\n  \"antecedentesMedicos\": \"Sin antecedentes patológicos\",\n  \"medicamentos\": \"Ninguno\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Archivar Paciente (Baja Lógica)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/patients/{{pacienteId}}/archive",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "patients",
+                "{{pacienteId}}",
+                "archive"
+              ],
+              "variable": [
+                {
+                  "key": "pacienteId",
+                  "value": "5",
+                  "description": "ID o parámetro de ruta pacienteId"
+                }
+              ]
+            },
+            "description": "Marca el estado del paciente como ARCHIVADO sin eliminar su historia clínica."
+          },
+          "response": []
+        },
+        {
+          "name": "Vincular Cuenta de Usuario a Paciente",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/patients/{{pacienteId}}/link-user",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "patients",
+                "{{pacienteId}}",
+                "link-user"
+              ],
+              "variable": [
+                {
+                  "key": "pacienteId",
+                  "value": "1",
+                  "description": "ID o parámetro de ruta pacienteId"
+                }
+              ]
+            },
+            "description": "Vincula una cuenta de usuario autenticable al registro del paciente para acceso al portal.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"usuarioId\": \"5\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Mi Perfil de Paciente [Portal Paciente]",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/patients/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "patients",
+                "me"
+              ]
+            },
+            "description": "Consulta el perfil propio del paciente en sesión (también disponible en /api/v1/me/paciente)."
+          },
+          "response": []
+        },
+        {
+          "name": "Actualizar Mi Perfil [Portal Paciente]",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/patients/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "patients",
+                "me"
+              ]
+            },
+            "description": "Permite al paciente actualizar sus datos de contacto y antecedentes autorizados.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"telefono\": \"+51 944 321 654\",\n  \"direccion\": \"Av. Larco 450, Dpto 301, Trujillo\",\n  \"alergias\": \"Ninguna conocida\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "5. Citas & Agendamiento (Appointments)",
+      "item": [
+        {
+          "name": "Agendar Nueva Cita (Personal Asistencial / Recepción)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/citas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "citas"
+              ]
+            },
+            "description": "Agenda una cita dentro del horario institucional (L-V 8am-6pm, Sáb 8am-1pm). Valida solapamientos y reglas de negocio.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pacienteId\": \"1\",\n  \"odontologoId\": \"2\",\n  \"inicioEn\": \"2026-10-15T09:00:00-05:00\",\n  \"finEn\": \"2026-10-15T09:30:00-05:00\",\n  \"modalidad\": \"PRESENCIAL\",\n  \"motivo\": \"Control semestral y profilaxis\",\n  \"consultorio\": \"Sillón 1\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Citas de la Clínica por Rango de Fechas",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/citas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "citas"
+              ],
+              "query": [
+                {
+                  "key": "desde",
+                  "value": "2026-08-01T00:00:00-05:00",
+                  "description": "Fecha inicial ISO 8601",
+                  "disabled": false
+                },
+                {
+                  "key": "hasta",
+                  "value": "2026-10-31T23:59:59-05:00",
+                  "description": "Fecha final ISO 8601",
+                  "disabled": false
+                }
+              ]
+            },
+            "description": "Lista las citas agendadas dentro del intervalo de tiempo."
+          },
+          "response": []
+        },
+        {
+          "name": "Catálogo de Odontólogos para Citas",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/citas/odontologos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "citas",
+                "odontologos"
+              ]
+            },
+            "description": "Lista los doctores activos disponibles para asignación de citas. Accesible por todos los roles."
+          },
+          "response": []
+        },
+        {
+          "name": "Obtener Detalle de Cita por ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/citas/{{citaId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "citas",
+                "{{citaId}}"
+              ],
+              "variable": [
+                {
+                  "key": "citaId",
+                  "value": "1",
+                  "description": "ID o parámetro de ruta citaId"
+                }
+              ]
+            },
+            "description": "Consulta el detalle completo, estado y participantes de una cita médica."
+          },
+          "response": []
+        },
+        {
+          "name": "Agenda de Citas por Odontólogo",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/citas/odontologo/{{odontologoId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "citas",
+                "odontologo",
+                "{{odontologoId}}"
+              ],
+              "variable": [
+                {
+                  "key": "odontologoId",
+                  "value": "2",
+                  "description": "ID o parámetro de ruta odontologoId"
+                }
+              ],
+              "query": [
+                {
+                  "key": "desde",
+                  "value": "2026-08-01T00:00:00-05:00",
+                  "description": "",
+                  "disabled": false
+                },
+                {
+                  "key": "hasta",
+                  "value": "2026-10-31T23:59:59-05:00",
+                  "description": "",
+                  "disabled": false
+                }
+              ]
+            },
+            "description": "Consulta el cronograma y citas agendadas para un odontólogo específico."
+          },
+          "response": []
+        },
+        {
+          "name": "Historial de Citas por Paciente",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/citas/paciente/{{pacienteId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "citas",
+                "paciente",
+                "{{pacienteId}}"
+              ],
+              "variable": [
+                {
+                  "key": "pacienteId",
+                  "value": "1",
+                  "description": "ID o parámetro de ruta pacienteId"
+                }
+              ]
+            },
+            "description": "Consulta todas las citas pasadas y futuras de un paciente."
+          },
+          "response": []
+        },
+        {
+          "name": "Mis Citas [Portal del Paciente]",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/citas/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "citas",
+                "me"
+              ]
+            },
+            "description": "Lista las citas propias del paciente autenticado (sin requerir exponer su ID)."
+          },
+          "response": []
+        },
+        {
+          "name": "Agendar Mi Cita [Portal del Paciente]",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/citas/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "citas",
+                "me"
+              ]
+            },
+            "description": "Agendamiento directo desde el portal del paciente. Asigna automáticamente el paciente autenticado.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"odontologoId\": \"2\",\n  \"inicioEn\": \"2026-10-16T10:00:00-05:00\",\n  \"finEn\": \"2026-10-16T10:30:00-05:00\",\n  \"modalidad\": \"PRESENCIAL\",\n  \"motivo\": \"Consulta por molestia en molar inferior\",\n  \"consultorio\": \"Sillón 1\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Cambiar Estado de Cita",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/citas/{{citaId}}/estado",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "citas",
+                "{{citaId}}",
+                "estado"
+              ],
+              "variable": [
+                {
+                  "key": "citaId",
+                  "value": "7",
+                  "description": "ID o parámetro de ruta citaId"
+                }
+              ]
+            },
+            "description": "Cambia el estado administrativo (PROGRAMADA, CONFIRMADA, ATENDIDA, CANCELADA).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"CONFIRMADA\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Registrar Asistencia Física (Personal)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/citas/{{citaId}}/asistencia",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "citas",
+                "{{citaId}}",
+                "asistencia"
+              ],
+              "variable": [
+                {
+                  "key": "citaId",
+                  "value": "7",
+                  "description": "ID o parámetro de ruta citaId"
+                }
+              ]
+            },
+            "description": "Marca asistencia física (ASISTIO o NO_SHOW). Exclusivo personal asistencial y recepción.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"asistencia\": \"ASISTIO\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reprogramar Cita Directamente",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/citas/{{citaId}}/reprogramar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "citas",
+                "{{citaId}}",
+                "reprogramar"
+              ],
+              "variable": [
+                {
+                  "key": "citaId",
+                  "value": "7",
+                  "description": "ID o parámetro de ruta citaId"
+                }
+              ],
+              "query": [
+                {
+                  "key": "nuevoInicio",
+                  "value": "2026-10-16T11:00:00-05:00",
+                  "description": "",
+                  "disabled": false
+                },
+                {
+                  "key": "nuevoFin",
+                  "value": "2026-10-16T11:30:00-05:00",
+                  "description": "",
+                  "disabled": false
+                }
+              ]
+            },
+            "description": "Actualiza la fecha y hora de la cita. Exclusivo administradores y recepción."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "6. Solicitudes de Reprogramación",
+      "item": [
+        {
+          "name": "Crear Solicitud de Reprogramación",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/citas/{{citaId}}/solicitar-reprogramacion",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "citas",
+                "{{citaId}}",
+                "solicitar-reprogramacion"
+              ],
+              "variable": [
+                {
+                  "key": "citaId",
+                  "value": "7",
+                  "description": "ID o parámetro de ruta citaId"
+                }
+              ]
+            },
+            "description": "Registra una solicitud de reprogramación sujeta a aprobación por la clínica.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nuevaFechaHoraInicio\": \"2026-10-17T09:00:00-05:00\",\n  \"nuevaFechaHoraFin\": \"2026-10-17T09:30:00-05:00\",\n  \"motivo\": \"Cruce de horario laboral imprevisto\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Solicitudes de Reprogramación (Clínica)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/citas/solicitudes-reprogramacion",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "citas",
+                "solicitudes-reprogramacion"
+              ],
+              "query": [
+                {
+                  "key": "estado",
+                  "value": "PENDIENTE",
+                  "description": "PENDIENTE, APROBADA, RECHAZADA",
+                  "disabled": false
+                }
+              ]
+            },
+            "description": "Lista solicitudes de reprogramación pendientes para revisión por recepción o administración."
+          },
+          "response": []
+        },
+        {
+          "name": "Mis Solicitudes de Reprogramación [Portal Paciente]",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/citas/me/solicitudes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "citas",
+                "me",
+                "solicitudes"
+              ]
+            },
+            "description": "Consulta las solicitudes de reprogramación emitidas por el paciente autenticado."
+          },
+          "response": []
+        },
+        {
+          "name": "Resolver Solicitud de Reprogramación (Aprobar/Rechazar)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/citas/solicitudes-reprogramacion/1/resolver",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "citas",
+                "solicitudes-reprogramacion",
+                "1",
+                "resolver"
+              ]
+            },
+            "description": "Aprueba o rechaza una solicitud. Al aprobar, reprograma automáticamente la cita en una transacción atómica.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"accion\": \"APROBADA\",\n  \"motivoResolucion\": \"Horario disponible y confirmado con odontólogo\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Cancelar Solicitud de Reprogramación",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/citas/solicitudes-reprogramacion/1/cancelar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "citas",
+                "solicitudes-reprogramacion",
+                "1",
+                "cancelar"
+              ]
+            },
+            "description": "Cancela una solicitud pendiente por desistimiento del solicitante."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "7. Horarios & Disponibilidad (Availability)",
+      "item": [
+        {
+          "name": "Consultar Horarios de Atención de la Sede",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/disponibilidad/horarios",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "disponibilidad",
+                "horarios"
+              ]
+            },
+            "description": "Devuelve la configuración semanal oficial (L-V 08:00 a 18:00, Sábados 08:00 a 13:00)."
+          },
+          "response": []
+        },
+        {
+          "name": "Actualizar Horarios de Atención de la Sede",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/disponibilidad/horarios",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "disponibilidad",
+                "horarios"
+              ]
+            },
+            "description": "Configura los turnos y rangos horarios oficiales de la clínica.",
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\n    \"diaSemana\": 1,\n    \"horaApertura\": \"08:00:00\",\n    \"horaCierre\": \"18:00:00\",\n    \"activo\": true,\n    \"duracionTurnoMinutos\": 30\n  },\n  {\n    \"diaSemana\": 2,\n    \"horaApertura\": \"08:00:00\",\n    \"horaCierre\": \"18:00:00\",\n    \"activo\": true,\n    \"duracionTurnoMinutos\": 30\n  },\n  {\n    \"diaSemana\": 3,\n    \"horaApertura\": \"08:00:00\",\n    \"horaCierre\": \"18:00:00\",\n    \"activo\": true,\n    \"duracionTurnoMinutos\": 30\n  },\n  {\n    \"diaSemana\": 4,\n    \"horaApertura\": \"08:00:00\",\n    \"horaCierre\": \"18:00:00\",\n    \"activo\": true,\n    \"duracionTurnoMinutos\": 30\n  },\n  {\n    \"diaSemana\": 5,\n    \"horaApertura\": \"08:00:00\",\n    \"horaCierre\": \"18:00:00\",\n    \"activo\": true,\n    \"duracionTurnoMinutos\": 30\n  },\n  {\n    \"diaSemana\": 6,\n    \"horaApertura\": \"08:00:00\",\n    \"horaCierre\": \"13:00:00\",\n    \"activo\": true,\n    \"duracionTurnoMinutos\": 30\n  }\n]",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Consultar Ausencias de un Odontólogo",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/disponibilidad/ausencias/{{odontologoId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "disponibilidad",
+                "ausencias",
+                "{{odontologoId}}"
+              ],
+              "variable": [
+                {
+                  "key": "odontologoId",
+                  "value": "2",
+                  "description": "ID o parámetro de ruta odontologoId"
+                }
+              ]
+            },
+            "description": "Consulta vacaciones, permisos o descansos médicos registrados para un profesional."
+          },
+          "response": []
+        },
+        {
+          "name": "Registrar Ausencia de Odontólogo",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/disponibilidad/ausencias/{{odontologoId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "disponibilidad",
+                "ausencias",
+                "{{odontologoId}}"
+              ],
+              "variable": [
+                {
+                  "key": "odontologoId",
+                  "value": "2",
+                  "description": "ID o parámetro de ruta odontologoId"
+                }
+              ]
+            },
+            "description": "Registra un bloqueo de agenda para el profesional.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"inicioEn\": \"2026-11-01T08:00:00-05:00\",\n  \"finEn\": \"2026-11-03T18:00:00-05:00\",\n  \"tipo\": \"VACACIONES\",\n  \"motivo\": \"Descanso programado por congreso odontológico\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Eliminar Ausencia de Odontólogo",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/disponibilidad/ausencias/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "disponibilidad",
+                "ausencias",
+                "1"
+              ]
+            },
+            "description": "Elimina un registro de ausencia y reactiva la disponibilidad de agenda."
+          },
+          "response": []
+        },
+        {
+          "name": "Consultar Slots / Turnos Disponibles",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/disponibilidad/slots",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "disponibilidad",
+                "slots"
+              ],
+              "query": [
+                {
+                  "key": "odontologoId",
+                  "value": "2",
+                  "description": "",
+                  "disabled": false
+                },
+                {
+                  "key": "fecha",
+                  "value": "2026-10-15",
+                  "description": "",
+                  "disabled": false
+                }
+              ]
+            },
+            "description": "Calcula en tiempo real los intervalos horarios libres considerando horario de sede, citas previas y descansos."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "8. Atenciones Clínicas & Historia (Clinical Encounters)",
+      "item": [
+        {
+          "name": "Crear Borrador de Atención Clínica (Versión Inicial 1)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/clinical-encounters",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "clinical-encounters"
+              ]
+            },
+            "description": "Crea un encuentro clínico en estado borrador con su versión 1 inmutable en preparación.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pacienteId\": 1,\n  \"citaId\": 1,\n  \"motivoConsulta\": \"Dolor moderado en zona molar superior derecha\",\n  \"examenClinico\": \"Pieza 16 presenta lesión cariosa oclusal profunda sin compromiso pulpar evidente\",\n  \"diagnostico\": \"Caries de la dentina (K02.1)\",\n  \"procedimientos\": \"Evaluación clínica y radiografía periapical digital\",\n  \"planTratamiento\": \"Restauración con resina compuesta fotocurable en pieza 16\",\n  \"recetasPrescripciones\": \"Ibuprofeno 400mg cada 8 horas si hay dolor\",\n  \"indicaciones\": \"Evitar masticar alimentos duros por el cuadrante superior derecho\",\n  \"signosVitales\": \"PA: 120/80 mmHg, Pulso: 72 lpm, Temp: 36.5°C\",\n  \"textoPendienteRevision\": \"Revisar respuesta térmica previa a obturación definitiva\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Modificar Borrador de Atención Activa",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/clinical-encounters/{{atencionId}}/draft",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "clinical-encounters",
+                "{{atencionId}}",
+                "draft"
+              ],
+              "variable": [
+                {
+                  "key": "atencionId",
+                  "value": "1",
+                  "description": "ID o parámetro de ruta atencionId"
+                }
+              ]
+            },
+            "description": "Modifica los campos del borrador antes de su confirmación oficial.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"motivoConsulta\": \"Control y seguimiento post obturación\",\n  \"examenClinico\": \"Restauración íntegra y sin filtraciones marginales\",\n  \"diagnostico\": \"Caries dental tratada satisfactoriamente\",\n  \"procedimientos\": \"Pulido y ajuste oclusal\",\n  \"planTratamiento\": \"Control en 6 meses\",\n  \"signosVitales\": \"PA: 118/78 mmHg, Pulso: 70 lpm, Temp: 36.4°C\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Confirmar Atención Clínica (Cierre Oficial Idempotente)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/clinical-encounters/{{atencionId}}/confirm",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "clinical-encounters",
+                "{{atencionId}}",
+                "confirm"
+              ],
+              "variable": [
+                {
+                  "key": "atencionId",
+                  "value": "1",
+                  "description": "ID o parámetro de ruta atencionId"
+                }
+              ]
+            },
+            "description": "Sella la versión como oficial y confirmada. A partir de aquí no admite modificaciones destructivas.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"versionId\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Crear Versión de Corrección Inmutable (Addendum / Adenda)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/clinical-encounters/{{atencionId}}/versions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "clinical-encounters",
+                "{{atencionId}}",
+                "versions"
+              ],
+              "variable": [
+                {
+                  "key": "atencionId",
+                  "value": "1",
+                  "description": "ID o parámetro de ruta atencionId"
+                }
+              ]
+            },
+            "description": "Genera una nueva versión sucesiva inmutable (v2, v3, etc.) preservando intacto el historial anterior.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"motivoCorreccion\": \"Se precisa detalle del lote de resina empleado\",\n  \"motivoConsulta\": \"Dolor moderado en zona molar\",\n  \"examenClinico\": \"Pieza 16 con lesión cariosa\",\n  \"diagnostico\": \"Caries de la dentina (K02.1)\",\n  \"procedimientos\": \"Restauración con resina compuesta 3M Filtek Z350 Lote #4521\",\n  \"planTratamiento\": \"Control rutinario\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Consultar Historial de Atenciones de un Paciente",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/clinical-encounters/paciente/{{pacienteId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "clinical-encounters",
+                "paciente",
+                "{{pacienteId}}"
+              ],
+              "variable": [
+                {
+                  "key": "pacienteId",
+                  "value": "1",
+                  "description": "ID o parámetro de ruta pacienteId"
+                }
+              ]
+            },
+            "description": "Devuelve todas las atenciones médicas del paciente (ej. las 4 evoluciones de Marina Ríos)."
+          },
+          "response": []
+        },
+        {
+          "name": "Consultar Atención Clínica por ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/clinical-encounters/{{atencionId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "clinical-encounters",
+                "{{atencionId}}"
+              ],
+              "variable": [
+                {
+                  "key": "atencionId",
+                  "value": "1",
+                  "description": "ID o parámetro de ruta atencionId"
+                }
+              ]
+            },
+            "description": "Obtiene la ficha y datos de la atención clínica especificada."
+          },
+          "response": []
+        },
+        {
+          "name": "Consultar Historial de Versiones de una Atención",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/clinical-encounters/{{atencionId}}/versions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "clinical-encounters",
+                "{{atencionId}}",
+                "versions"
+              ],
+              "variable": [
+                {
+                  "key": "atencionId",
+                  "value": "1",
+                  "description": "ID o parámetro de ruta atencionId"
+                }
+              ]
+            },
+            "description": "Devuelve el historial cronológico e inmutable de versiones de la atención médica."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "9. Odontograma Interactivo (Odontogram)",
+      "item": [
+        {
+          "name": "Obtener Odontograma Actual del Paciente",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/odontograma/paciente/{{pacienteId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "odontograma",
+                "paciente",
+                "{{pacienteId}}"
+              ],
+              "variable": [
+                {
+                  "key": "pacienteId",
+                  "value": "1",
+                  "description": "ID o parámetro de ruta pacienteId"
+                }
+              ]
+            },
+            "description": "Obtiene el odontograma más reciente con todos sus hallazgos dentales activos (piezas 16 y 26 restauradas)."
+          },
+          "response": []
+        },
+        {
+          "name": "Historial Cronológico de Versiones de Odontograma",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/odontograma/paciente/{{pacienteId}}/historial",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "odontograma",
+                "paciente",
+                "{{pacienteId}}",
+                "historial"
+              ],
+              "variable": [
+                {
+                  "key": "pacienteId",
+                  "value": "1",
+                  "description": "ID o parámetro de ruta pacienteId"
+                }
+              ]
+            },
+            "description": "Consulta la secuencia evolutiva de odontogramas del paciente (muestra cómo caries pasaron a restauradas)."
+          },
+          "response": []
+        },
+        {
+          "name": "Guardar Borrador de Odontograma",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/odontograma/paciente/{{pacienteId}}/draft",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "odontograma",
+                "paciente",
+                "{{pacienteId}}",
+                "draft"
+              ],
+              "variable": [
+                {
+                  "key": "pacienteId",
+                  "value": "1",
+                  "description": "ID o parámetro de ruta pacienteId"
+                }
+              ]
+            },
+            "description": "Guarda o actualiza los hallazgos dentales en un borrador de trabajo del paciente.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"hallazgos\": [\n    {\n      \"codigoPiezaDental\": \"16\",\n      \"codigoSuperficieCara\": \"OCLUSAL\",\n      \"codigoCondicion\": \"RESTAURACION\",\n      \"notaObservacion\": \"Resina compuesta estética en buen estado\"\n    },\n    {\n      \"codigoPiezaDental\": \"26\",\n      \"codigoSuperficieCara\": \"OCLUSAL\",\n      \"codigoCondicion\": \"RESTAURACION\",\n      \"notaObservacion\": \"Obturación oclusal completada\"\n    },\n    {\n      \"codigoPiezaDental\": \"11\",\n      \"codigoSuperficieCara\": \"VESTIBULAR\",\n      \"codigoCondicion\": \"SANO\",\n      \"notaObservacion\": \"Pieza sin alteraciones\"\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Actualizar Borrador por ID de Versión",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/odontograma/borrador/{{versionId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "odontograma",
+                "borrador",
+                "{{versionId}}"
+              ],
+              "variable": [
+                {
+                  "key": "versionId",
+                  "value": "1",
+                  "description": "ID o parámetro de ruta versionId"
+                }
+              ]
+            },
+            "description": "Actualiza la lista de hallazgos de una versión específica en borrador.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"hallazgos\": [\n    {\n      \"codigoPiezaDental\": \"16\",\n      \"codigoSuperficieCara\": \"OCLUSAL\",\n      \"codigoCondicion\": \"RESTAURACION\",\n      \"notaObservacion\": \"Pulido final ejecutado\"\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Crear Nueva Versión Sucesiva de Odontograma",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/odontograma/paciente/{{pacienteId}}/nueva-version",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "odontograma",
+                "paciente",
+                "{{pacienteId}}",
+                "nueva-version"
+              ],
+              "variable": [
+                {
+                  "key": "pacienteId",
+                  "value": "1",
+                  "description": "ID o parámetro de ruta pacienteId"
+                }
+              ]
+            },
+            "description": "Crea una nueva versión a partir del estado previo para registrar una nueva etapa del tratamiento.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"hallazgos\": [\n    {\n      \"codigoPiezaDental\": \"16\",\n      \"codigoSuperficieCara\": \"OCLUSAL\",\n      \"codigoCondicion\": \"RESTAURACION\",\n      \"notaObservacion\": \"Control evolutivo ok\"\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Confirmar Versión Oficial de Odontograma",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/odontograma/{{versionId}}/confirm",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "odontograma",
+                "{{versionId}}",
+                "confirm"
+              ],
+              "variable": [
+                {
+                  "key": "versionId",
+                  "value": "1",
+                  "description": "ID o parámetro de ruta versionId"
+                }
+              ]
+            },
+            "description": "Sella la versión de odontograma como confirmada y oficial.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"observaciones\": \"Odontograma validado en sesión clínica presencial\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "10. Archivos Adjuntos & Radiografías (Attachments)",
+      "item": [
+        {
+          "name": "Cargar Archivo Médico Adjunto (Multipart Form)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/attachments/upload",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "attachments",
+                "upload"
+              ]
+            },
+            "description": "Carga y almacena un archivo médico en el volumen persistente /data/coronyx de Railway.",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "",
+                  "description": "Seleccionar archivo binario (PDF o PNG)"
+                },
+                {
+                  "key": "pacienteId",
+                  "value": "1",
+                  "type": "text"
+                },
+                {
+                  "key": "citaId",
+                  "value": "1",
+                  "type": "text"
+                },
+                {
+                  "key": "tipoArchivo",
+                  "value": "INFORME",
+                  "type": "text",
+                  "description": "INFORME, RECETA, CONSENTIMIENTO, RADIOGRAFIA, DOCUMENTO"
+                },
+                {
+                  "key": "regionAnatomica",
+                  "value": "Molar superior derecha 16",
+                  "type": "text"
+                },
+                {
+                  "key": "esVisiblePaciente",
+                  "value": "true",
+                  "type": "text",
+                  "description": "true para visible en portal paciente, false para privado del doctor"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Descargar Archivo Binario (Proxy Seguro)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/attachments/{{adjuntoId}}/download",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "attachments",
+                "{{adjuntoId}}",
+                "download"
+              ],
+              "variable": [
+                {
+                  "key": "adjuntoId",
+                  "value": "28",
+                  "description": "ID o parámetro de ruta adjuntoId"
+                }
+              ]
+            },
+            "description": "Descarga el archivo físico validando credenciales y reglas de visibilidad del paciente."
+          },
+          "response": []
+        },
+        {
+          "name": "Consultar Metadatos de Archivo por ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/attachments/{{adjuntoId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "attachments",
+                "{{adjuntoId}}"
+              ],
+              "variable": [
+                {
+                  "key": "adjuntoId",
+                  "value": "28",
+                  "description": "ID o parámetro de ruta adjuntoId"
+                }
+              ]
+            },
+            "description": "Devuelve el hash SHA-256, peso en bytes, tipo MIME, visibilidad y fecha de carga."
+          },
+          "response": []
+        },
+        {
+          "name": "Modificar Visibilidad para el Paciente",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/attachments/{{adjuntoId}}/visibility",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "attachments",
+                "{{adjuntoId}}",
+                "visibility"
+              ],
+              "variable": [
+                {
+                  "key": "adjuntoId",
+                  "value": "28",
+                  "description": "ID o parámetro de ruta adjuntoId"
+                }
+              ]
+            },
+            "description": "Actualiza el indicador esVisiblePaciente del documento.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"esVisiblePaciente\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Publicar Archivo en Portal del Paciente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/attachments/{{adjuntoId}}/publicar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "attachments",
+                "{{adjuntoId}}",
+                "publicar"
+              ],
+              "variable": [
+                {
+                  "key": "adjuntoId",
+                  "value": "28",
+                  "description": "ID o parámetro de ruta adjuntoId"
+                }
+              ]
+            },
+            "description": "Acción directa para hacer el archivo visible al paciente."
+          },
+          "response": []
+        },
+        {
+          "name": "Revocar Archivo del Portal del Paciente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/attachments/{{adjuntoId}}/revocar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "attachments",
+                "{{adjuntoId}}",
+                "revocar"
+              ],
+              "variable": [
+                {
+                  "key": "adjuntoId",
+                  "value": "28",
+                  "description": "ID o parámetro de ruta adjuntoId"
+                }
+              ]
+            },
+            "description": "Acción directa para ocultar el archivo del portal del paciente."
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Archivos Clínicos de un Paciente",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/attachments/patient/{{pacienteId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "attachments",
+                "patient",
+                "{{pacienteId}}"
+              ],
+              "variable": [
+                {
+                  "key": "pacienteId",
+                  "value": "1",
+                  "description": "ID o parámetro de ruta pacienteId"
+                }
+              ]
+            },
+            "description": "Lista todos los adjuntos del paciente (el doctor ve los 12, el paciente ve sus 11 documentos públicos)."
+          },
+          "response": []
+        },
+        {
+          "name": "Mis Archivos Médicos [Portal del Paciente]",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/attachments/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "attachments",
+                "me"
+              ]
+            },
+            "description": "Consulta directa de los documentos compartidos del paciente autenticado."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "11. Métricas & Dashboard (Dashboard)",
+      "item": [
+        {
+          "name": "Resumen General de Métricas de la Clínica",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/dashboard/summary",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "dashboard",
+                "summary"
+              ]
+            },
+            "description": "Devuelve el conteo de citas hoy, pacientes registrados, atenciones concluidas y porcentaje de asistencia."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "12. Notificaciones Operativas (Notifications)",
+      "item": [
+        {
+          "name": "Listar Mis Notificaciones",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/notifications",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "notifications"
+              ]
+            },
+            "description": "Devuelve las alertas y notificaciones del usuario autenticado (citas agendadas, reprogramaciones, recordatorios)."
+          },
+          "response": []
+        },
+        {
+          "name": "Contador de Notificaciones No Leídas",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/notifications/unread-count",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "notifications",
+                "unread-count"
+              ]
+            },
+            "description": "Devuelve el número total de notificaciones no leídas para el badge del frontend."
+          },
+          "response": []
+        },
+        {
+          "name": "Marcar Notificación Individual como Leída",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/notifications/1/read",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "notifications",
+                "1",
+                "read"
+              ]
+            },
+            "description": "Marca una notificación específica como leída."
+          },
+          "response": []
+        },
+        {
+          "name": "Marcar Todas las Notificaciones como Leídas",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/notifications/read-all",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "notifications",
+                "read-all"
+              ]
+            },
+            "description": "Marca todas las notificaciones pendientes del usuario como leídas."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
