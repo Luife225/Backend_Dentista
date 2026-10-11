@@ -34,3 +34,22 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Database Dumps ###
+*.dump
+
+### Private Credentials & Configurations ###
+.env
+.env.*
+!.env.example
+
+### Tests & Temporary Scripts ###
+test_*.mjs
+*.ps1
+scripts/
+tmp/
+
+### External Deliverables & Planning ###
+Entregables_Avance_2/
+Entregables_Sprints_Corregidos/
+Planificacion_CORONYX/
