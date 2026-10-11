@@ -86,4 +86,14 @@ public class GlobalExceptionHandler {
         body.put("errors", errors);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
     }
+
+    @ExceptionHandler(org.springframework.web.HttpMediaTypeNotSupportedException.class)
+    public ResponseEntity<Map<String, Object>> handleUnsupportedMediaType(
+            org.springframework.web.HttpMediaTypeNotSupportedException ex, HttpServletRequest req) {
+        log.warn("[MEDIA-TYPE-EX] 415 en {}: {}", req.getRequestURI(), ex.getMessage());
+        return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+                .body(buildErrorResponse(HttpStatus.UNSUPPORTED_MEDIA_TYPE,
+                        "El formato de la petición no es soportado. Se requiere cabecera 'Content-Type: application/json'.",
+                        req.getRequestURI()));
+    }
 }
