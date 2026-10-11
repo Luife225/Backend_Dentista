@@ -180,6 +180,23 @@ public class AppointmentService {
                     "Se le ha asignado una cita con el paciente " + paciente.getNombres() + " " + paciente.getApellidos() + " para el " + saved.getInicioEn() + "."
             );
         }
+        if (clinica != null && clinica.getId() != null) {
+            List<ClinicUser> clinicUsers = clinicUserRepository.findByClinicaId(clinica.getId());
+            for (ClinicUser cu : clinicUsers) {
+                if ("ACTIVO".equalsIgnoreCase(cu.getEstado()) &&
+                        cu.getRol() != null &&
+                        "RECEPCIONISTA".equalsIgnoreCase(cu.getRol().getCodigo()) &&
+                        cu.getUsuario() != null) {
+                    notificationService.createNotification(
+                            clinica,
+                            cu.getUsuario(),
+                            "CITA_PROGRAMADA",
+                            "Nueva cita registrada",
+                            "Se ha programado una cita para el paciente " + paciente.getNombres() + " " + paciente.getApellidos() + " con el " + doctorNombre + " para el " + saved.getInicioEn() + "."
+                    );
+                }
+            }
+        }
 
         return toDto(saved);
     }
@@ -391,6 +408,23 @@ public class AppointmentService {
                         "Su cita del " + updated.getInicioEn() + " ha sido cancelada."
                 );
             }
+            if (updated.getClinica() != null && updated.getClinica().getId() != null) {
+                List<ClinicUser> clinicUsers = clinicUserRepository.findByClinicaId(updated.getClinica().getId());
+                for (ClinicUser cu : clinicUsers) {
+                    if ("ACTIVO".equalsIgnoreCase(cu.getEstado()) &&
+                            cu.getRol() != null &&
+                            "RECEPCIONISTA".equalsIgnoreCase(cu.getRol().getCodigo()) &&
+                            cu.getUsuario() != null) {
+                        notificationService.createNotification(
+                                updated.getClinica(),
+                                cu.getUsuario(),
+                                "CITA_CANCELADA",
+                                "Cita cancelada",
+                                "La cita del paciente " + (updated.getPaciente() != null ? updated.getPaciente().getNombres() + " " + updated.getPaciente().getApellidos() : "") + " para el " + updated.getInicioEn() + " ha sido cancelada."
+                        );
+                    }
+                }
+            }
         }
 
         return toDto(updated);
@@ -487,6 +521,23 @@ public class AppointmentService {
                     "Su cita ha sido reprogramada para el " + updated.getInicioEn() + "."
             );
         }
+        if (updated.getClinica() != null && updated.getClinica().getId() != null) {
+            List<ClinicUser> clinicUsers = clinicUserRepository.findByClinicaId(updated.getClinica().getId());
+            for (ClinicUser cu : clinicUsers) {
+                if ("ACTIVO".equalsIgnoreCase(cu.getEstado()) &&
+                        cu.getRol() != null &&
+                        "RECEPCIONISTA".equalsIgnoreCase(cu.getRol().getCodigo()) &&
+                        cu.getUsuario() != null) {
+                    notificationService.createNotification(
+                            updated.getClinica(),
+                            cu.getUsuario(),
+                            "CITA_REPROGRAMADA",
+                            "Cita reprogramada",
+                            "La cita del paciente " + (updated.getPaciente() != null ? updated.getPaciente().getNombres() + " " + updated.getPaciente().getApellidos() : "") + " ha sido reprogramada para el " + updated.getInicioEn() + "."
+                    );
+                }
+            }
+        }
 
         return toDto(updated);
     }
@@ -528,6 +579,26 @@ public class AppointmentService {
         solicitud.setEstado("PENDIENTE");
 
         SolicitudReprogramacion saved = solicitudReprogramacionRepository.save(solicitud);
+
+        if (appointment.getClinica() != null && appointment.getClinica().getId() != null) {
+            List<ClinicUser> clinicUsers = clinicUserRepository.findByClinicaId(appointment.getClinica().getId());
+            for (ClinicUser cu : clinicUsers) {
+                if ("ACTIVO".equalsIgnoreCase(cu.getEstado()) &&
+                        cu.getRol() != null &&
+                        "RECEPCIONISTA".equalsIgnoreCase(cu.getRol().getCodigo()) &&
+                        cu.getUsuario() != null) {
+                    notificationService.createNotification(
+                            appointment.getClinica(),
+                            cu.getUsuario(),
+                            "CITA_REPROGRAMADA",
+                            "Solicitud de reprogramación",
+                            "Se ha recibido una solicitud de reprogramación para la cita del paciente " +
+                                    (appointment.getPaciente() != null ? appointment.getPaciente().getNombres() + " " + appointment.getPaciente().getApellidos() : "") + "."
+                    );
+                }
+            }
+        }
+
         return toSolicitudDto(saved);
     }
 
@@ -634,6 +705,26 @@ public class AppointmentService {
                     "Solicitud de reprogramación " + resolucion.toLowerCase(),
                     "Su solicitud de reprogramación para la cita ha sido " + resolucion.toLowerCase() + "."
             );
+        }
+
+        if (cita.getClinica() != null && cita.getClinica().getId() != null) {
+            List<ClinicUser> clinicUsers = clinicUserRepository.findByClinicaId(cita.getClinica().getId());
+            for (ClinicUser cu : clinicUsers) {
+                if ("ACTIVO".equalsIgnoreCase(cu.getEstado()) &&
+                        cu.getRol() != null &&
+                        "RECEPCIONISTA".equalsIgnoreCase(cu.getRol().getCodigo()) &&
+                        cu.getUsuario() != null) {
+                    notificationService.createNotification(
+                            cita.getClinica(),
+                            cu.getUsuario(),
+                            "SOLICITUD_REPROGRAMACION_" + resolucion,
+                            "Solicitud de reprogramación " + resolucion.toLowerCase(),
+                            "La solicitud de reprogramación para la cita del paciente " +
+                                    (cita.getPaciente() != null ? cita.getPaciente().getNombres() + " " + cita.getPaciente().getApellidos() : "") +
+                                    " fue " + resolucion.toLowerCase() + "."
+                    );
+                }
+            }
         }
 
         return toSolicitudDto(updated);
