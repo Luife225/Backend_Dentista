@@ -20,7 +20,6 @@ import pe.edu.utp.coronyx.backend.security.UserPrincipal;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -40,17 +39,19 @@ public class ClinicUserService {
     private final RoleRepository roleRepository;
     private final PatientRepository patientRepository;
     private final PasswordEncoder passwordEncoder;
+    private final PatientAccountService patientAccounts;
 
     public ClinicUserService(ClinicUserRepository clinicUserRepository,
                              UserRepository userRepository,
                              RoleRepository roleRepository,
                              PatientRepository patientRepository,
-                             PasswordEncoder passwordEncoder) {
+                             PasswordEncoder passwordEncoder, PatientAccountService patientAccounts) {
         this.clinicUserRepository = clinicUserRepository;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.patientRepository = patientRepository;
         this.passwordEncoder = passwordEncoder;
+        this.patientAccounts = patientAccounts;
     }
 
     private void validateAdminPrivileges(UserPrincipal principal) {
@@ -115,31 +116,28 @@ public class ClinicUserService {
         Long clinicaId = principal.getClinicaId();
         Clinic clinic = principal.getClinic();
 
-        // 1. Obtener o crear Usuario
-        Optional<User> existingUserOpt = userRepository.findByCorreoIgnoreCase(email);
-        User user;
-
-        if (existingUserOpt.isPresent()) {
-            user = existingUserOpt.get();
-            // Comprobar si ya tiene membresía en esta clínica
-            Optional<ClinicUser> existingCu = clinicUserRepository.findByUsuarioIdAndClinicaId(user.getId(), clinicaId);
-            if (existingCu.isPresent()) {
-                throw new IllegalStateException("El usuario con correo '" + email + "' ya cuenta con una membresía activa en esta clínica.");
-            }
-        } else {
-            user = new User();
-            user.setCorreo(email);
-            user.setClaveHash(passwordEncoder.encode(dto.getClave()));
-            user.setNombres(dto.getNombres().trim());
-            user.setApellidos(dto.getApellidos().trim());
-            user.setEstado(dto.getEstado() != null ? dto.getEstado().toUpperCase().trim() : "ACTIVO");
-            user = userRepository.save(user);
+        // Dar de alta una cuenta no autoriza apropiarse de una identidad existente.
+        if (userRepository.findByCorreoIgnoreCase(email).isPresent()) {
+            throw new IllegalStateException("El correo ya está registrado; edite su cuenta autorizada en lugar de reutilizarlo");
+        }
+        String rolCodigo = dto.getRol().trim().toUpperCase();
+        Role role = activeRole(rolCodigo);
+        String state = normalizeState(dto.getEstado() == null ? "ACTIVO" : dto.getEstado());
+        Patient linkedPatient = null;
+        if (dto.getPacienteId() != null && !dto.getPacienteId().isBlank()) {
+            if (!"PACIENTE".equals(rolCodigo)) throw new IllegalArgumentException("Solo una cuenta PACIENTE puede vincularse a un expediente");
+            Long patientId = patientAccounts.parseUserId(dto.getPacienteId());
+            if (patientId == null) throw new IllegalArgumentException("pacienteId debe ser un entero positivo");
+            linkedPatient = patientRepository.findLockedById(patientId)
+                    .orElseThrow(() -> new NoSuchElementException("Paciente no encontrado"));
+            if (!clinicaId.equals(linkedPatient.getClinica().getId())) throw new NoSuchElementException("Paciente no encontrado");
+            if (linkedPatient.getUsuario() != null) throw new IllegalStateException("El expediente ya tiene una cuenta vinculada");
+            if (!"ACTIVO".equalsIgnoreCase(linkedPatient.getEstado())) throw new IllegalArgumentException("El expediente debe estar activo");
         }
 
-        // 2. Resolver Rol
-        String rolCodigo = dto.getRol().trim().toUpperCase();
-        Role role = roleRepository.findByCodigo(rolCodigo)
-                .orElseThrow(() -> new IllegalArgumentException("No se encontró el rol con código: " + rolCodigo));
+        User user = new User(email, passwordEncoder.encode(dto.getClave()), dto.getNombres().trim(), dto.getApellidos().trim());
+        user.setEstado("ACTIVO".equals(state) ? "ACTIVO" : "DESHABILITADO");
+        user = userRepository.save(user);
 
         // 3. Crear Membresía
         ClinicUser membership = new ClinicUser();
@@ -147,22 +145,14 @@ public class ClinicUserService {
         membership.setUsuario(user);
         membership.setRol(role);
         membership.setRolAsignadoPor(principal.getUser());
-        membership.setEstado(dto.getEstado() != null ? dto.getEstado().toUpperCase().trim() : "ACTIVO");
+        membership.setEstado(state);
 
         ClinicUser saved = clinicUserRepository.save(membership);
 
-        // 4. Si el rol es PACIENTE y se envió pacienteId, vincular el paciente de la clínica a este usuario
-        if ("PACIENTE".equals(rolCodigo) && dto.getPacienteId() != null && !dto.getPacienteId().isBlank()) {
-            try {
-                Long pId = Long.parseLong(dto.getPacienteId().trim());
-                Optional<Patient> pOpt = patientRepository.findById(pId);
-                if (pOpt.isPresent() && pOpt.get().getClinica().getId().equals(clinicaId)) {
-                    Patient p = pOpt.get();
-                    p.setUsuario(user);
-                    patientRepository.save(p);
-                }
-            } catch (NumberFormatException ignored) {
-            }
+        if (linkedPatient != null) {
+            // La cuenta recién creada puede estar inactiva; el vínculo se valida antes de insertar.
+            linkedPatient.setUsuario(user);
+            patientRepository.save(linkedPatient);
         }
 
         return toDto(saved);
@@ -179,7 +169,10 @@ public class ClinicUserService {
             throw new NoSuchElementException("Membresía no encontrada con ID: " + membershipId);
         }
 
-        User user = cu.getUsuario();
+        User user = patientAccounts.lockUser(cu.getUsuario().getId());
+        ensureExclusiveAccount(user, principal.getClinicaId());
+        cu.setUsuario(user);
+        boolean revoke = false;
 
         // 1. Actualización de datos de usuario
         if (dto.getNombres() != null && !dto.getNombres().isBlank()) {
@@ -190,6 +183,7 @@ public class ClinicUserService {
         }
         if (dto.getClave() != null && !dto.getClave().isBlank()) {
             user.setClaveHash(passwordEncoder.encode(dto.getClave()));
+            revoke = true;
         }
 
         // 2. Asignación de nuevo rol autorizado
@@ -202,20 +196,24 @@ public class ClinicUserService {
                 throw new IllegalArgumentException("No puede revocar su propio rol de ADMIN_CLINICA en esta clínica.");
             }
 
-            Role newRole = roleRepository.findByCodigo(rolCodigo)
-                    .orElseThrow(() -> new IllegalArgumentException("No se encontró el rol con código: " + rolCodigo));
+            Role newRole = activeRole(rolCodigo);
+            revoke |= cu.getRol() == null || !rolCodigo.equals(cu.getRol().getCodigo());
             cu.setRol(newRole);
         }
 
         // 3. Actualización de estado
         if (dto.getEstado() != null && !dto.getEstado().isBlank()) {
-            String nuevoEstado = dto.getEstado().trim().toUpperCase();
-            if (!"ACTIVO".equals(nuevoEstado) && !"INACTIVO".equals(nuevoEstado) && !"DESHABILITADO".equals(nuevoEstado)) {
-                throw new IllegalArgumentException("Estado no válido. Debe ser ACTIVO o INACTIVO.");
+            String nuevoEstado = normalizeState(dto.getEstado());
+            if (user.getId().equals(principal.getUserId()) && "INACTIVO".equals(nuevoEstado)) {
+                throw new IllegalArgumentException("No puede desactivar su propia cuenta o membresía activa.");
             }
-            cu.setEstado("DESHABILITADO".equals(nuevoEstado) ? "INACTIVO" : nuevoEstado);
-            user.setEstado("INACTIVO".equals(nuevoEstado) ? "DESHABILITADO" : nuevoEstado);
+            String userState = "INACTIVO".equals(nuevoEstado) ? "DESHABILITADO" : "ACTIVO";
+            revoke |= !nuevoEstado.equals(cu.getEstado()) || !userState.equals(user.getEstado());
+            cu.setEstado(nuevoEstado);
+            user.setEstado(userState);
         }
+
+        if (revoke) user.revokeSessions();
 
         userRepository.save(user);
         ClinicUser updated = clinicUserRepository.save(cu);
@@ -245,13 +243,43 @@ public class ClinicUserService {
         }
 
         cu.setEstado(nuevoEstado);
-        User user = cu.getUsuario();
+        User user = patientAccounts.lockUser(cu.getUsuario().getId());
+        ensureExclusiveAccount(user, principal.getClinicaId());
+        cu.setUsuario(user);
+        // Revoca también después de reactivar: un token previo no vuelve a ser válido.
+        user.revokeSessions();
         user.setEstado("INACTIVO".equals(nuevoEstado) ? "DESHABILITADO" : "ACTIVO");
 
         userRepository.save(user);
         ClinicUser updated = clinicUserRepository.save(cu);
 
         return toDto(updated);
+    }
+
+    private Role activeRole(String code) {
+        Role role = roleRepository.findByCodigo(code)
+                .orElseThrow(() -> new IllegalArgumentException("Rol no encontrado: " + code));
+        if (!Boolean.TRUE.equals(role.getActivo())) throw new IllegalArgumentException("El rol está desactivado");
+        return role;
+    }
+
+    private String normalizeState(String state) {
+        String normalized = state.trim().toUpperCase();
+        if ("DESHABILITADO".equals(normalized)) normalized = "INACTIVO";
+        if (!Set.of("ACTIVO", "INACTIVO").contains(normalized)) {
+            throw new IllegalArgumentException("Estado no válido. Debe ser ACTIVO o INACTIVO.");
+        }
+        return normalized;
+    }
+
+    private void ensureExclusiveAccount(User user, Long clinicId) {
+        boolean otherMembership = clinicUserRepository.findByUsuarioId(user.getId()).stream()
+                .anyMatch(m -> !clinicId.equals(m.getClinica().getId()));
+        boolean otherPatient = patientRepository.findByUsuarioId(user.getId()).stream()
+                .anyMatch(p -> !clinicId.equals(p.getClinica().getId()));
+        if (otherMembership || otherPatient) {
+            throw new IllegalStateException("No se puede modificar una identidad compartida con otra clínica desde esta sede");
+        }
     }
 
     public ClinicUserDto toDto(ClinicUser cu) {
@@ -280,8 +308,11 @@ public class ClinicUserService {
         }
 
         if (u != null) {
-            patientRepository.findFirstByUsuarioId(u.getId())
-                    .ifPresent(p -> dto.setPacienteId(p.getId().toString()));
+            List<Patient> linked = patientRepository.findByUsuarioId(u.getId());
+            if ("PACIENTE".equals(dto.getRol()) && linked.size() == 1
+                    && cu.getClinica().getId().equals(linked.getFirst().getClinica().getId())) {
+                dto.setPacienteId(linked.getFirst().getId().toString());
+            }
         }
 
         dto.setFechaAsignacion(cu.getFechaAsignacion());

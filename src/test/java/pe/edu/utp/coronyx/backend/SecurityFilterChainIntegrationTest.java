@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import pe.edu.utp.coronyx.backend.dto.*;
 import pe.edu.utp.coronyx.backend.model.*;
 import pe.edu.utp.coronyx.backend.repository.*;
 import pe.edu.utp.coronyx.backend.service.JwtService;
@@ -257,13 +258,11 @@ class SecurityFilterChainIntegrationTest {
                 .andExpect(jsonPath("$.status").value(403))
                 .andExpect(jsonPath("$.error").value("Forbidden"));
 
-        // SUPER_ADMIN denegado en endpoints clínicos operativos (no asigna clínica por fallback)
-        String tokenSuper = loginAndGetToken("superadmin@coronyx.pe", "123456");
-
-        mockMvc.perform(get("/api/v1/patients")
-                        .header("Authorization", "Bearer " + tokenSuper))
-                .andExpect(status().isForbidden())
-                .andExpect(jsonPath("$.status").value(403));
+        // SUPER_ADMIN no inicia una sesión operativa en este incremento.
+        mockMvc.perform(post("/api/v1/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(new LoginRequestDto("superadmin@coronyx.pe", "123456"))))
+                .andExpect(status().isUnauthorized());
     }
 
     @Test

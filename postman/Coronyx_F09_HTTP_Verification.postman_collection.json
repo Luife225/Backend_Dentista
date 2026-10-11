@@ -202,6 +202,51 @@
               }
             }
           ]
+        },
+        {
+          "name": "00.5 Registro Autónomo de Paciente (RF-01 / F03)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/register-patient",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "register-patient"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombres\": \"Carlos\",\n  \"apellidos\": \"Santillan Postman\",\n  \"tipoDocumento\": \"DNI\",\n  \"numeroDocumento\": \"45678912\",\n  \"fechaNacimiento\": \"1992-04-12\",\n  \"correo\": \"paciente_autonomo@coronyx.pe\",\n  \"clave\": \"Password123!\",\n  \"telefono\": \"987112233\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201 Created or 200 OK\", function () { pm.expect([200, 201]).to.include(pm.response.code); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
         }
       ]
     },
@@ -744,6 +789,50 @@
     {
       "name": "02. Rol RECEPCIONISTA (R01 - R10)",
       "item": [
+        {
+          "name": "R00: Listar odontólogos habilitados de la clínica",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{recepToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/citas/odontologos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "citas",
+                "odontologos"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"R00: Odontólogos retornados con 200 OK\", function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test(\"R00: Lista de odontólogos disponibles\", function () {",
+                  "    pm.expect(Array.isArray(json)).to.be.true;",
+                  "    if (json.length > 0) {",
+                  "        pm.expect(json[0].id).to.be.a('string');",
+                  "        pm.expect(json[0].nombres).to.be.a('string');",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
         {
           "name": "R01: Listar pacientes en recepción",
           "request": {
@@ -2025,6 +2114,118 @@
               "script": {
                 "exec": [
                   "pm.test(\"G05: Revocación exitosa con 200 OK\", function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "06. Notificaciones y Alertas (N01 - N03)",
+      "item": [
+        {
+          "name": "N01: Listar notificaciones del usuario",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/notifications",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "notifications"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"N01: Notificaciones retornadas con 200 OK\", function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "N02: Conteo de no leídas",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/notifications/unread-count",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "notifications",
+                "unread-count"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"N02: Conteo retornado con 200 OK\", function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "N03: Marcar todas como leídas",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/notifications/read-all",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "notifications",
+                "read-all"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"N03: Marcadas con 200 OK\", function () { pm.response.to.have.status(200); });"
                 ],
                 "type": "text/javascript"
               }

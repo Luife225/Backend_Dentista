@@ -41,6 +41,7 @@ public class JwtService {
         extraClaims.put("nombres", user.getNombres());
         extraClaims.put("apellidos", user.getApellidos());
         extraClaims.put("rol", rol);
+        extraClaims.put("sessionVersion", user.getSessionVersion().toString());
 
         if (usuarioClinicaId != null) {
             extraClaims.put("usuarioClinicaId", usuarioClinicaId.toString());

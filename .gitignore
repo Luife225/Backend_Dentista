@@ -37,3 +37,18 @@ build/
 
 ### Database Dumps ###
 *.dump
+
+### Private Credentials & Configurations ###
+src/main/resources/application.yml
+!src/main/resources/application.example.yml
+
+### Tests & Temporary Scripts ###
+test_*.mjs
+*.ps1
+scripts/
+tmp/
+
+### External Deliverables & Planning ###
+Entregables_Avance_2/
+Entregables_Sprints_Corregidos/
+Planificacion_CORONYX/

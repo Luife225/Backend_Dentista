@@ -43,6 +43,18 @@ public class User {
     @Column(name = "estado", nullable = false, length = 20)
     private String estado = "ACTIVO";
 
+    @NotNull
+    @Column(name = "session_version", nullable = false)
+    private Long sessionVersion = 0L;
+
+    public Long getSessionVersion() {
+        return sessionVersion;
+    }
+
+    public void revokeSessions() {
+        sessionVersion = Math.addExact(sessionVersion, 1L);
+    }
+
     @Column(name = "correo_verificado_en")
     private OffsetDateTime correoVerificadoEn;
 

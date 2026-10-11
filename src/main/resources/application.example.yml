@@ -3,8 +3,8 @@ spring:
     name: coronyx-backend
   datasource:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/coronyx}
-    username: ${DB_USERNAME:akise}
-    password: ${DB_PASSWORD:admin}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:tu_password_aqui}
   jpa:
     open-in-view: false
     hibernate:
@@ -35,5 +35,5 @@ server:
   port: ${SERVER_PORT:8081}
 
 jwt:
-  secret: ${JWT_SECRET:coronyx-dental-system-secret-key-2026-super-secure-token-jwt-utp-platform}
+  secret: ${JWT_SECRET:cambiar-esta-clave-secreta-en-produccion-minimo-256-bits-super-segura}
   expiration-ms: ${JWT_EXPIRATION_MS:86400000}

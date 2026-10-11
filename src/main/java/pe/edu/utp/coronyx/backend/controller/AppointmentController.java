@@ -85,6 +85,15 @@ public class AppointmentController {
     }
 
     /**
+     * GET /api/v1/citas/odontologos - Catálogo asistencial de odontólogos activos de la clínica.
+     * Permite a ADMIN_CLINICA, RECEPCIONISTA, ODONTOLOGO y PACIENTE consultar doctores para agendar citas.
+     */
+    @GetMapping({"/odontologos", "/doctores"})
+    public ResponseEntity<List<UserDto>> getClinicDentists(@AuthenticationPrincipal UserPrincipal principal) {
+        return ResponseEntity.ok(appointmentService.getClinicDentists(resolvePrincipal(principal)));
+    }
+
+    /**
      * GET /api/v1/citas/{id} - Obtener detalle de una cita por su ID.
      */
     @GetMapping("/{id}")

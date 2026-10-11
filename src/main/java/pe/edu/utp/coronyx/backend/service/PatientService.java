@@ -24,13 +24,15 @@ public class PatientService {
     private final PatientRepository patientRepository;
     private final ClinicRepository clinicRepository;
     private final UserRepository userRepository;
+    private final PatientAccountService patientAccounts;
 
     public PatientService(PatientRepository patientRepository,
                           ClinicRepository clinicRepository,
-                          UserRepository userRepository) {
+                          UserRepository userRepository, PatientAccountService patientAccounts) {
         this.patientRepository = patientRepository;
         this.clinicRepository = clinicRepository;
         this.userRepository = userRepository;
+        this.patientAccounts = patientAccounts;
     }
 
     @Transactional(readOnly = true)
@@ -219,11 +221,7 @@ public class PatientService {
 
         // Vinculación explícita de cuenta de paciente sin equiparar paciente.id a usuario.id
         if (dto.getUsuarioId() != null && !dto.getUsuarioId().isBlank()) {
-            try {
-                Long uId = Long.parseLong(dto.getUsuarioId().trim());
-                userRepository.findById(uId).ifPresent(patient::setUsuario);
-            } catch (NumberFormatException ignored) {
-            }
+            patientAccounts.link(patient, patientAccounts.parseUserId(dto.getUsuarioId()), principal);
         }
 
         Patient saved = patientRepository.save(patient);
@@ -245,7 +243,7 @@ public class PatientService {
             throw new AccessDeniedException("Acceso denegado: el usuario no tiene una clínica activa asignada");
         }
 
-        Patient patient = patientRepository.findById(id)
+        Patient patient = patientRepository.findLockedById(id)
                 .orElseThrow(() -> new NoSuchElementException("Paciente no encontrado con ID: " + id));
 
         if (!patient.getClinica().getId().equals(principal.getClinicaId())) {
@@ -307,15 +305,10 @@ public class PatientService {
         }
 
         if (dto.getUsuarioId() != null) {
-            String uIdStr = dto.getUsuarioId().trim();
-            if (uIdStr.isBlank() || "null".equalsIgnoreCase(uIdStr)) {
-                patient.setUsuario(null);
-            } else {
-                try {
-                    Long uId = Long.parseLong(uIdStr);
-                    userRepository.findById(uId).ifPresent(patient::setUsuario);
-                } catch (NumberFormatException ignored) {
-                }
+            Long targetId = patientAccounts.parseUserId(dto.getUsuarioId());
+            Long currentId = patient.getUsuario() == null ? null : patient.getUsuario().getId();
+            if (!java.util.Objects.equals(targetId, currentId)) {
+                patientAccounts.link(patient, targetId, principal);
             }
         }
 
@@ -482,20 +475,14 @@ public class PatientService {
             throw new AccessDeniedException("Acceso denegado: el usuario no tiene una clínica activa asignada");
         }
 
-        Patient patient = patientRepository.findById(patientId)
+        Patient patient = patientRepository.findLockedById(patientId)
                 .orElseThrow(() -> new NoSuchElementException("Paciente no encontrado con ID: " + patientId));
 
         if (!patient.getClinica().getId().equals(principal.getClinicaId())) {
             throw new NoSuchElementException("Paciente no encontrado con ID: " + patientId);
         }
 
-        if (usuarioId != null) {
-            User user = userRepository.findById(usuarioId)
-                    .orElseThrow(() -> new NoSuchElementException("Usuario no encontrado con ID: " + usuarioId));
-            patient.setUsuario(user);
-        } else {
-            patient.setUsuario(null);
-        }
+        patientAccounts.link(patient, usuarioId, principal);
 
         Patient updated = patientRepository.save(patient);
         boolean isClinical = "ODONTOLOGO".equalsIgnoreCase(principal.getRol());

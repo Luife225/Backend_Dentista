@@ -127,6 +127,19 @@ const json = pm.response.json();
 pm.test("Long precision: pacienteId como string", function () { pm.expect(json.pacienteId).to.be.a('string'); });
 pm.environment.set("pacienteToken", json.token);
 if (json.pacienteId) { pm.environment.set("pacienteId", json.pacienteId); }`
+        ),
+        createItem("00.5 Registro Autónomo de Paciente (RF-01 / F03)", "POST", "/api/v1/auth/register-patient", { "Content-Type": "application/json" },
+          {
+            nombres: "Carlos",
+            apellidos: "Santillan Postman",
+            tipoDocumento: "DNI",
+            numeroDocumento: "45678912",
+            fechaNacimiento: "1992-04-12",
+            correo: "paciente_autonomo@coronyx.pe",
+            clave: "Password123!",
+            telefono: "987112233"
+          },
+          `pm.test("Status code is 201 Created or 200 OK", function () { pm.expect([200, 201]).to.include(pm.response.code); });`
         )
       ]
     },
@@ -243,6 +256,18 @@ pm.test("A11: Métricas numéricas y zona horaria presentes", function () {
     {
       name: "02. Rol RECEPCIONISTA (R01 - R10)",
       item: [
+        createItem("R00: Listar odontólogos habilitados de la clínica", "GET", "/api/v1/citas/odontologos",
+          { "Authorization": "Bearer {{recepToken}}" }, null,
+          `pm.test("R00: Odontólogos retornados con 200 OK", function () { pm.response.to.have.status(200); });
+const json = pm.response.json();
+pm.test("R00: Lista de odontólogos disponibles", function () {
+    pm.expect(Array.isArray(json)).to.be.true;
+    if (json.length > 0) {
+        pm.expect(json[0].id).to.be.a('string');
+        pm.expect(json[0].nombres).to.be.a('string');
+    }
+});`
+        ),
         createItem("R01: Listar pacientes en recepción", "GET", "/api/v1/patients",
           { "Authorization": "Bearer {{recepToken}}" }, null,
           `pm.test("R01: Status code is 200 OK", function () { pm.response.to.have.status(200); });`
@@ -458,14 +483,49 @@ pm.test("P02: Cita ligada al paciente autenticado", function () {
           `pm.test("G05: Revocación exitosa con 200 OK", function () { pm.response.to.have.status(200); });`
         )
       ]
+    },
+    {
+      name: "06. Notificaciones y Alertas (N01 - N03)",
+      item: [
+        createItem("N01: Listar notificaciones del usuario", "GET", "/api/v1/notifications",
+          { "Authorization": "Bearer {{adminToken}}" }, null,
+          `pm.test("N01: Notificaciones retornadas con 200 OK", function () { pm.response.to.have.status(200); });`
+        ),
+        createItem("N02: Conteo de no leídas", "GET", "/api/v1/notifications/unread-count",
+          { "Authorization": "Bearer {{adminToken}}" }, null,
+          `pm.test("N02: Conteo retornado con 200 OK", function () { pm.response.to.have.status(200); });`
+        ),
+        createItem("N03: Marcar todas como leídas", "PATCH", "/api/v1/notifications/read-all",
+          { "Authorization": "Bearer {{adminToken}}" }, null,
+          `pm.test("N03: Marcadas con 200 OK", function () { pm.response.to.have.status(200); });`
+        )
+      ]
     }
   ]
 };
 
+const collectionJson = JSON.stringify(collection, null, 2);
+
+// 1. Guardar en Backend_Dentista/postman
 fs.writeFileSync(
   path.join(postmanDir, 'Coronyx_F09_HTTP_Verification.postman_collection.json'),
-  JSON.stringify(collection, null, 2),
+  collectionJson,
   'utf-8'
 );
+
+fs.writeFileSync(
+  path.join(postmanDir, 'Coronyx_API_Collection.postman_collection.json'),
+  collectionJson,
+  'utf-8'
+);
+
+// 2. Guardar en la raíz de CoronyxProyecto
+const rootPostmanPath = path.resolve('..', 'Coronyx_API_Collection.postman_collection.json');
+try {
+  fs.writeFileSync(rootPostmanPath, collectionJson, 'utf-8');
+  console.log('Colección actualizada también en la raíz:', rootPostmanPath);
+} catch (e) {
+  console.warn('No se pudo escribir en la raíz:', e.message);
+}
 
 console.log('Postman Collection y Environment LOCAL generados con éxito en:', postmanDir);

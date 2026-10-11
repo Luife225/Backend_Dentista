@@ -871,4 +871,33 @@ public class AppointmentService {
         dto.setFechaResolucion(s.getFechaResolucion());
         return dto;
     }
+
+    /**
+     * Catálogo asistencial de odontólogos activos de la clínica del usuario autenticado.
+     * Permite a RECEPCIONISTA, ODONTOLOGO, PACIENTE y ADMIN_CLINICA consultar doctores para citas.
+     */
+    @Transactional(readOnly = true)
+    public List<UserDto> getClinicDentists(UserPrincipal principal) {
+        validateSecurityPrincipal(principal);
+        Long clinicaId = principal.getClinicaId();
+        return clinicUserRepository.findByClinicaId(clinicaId).stream()
+                .filter(m -> m.getRol() != null && "ODONTOLOGO".equalsIgnoreCase(m.getRol().getCodigo()))
+                .filter(m -> "ACTIVO".equalsIgnoreCase(m.getEstado()) &&
+                        (m.getUsuario() == null || "ACTIVO".equalsIgnoreCase(m.getUsuario().getEstado())))
+                .map(m -> {
+                    User user = m.getUsuario();
+                    UserDto dto = new UserDto();
+                    dto.setId(user != null ? user.getId().toString() : m.getId().toString());
+                    dto.setUsuarioClinicaId(m.getId().toString());
+                    dto.setCorreo(user != null ? user.getCorreo() : "");
+                    dto.setNombres(user != null ? user.getNombres() : "Odontólogo");
+                    dto.setApellidos(user != null ? user.getApellidos() : "");
+                    dto.setEstado(m.getEstado());
+                    dto.setRol("ODONTOLOGO");
+                    dto.setClinicaNombre(m.getClinica() != null ? m.getClinica().getNombre() : "");
+                    return dto;
+                })
+                .toList();
+    }
 }
+

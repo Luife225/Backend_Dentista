@@ -59,6 +59,12 @@ public class GlobalExceptionHandler {
                 .body(buildErrorResponse(HttpStatus.CONFLICT, ex.getMessage(), req.getRequestURI()));
     }
 
+    @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
+    public ResponseEntity<Map<String, Object>> handleDataConflict(org.springframework.dao.DataIntegrityViolationException ex, HttpServletRequest req) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(buildErrorResponse(HttpStatus.CONFLICT, "Los datos entran en conflicto con un registro existente", req.getRequestURI()));
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, Object>> handleBadRequest(IllegalArgumentException ex, HttpServletRequest req) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)

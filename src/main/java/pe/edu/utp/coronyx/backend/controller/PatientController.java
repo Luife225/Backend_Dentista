@@ -103,7 +103,15 @@ public class PatientController {
                                                @RequestBody Map<String, String> body,
                                                @AuthenticationPrincipal UserPrincipal principal) {
         String uIdStr = body != null ? body.get("usuarioId") : null;
-        Long uId = (uIdStr != null && !uIdStr.isBlank() && !"null".equalsIgnoreCase(uIdStr)) ? Long.parseLong(uIdStr.trim()) : null;
+        Long uId = null;
+        if (uIdStr != null && !uIdStr.isBlank() && !"null".equalsIgnoreCase(uIdStr.trim())) {
+            if (!uIdStr.trim().matches("[1-9]\\d*")) throw new IllegalArgumentException("usuarioId debe ser un entero positivo");
+            try {
+                uId = Long.valueOf(uIdStr.trim());
+            } catch (NumberFormatException ex) {
+                throw new IllegalArgumentException("usuarioId está fuera del rango permitido");
+            }
+        }
         return ResponseEntity.ok(patientService.linkUserAccount(id, uId, resolvePrincipal(principal)));
     }
 

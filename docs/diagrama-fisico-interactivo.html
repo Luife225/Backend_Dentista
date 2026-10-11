@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CORONYX — Diagrama Físico de Base de Datos (Modelo objetivo BIGINT · 12 tablas · 32 FK)</title>
+  <title>CORONYX — Diagrama Físico de Base de Datos (Modelo objetivo BIGINT · 15 tablas · 35 FK)</title>
   <!-- Cytoscape.js para visualización de grafos de alta performance -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.28.1/cytoscape.min.js"></script>
   <!-- Dagre layout para organización jerárquica automática de entidades -->
@@ -254,9 +254,9 @@
 <body>
 
   <header>
-    <div class="brand" title="Esquema implementado V4 con Flyway en PostgreSQL 18. Claves primarias y foráneas BIGINT identity validadas.">
+    <div class="brand" title="Esquema implementado V10 con Flyway en PostgreSQL. Claves primarias y foráneas BIGINT identity validadas.">
       <h1>🦷 CORONYX · Modelo Físico Relacional</h1>
-      <span>Esquema Implementado V4 · BIGINT IDENTITY · 12 tablas · 32 FK</span>
+      <span>Esquema Implementado V10 · BIGINT IDENTITY · 15 tablas · 35 FK</span>
     </div>
     <div class="controls">
       <button onclick="toggleVista()" id="btn-vista">👁️ Modo: Todas las Columnas</button>
@@ -276,8 +276,8 @@
   </div>
 
   <div class="legend">
-    <div class="legend-item"><span class="color-dot" style="background: #1E8C82;"></span> Seguridad y Multi-Sede (4)</div>
-    <div class="legend-item"><span class="color-dot" style="background: #059669;"></span> Pacientes y Citas (2)</div>
+    <div class="legend-item"><span class="color-dot" style="background: #1E8C82;"></span> Seguridad y Multi-Sede (6)</div>
+    <div class="legend-item"><span class="color-dot" style="background: #059669;"></span> Pacientes y Citas (3)</div>
     <div class="legend-item"><span class="color-dot" style="background: #D97706;"></span> Historia Clínica y Odontograma (4)</div>
     <div class="legend-item"><span class="color-dot" style="background: #7C3AED;"></span> Archivos e Inteligencia Artificial (1)</div>
     <div class="legend-item"><span class="color-dot" style="background: #475569;"></span> Notificaciones (1)</div>
@@ -287,7 +287,7 @@
     let modoVista = 'FULL';
 
     // =========================================================================
-    // DICCIONARIO DEL MODELO IMPLEMENTADO V4 · BIGINT IDENTITY · 12 TABLAS · 32 FK
+    // DICCIONARIO DEL MODELO IMPLEMENTADO V10 · BIGINT IDENTITY · 15 TABLAS · 35 FK
     // =========================================================================
     const tablasData = {
       "clinica": {
@@ -317,6 +317,26 @@
                   {
                         "name": "estado",
                         "type": "VARCHAR(16)"
+                  },
+                  {
+                        "name": "ruc",
+                        "type": "VARCHAR(20)"
+                  },
+                  {
+                        "name": "telefono",
+                        "type": "VARCHAR(30)"
+                  },
+                  {
+                        "name": "correo",
+                        "type": "VARCHAR(254)"
+                  },
+                  {
+                        "name": "ciudad",
+                        "type": "VARCHAR(100)"
+                  },
+                  {
+                        "name": "direccion",
+                        "type": "VARCHAR(255)"
                   },
                   {
                         "name": "fecha_creacion",
@@ -375,6 +395,10 @@
                   {
                         "name": "token_recuperacion_usado_en",
                         "type": "TIMESTAMPTZ"
+                  },
+                  {
+                        "name": "session_version",
+                        "type": "BIGINT"
                   },
                   {
                         "name": "fecha_creacion",
@@ -482,6 +506,114 @@
                   }
             ]
       },
+      "horario_atencion": {
+            "nombre": "horario_atencion",
+            "dominio": "Seguridad y Multi-Sede",
+            "color": "#1E8C82",
+            "icono": "⏱️",
+            "desc": "Definición de turnos y ventanas de disponibilidad semanal por clínica y por odontólogo (V09 / R05).",
+            "cols": [
+                  {
+                        "name": "id",
+                        "type": "BIGINT",
+                        "pk": true
+                  },
+                  {
+                        "name": "clinica_id",
+                        "type": "BIGINT",
+                        "fk": true,
+                        "ref": "clinica.id",
+                        "nullable": false,
+                        "onDelete": "CASCADE"
+                  },
+                  {
+                        "name": "odontologo_id",
+                        "type": "BIGINT",
+                        "fk": true,
+                        "ref": "usuario_clinica.id",
+                        "nullable": true,
+                        "onDelete": "CASCADE"
+                  },
+                  {
+                        "name": "dia_semana",
+                        "type": "INTEGER"
+                  },
+                  {
+                        "name": "hora_apertura",
+                        "type": "TIME"
+                  },
+                  {
+                        "name": "hora_cierre",
+                        "type": "TIME"
+                  },
+                  {
+                        "name": "activo",
+                        "type": "BOOLEAN"
+                  },
+                  {
+                        "name": "duracion_turno_minutos",
+                        "type": "INTEGER"
+                  },
+                  {
+                        "name": "fecha_creacion",
+                        "type": "TIMESTAMPTZ"
+                  },
+                  {
+                        "name": "fecha_actualizacion",
+                        "type": "TIMESTAMPTZ"
+                  }
+            ]
+      },
+      "ausencia_odontologo": {
+            "nombre": "ausencia_odontologo",
+            "dominio": "Seguridad y Multi-Sede",
+            "color": "#1E8C82",
+            "icono": "🏖️",
+            "desc": "Bloqueos y excepciones de agenda (vacaciones, licencias médicas, capacitaciones) para profesionales (V09 / R05).",
+            "cols": [
+                  {
+                        "name": "id",
+                        "type": "BIGINT",
+                        "pk": true
+                  },
+                  {
+                        "name": "clinica_id",
+                        "type": "BIGINT",
+                        "fk": true,
+                        "ref": "clinica.id",
+                        "nullable": false,
+                        "onDelete": "CASCADE"
+                  },
+                  {
+                        "name": "odontologo_id",
+                        "type": "BIGINT",
+                        "fk": true,
+                        "ref": "usuario_clinica.id",
+                        "nullable": false,
+                        "onDelete": "CASCADE"
+                  },
+                  {
+                        "name": "inicio_en",
+                        "type": "TIMESTAMPTZ"
+                  },
+                  {
+                        "name": "fin_en",
+                        "type": "TIMESTAMPTZ"
+                  },
+                  {
+                        "name": "motivo",
+                        "type": "VARCHAR(255)"
+                  },
+                  {
+                        "name": "tipo",
+                        "type": "VARCHAR(40)"
+                  },
+                  {
+                        "name": "fecha_creacion",
+                        "type": "TIMESTAMPTZ"
+                  }
+            ]
+      },
       "paciente": {
             "nombre": "paciente",
             "dominio": "Pacientes y Citas",
@@ -581,6 +713,10 @@
                   {
                         "name": "seguro",
                         "type": "VARCHAR(80)"
+                  },
+                  {
+                        "name": "direccion",
+                        "type": "VARCHAR(255)"
                   }
             ]
       },
@@ -666,6 +802,72 @@
                   },
                   {
                         "name": "fecha_actualizacion",
+                        "type": "TIMESTAMPTZ"
+                  }
+            ]
+      },
+      "solicitud_reprogramacion": {
+            "nombre": "solicitud_reprogramacion",
+            "dominio": "Pacientes y Citas",
+            "color": "#059669",
+            "icono": "🔄",
+            "desc": "Gestión asíncrona de solicitudes de reprogramación de citas entre pacientes y recepción/médicos (F04-A).",
+            "cols": [
+                  {
+                        "name": "id",
+                        "type": "BIGINT",
+                        "pk": true
+                  },
+                  {
+                        "name": "cita_id",
+                        "type": "BIGINT",
+                        "fk": true,
+                        "ref": "cita.id",
+                        "nullable": false,
+                        "onDelete": "CASCADE"
+                  },
+                  {
+                        "name": "solicitante_usuario_id",
+                        "type": "BIGINT",
+                        "fk": true,
+                        "ref": "usuario.id",
+                        "nullable": false,
+                        "onDelete": "RESTRICT"
+                  },
+                  {
+                        "name": "nueva_fecha_hora_inicio",
+                        "type": "TIMESTAMPTZ"
+                  },
+                  {
+                        "name": "nueva_fecha_hora_fin",
+                        "type": "TIMESTAMPTZ"
+                  },
+                  {
+                        "name": "motivo",
+                        "type": "VARCHAR(500)"
+                  },
+                  {
+                        "name": "estado",
+                        "type": "VARCHAR(20)"
+                  },
+                  {
+                        "name": "resolucion_usuario_id",
+                        "type": "BIGINT",
+                        "fk": true,
+                        "ref": "usuario.id",
+                        "nullable": true,
+                        "onDelete": "RESTRICT"
+                  },
+                  {
+                        "name": "resolucion_motivo",
+                        "type": "VARCHAR(500)"
+                  },
+                  {
+                        "name": "fecha_solicitud",
+                        "type": "TIMESTAMPTZ"
+                  },
+                  {
+                        "name": "fecha_resolucion",
                         "type": "TIMESTAMPTZ"
                   }
             ]
@@ -777,7 +979,19 @@
                         "type": "INTEGER"
                   },
                   {
+                        "name": "motivo_consulta",
+                        "type": "TEXT"
+                  },
+                  {
+                        "name": "examen_clinico",
+                        "type": "TEXT"
+                  },
+                  {
                         "name": "diagnostico",
+                        "type": "TEXT"
+                  },
+                  {
+                        "name": "plan_tratamiento",
                         "type": "TEXT"
                   },
                   {
@@ -795,6 +1009,14 @@
                   {
                         "name": "evolucion",
                         "type": "TEXT"
+                  },
+                  {
+                        "name": "signos_vitales",
+                        "type": "JSONB"
+                  },
+                  {
+                        "name": "proxima_cita_sugerida",
+                        "type": "VARCHAR(50)"
                   },
                   {
                         "name": "texto_pendiente_revision",
@@ -1332,7 +1554,7 @@
       const png64 = cy.png({ full: true, scale: 3, bg: '#0d1117' });
       const downloadLink = document.createElement('a');
       downloadLink.href = png64;
-      downloadLink.download = 'modelo_objetivo_coronyx_bigint_12_tablas_32_fk.png';
+      downloadLink.download = 'modelo_objetivo_coronyx_bigint_15_tablas_35_fk.png';
       document.body.appendChild(downloadLink);
       downloadLink.click();
       document.body.removeChild(downloadLink);
