@@ -92,6 +92,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/odontograma/**", "/odontograma/**")
                         .hasAnyRole("ADMIN_CLINICA", "RECEPCIONISTA", "ODONTOLOGO", "PACIENTE")
 
+                        .requestMatchers("/api/v1/corovoz/odontograma/**").hasRole("ODONTOLOGO")
+                        .requestMatchers("/api/v1/corovoz/**").hasAnyRole("ODONTOLOGO", "RECEPCIONISTA")
+
                         // Disponibilidad y configuración de horarios (A09/R05)
                         .requestMatchers("/api/v1/disponibilidad/**", "/disponibilidad/**")
                         .hasAnyRole("ADMIN_CLINICA", "RECEPCIONISTA", "ODONTOLOGO", "PACIENTE")

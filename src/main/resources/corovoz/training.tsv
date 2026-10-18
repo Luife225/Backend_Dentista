@@ -1,0 +1,103 @@
+# Categoría|Pregunta de entrenamiento. Solo instrucciones del sistema; sin datos de pacientes.
+CITA_NUEVA|cómo agendo una cita
+CITA_NUEVA|quiero reservar una cita nueva
+CITA_NUEVA|dónde registro citas nuevas
+CITA_NUEVA|crear cita para paciente
+CITA_NUEVA|cómo programo una consulta
+CITA_NUEVA|añadir una cita al calendario
+CITA_NUEVA|agendar turno odontólogo
+CITA_NUEVA|quiero abrir la agenda
+CITA_NUEVA|necesito agendar una atención
+CITA_NUEVA|cómo se utiliza la agenda
+CITA_CAMBIO|cómo reprogramar una cita
+CITA_CAMBIO|cambiar horario de cita
+CITA_CAMBIO|cancelar cita agendada
+CITA_CAMBIO|anular una cita
+CITA_CAMBIO|mover cita a otro día
+CITA_CAMBIO|modificar fecha de consulta
+CITA_CAMBIO|quiero reprogramar el turno
+CITA_CAMBIO|quiero cancelar una consulta
+CITA_CAMBIO|dónde cancelo citas
+CITA_CAMBIO|reprogramación de citas
+PACIENTE_NUEVO|cómo registro un paciente
+PACIENTE_NUEVO|crear paciente nuevo
+PACIENTE_NUEVO|añadir paciente al sistema
+PACIENTE_NUEVO|dar de alta un paciente
+PACIENTE_NUEVO|nuevo paciente
+PACIENTE_NUEVO|cómo registrar pacientes
+PACIENTE_NUEVO|llenar formulario de nuevo paciente
+PACIENTE_NUEVO|inscribir paciente
+PACIENTE_BUSCAR|buscar un paciente
+PACIENTE_BUSCAR|encontrar paciente por documento
+PACIENTE_BUSCAR|abrir ficha de paciente
+PACIENTE_BUSCAR|consultar datos de paciente
+PACIENTE_BUSCAR|ver lista de pacientes
+PACIENTE_BUSCAR|dónde encuentro al paciente
+PACIENTE_BUSCAR|buscar pacientes por nombre
+PACIENTE_BUSCAR|seleccionar paciente existente
+ODONTOGRAMA|cómo llenar el odontograma
+ODONTOGRAMA|registrar caries en una pieza dental
+ODONTOGRAMA|marcar extracción de diente
+ODONTOGRAMA|poner una corona en odontograma
+ODONTOGRAMA|guardar borrador de odontograma
+ODONTOGRAMA|confirmar versión de odontograma
+ODONTOGRAMA|abrir odontograma del paciente
+ODONTOGRAMA|registrar hallazgo dental
+ODONTOGRAMA|editar cara oclusal de diente
+ODONTOGRAMA|cómo uso odontograma por voz
+HISTORIA|abrir historia clínica
+HISTORIA|registrar atención clínica
+HISTORIA|ver antecedentes clínicos del paciente
+HISTORIA|consultar historia del paciente
+HISTORIA|crear una atención médica
+HISTORIA|dónde veo las atenciones clínicas
+HISTORIA|revisar evolución clínica
+HISTORIA|anotar antecedentes y alergias
+DOCUMENTOS|subir archivo adjunto
+DOCUMENTOS|adjuntar documentos de paciente
+DOCUMENTOS|cargar radiografía
+DOCUMENTOS|consultar radiografías del paciente
+DOCUMENTOS|descargar documento
+DOCUMENTOS|dónde veo archivos
+DOCUMENTOS|agregar imagen al paciente
+DOCUMENTOS|abrir documentos adjuntos
+NOTIFICACIONES|dónde veo notificaciones
+NOTIFICACIONES|consultar avisos pendientes
+NOTIFICACIONES|marcar notificación leída
+NOTIFICACIONES|ver alertas del sistema
+NOTIFICACIONES|revisar mis notificaciones
+NOTIFICACIONES|qué significa el número de notificaciones
+NOTIFICACIONES|abrir avisos
+NOTIFICACIONES|leer notificación nueva
+COROVOZ|cómo funciona corovoz
+COROVOZ|activar micrófono
+COROVOZ|prender corovoz
+COROVOZ|detener escucha
+COROVOZ|cómo dictar comandos de voz
+COROVOZ|usar asistente de voz
+COROVOZ|corovoz correcto edita elimina terminado
+COROVOZ|escribir preguntas al asistente
+DASHBOARD|abrir dashboard
+DASHBOARD|ver resumen de actividad
+DASHBOARD|consultar indicadores del panel
+DASHBOARD|qué muestra el tablero principal
+DASHBOARD|ver estadísticas de la clínica
+DASHBOARD|ir al inicio del panel
+INVENTARIO|abrir inventario
+INVENTARIO|consultar existencias de materiales
+INVENTARIO|revisar stock bajo
+INVENTARIO|buscar insumos dentales
+INVENTARIO|ajustar cantidades de material
+INVENTARIO|cómo veo materiales del almacén
+CAJA|abrir caja y reportes
+CAJA|consultar movimientos de caja
+CAJA|ver ingresos y egresos
+CAJA|ver resumen financiero
+CAJA|consultar reportes financieros
+CAJA|dónde veo el dinero de la clínica
+TELEODONTOLOGIA|abrir teleodontología
+TELEODONTOLOGIA|iniciar llamada virtual
+TELEODONTOLOGIA|consultas virtuales programadas
+TELEODONTOLOGIA|cómo hago una videollamada
+TELEODONTOLOGIA|consulta remota con paciente
+TELEODONTOLOGIA|abrir videollamada de teleodontología
