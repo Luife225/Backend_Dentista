@@ -19,6 +19,10 @@ public class VersionAtencionClinica {
     @Column(name = "id", updatable = false, nullable = false)
     private Long id;
 
+    @Version @Column(name = "revision", nullable = false)
+    private long revision;
+    public long getRevision() { return revision; }
+
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "clinica_id", nullable = false)

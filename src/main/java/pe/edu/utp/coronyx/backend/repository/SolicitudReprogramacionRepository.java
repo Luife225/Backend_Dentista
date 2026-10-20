@@ -11,6 +11,9 @@ import java.util.List;
 @Repository
 public interface SolicitudReprogramacionRepository extends JpaRepository<SolicitudReprogramacion, Long> {
 
+    @org.springframework.data.jpa.repository.Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)
+    @Query("select s from SolicitudReprogramacion s where s.id = :id")
+    java.util.Optional<SolicitudReprogramacion> findLockedById(@Param("id") Long id);
     List<SolicitudReprogramacion> findByCitaIdOrderByFechaSolicitudDesc(Long citaId);
 
     List<SolicitudReprogramacion> findBySolicitanteUsuarioIdOrderByFechaSolicitudDesc(Long solicitanteUsuarioId);

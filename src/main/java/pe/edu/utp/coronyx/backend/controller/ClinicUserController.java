@@ -19,9 +19,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/clinic/users")
-@CrossOrigin(origins = "*", allowedHeaders = "*", methods = {
-        RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.PATCH, RequestMethod.DELETE, RequestMethod.OPTIONS
-})
 @PreAuthorize("hasRole('ADMIN_CLINICA')")
 public class ClinicUserController {
 

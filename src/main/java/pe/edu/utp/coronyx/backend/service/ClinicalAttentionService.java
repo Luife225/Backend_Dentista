@@ -63,7 +63,7 @@ public class ClinicalAttentionService {
 
         Appointment cita = null;
         if (dto.getCitaId() != null) {
-            cita = appointmentRepository.findById(dto.getCitaId())
+            cita = appointmentRepository.findLockedByIdAndClinicaId(dto.getCitaId(), principal.getClinicaId())
                     .orElseThrow(() -> new NoSuchElementException("Cita no encontrada con ID: " + dto.getCitaId()));
 
             if (!cita.getClinica().getId().equals(principal.getClinicaId())) {
@@ -72,6 +72,8 @@ public class ClinicalAttentionService {
             if (!cita.getPaciente().getId().equals(paciente.getId())) {
                 throw new IllegalArgumentException("La cita especificada no corresponde al paciente seleccionado");
             }
+            requireAssignedDoctor(cita, principal);
+            AppointmentTransitions.requireTransition(cita.getEstado(), "EN_ATENCION");
             if (atencionClinicaRepository.existsByCitaId(dto.getCitaId())) {
                 throw new IllegalStateException(
                         "Ya existe una atención clínica registrada para la cita ID: " + dto.getCitaId());
@@ -105,10 +107,45 @@ public class ClinicalAttentionService {
 
         copyClinicalFields(dto, version);
 
-        VersionAtencionClinica savedVersion = versionAtencionClinicaRepository.save(version);
+        VersionAtencionClinica savedVersion = versionAtencionClinicaRepository.saveAndFlush(version);
         savedAtencion.getVersiones().add(savedVersion);
 
         return mapToEncounterDto(savedAtencion);
+    }
+
+    /** Inicio idempotente: la reserva, el borrador y su versión nacen en una transacción. */
+    public ClinicalEncounterResponseDto startAppointment(Long citaId) {
+        UserPrincipal principal = requireAuthorizedOdontologist();
+        Appointment cita = appointmentRepository.findLockedByIdAndClinicaId(citaId, principal.getClinicaId())
+                .orElseThrow(() -> new NoSuchElementException("Cita no encontrada"));
+        requireAssignedDoctor(cita, principal);
+        var existing = atencionClinicaRepository.findByCitaId(citaId);
+        if (existing.isPresent()) return mapToEncounterDto(existing.get());
+        AppointmentTransitions.requireTransition(cita.getEstado(), "EN_ATENCION");
+        CreateClinicalEncounterDto dto = new CreateClinicalEncounterDto();
+        dto.setPacienteId(cita.getPaciente().getId());
+        dto.setCitaId(citaId);
+        dto.setMotivoConsulta(cita.getMotivo());
+        return createDraft(dto);
+    }
+
+    private void requireAssignedDoctor(Appointment cita, UserPrincipal principal) {
+        if (!cita.getOdontologo().getId().equals(principal.getUsuarioClinicaId())) {
+            throw new AccessDeniedException("Solo el odontólogo asignado puede atender esta cita");
+        }
+    }
+
+    private void requireDraftAuthor(AtencionClinica atencion, UserPrincipal principal) {
+        if (!atencion.getOdontologo().getId().equals(principal.getUsuarioClinicaId())) {
+            throw new AccessDeniedException("El borrador pertenece a otro odontólogo");
+        }
+    }
+
+    private void validateSignature(VersionAtencionClinica version) {
+        if (version.getMotivoConsulta() == null || version.getMotivoConsulta().isBlank()
+                || version.getDiagnostico() == null || version.getDiagnostico().isBlank()) {
+            throw new IllegalArgumentException("Complete motivo de consulta y diagnóstico antes de firmar");
+        }
     }
 
     /**
@@ -117,9 +154,10 @@ public class ClinicalAttentionService {
     public ClinicalEncounterResponseDto updateDraft(Long atencionId, UpdateClinicalDraftDto dto) {
         UserPrincipal principal = requireAuthorizedOdontologist();
 
-        AtencionClinica atencion = atencionClinicaRepository.findByIdAndClinicaId(atencionId, principal.getClinicaId())
+        AtencionClinica atencion = atencionClinicaRepository.findLockedByIdAndClinicaId(atencionId, principal.getClinicaId())
                 .orElseThrow(() -> new NoSuchElementException("Atención clínica no encontrada con ID: " + atencionId));
 
+        requireDraftAuthor(atencion, principal);
         if ("CONFIRMADO".equalsIgnoreCase(atencion.getEstado())) {
             throw new IllegalStateException(
                     "La atención clínica está confirmada y es inmutable. Para aplicar cambios debe generar una nueva versión de corrección.");
@@ -135,6 +173,9 @@ public class ClinicalAttentionService {
                     "La versión activa ya se encuentra confirmada y es inmutable. Genere una nueva versión de corrección.");
         }
 
+        if (dto.getRevision() == null || dto.getRevision().longValue() != version.getRevision()) {
+            throw new IllegalStateException("El borrador cambió desde que se abrió. Recargue antes de guardar para evitar sobrescribir cambios.");
+        }
         version.setMotivoConsulta(dto.getMotivoConsulta());
         version.setExamenClinico(dto.getExamenClinico());
         version.setDiagnostico(dto.getDiagnostico());
@@ -145,10 +186,10 @@ public class ClinicalAttentionService {
         version.setEvolucion(dto.getEvolucion());
         version.setProximaCitaSugerida(dto.getProximaCitaSugerida());
         version.setSignosVitales(dto.getSignosVitales());
-        version.setTextoPendienteRevision(dto.getTextoPendienteRevision());
+        if (dto.getTextoPendienteRevision() != null) version.setTextoPendienteRevision(dto.getTextoPendienteRevision());
         version.setFechaRegistro(OffsetDateTime.now());
 
-        versionAtencionClinicaRepository.save(version);
+        versionAtencionClinicaRepository.saveAndFlush(version);
 
         return mapToEncounterDto(atencion);
     }
@@ -163,9 +204,10 @@ public class ClinicalAttentionService {
     public ClinicalEncounterResponseDto confirmVersion(Long atencionId, ConfirmVersionDto dto) {
         UserPrincipal principal = requireAuthorizedOdontologist();
 
-        AtencionClinica atencion = atencionClinicaRepository.findByIdAndClinicaId(atencionId, principal.getClinicaId())
+        AtencionClinica atencion = atencionClinicaRepository.findLockedByIdAndClinicaId(atencionId, principal.getClinicaId())
                 .orElseThrow(() -> new NoSuchElementException("Atención clínica no encontrada con ID: " + atencionId));
 
+        requireDraftAuthor(atencion, principal);
         VersionAtencionClinica version;
         if (dto != null && dto.getVersionId() != null) {
             version = versionAtencionClinicaRepository
@@ -182,9 +224,7 @@ public class ClinicalAttentionService {
                     .orElseThrow(() -> new NoSuchElementException("No se encontró la versión número "
                             + dto.getNumeroVersion() + " para la atención ID: " + atencionId));
         } else {
-            version = versionAtencionClinicaRepository.findTopByAtencionClinicaIdOrderByNumeroVersionDesc(atencionId)
-                    .orElseThrow(() -> new NoSuchElementException(
-                            "No se encontraron versiones para la atención ID: " + atencionId));
+            throw new IllegalArgumentException("Indique la versión exacta que desea firmar");
         }
 
         // Idempotencia frente a reintento
@@ -192,19 +232,38 @@ public class ClinicalAttentionService {
             return mapToEncounterDto(atencion);
         }
 
+        VersionAtencionClinica current = versionAtencionClinicaRepository
+                .findTopByAtencionClinicaIdOrderByNumeroVersionDesc(atencionId).orElseThrow();
+        if (!current.getId().equals(version.getId())) {
+            throw new IllegalStateException("La versión seleccionada ya no es la vigente. Actualice la historia clínica.");
+        }
+        if (dto.getRevision() == null || dto.getRevision().longValue() != version.getRevision()) {
+            throw new IllegalStateException("El contenido cambió desde su revisión. Recargue y revise la versión antes de firmar.");
+        }
+        validateSignature(version);
+        Appointment linked = null;
+        if (atencion.getCita() != null) {
+            linked = appointmentRepository.findLockedByIdAndClinicaId(atencion.getCita().getId(), principal.getClinicaId())
+                    .orElseThrow(() -> new NoSuchElementException("Cita no encontrada"));
+            requireAssignedDoctor(linked, principal);
+            if (!(version.getNumeroVersion() > 1 && "FINALIZADA".equals(linked.getEstado()))) {
+                AppointmentTransitions.requireTransition(linked.getEstado(), "FINALIZADA");
+            }
+        }
+
         OffsetDateTime now = OffsetDateTime.now();
         version.setEstaConfirmado(true);
         version.setFirmadoPor(principal.getMembership());
         version.setFechaConfirmacion(now);
-        versionAtencionClinicaRepository.save(version);
+        versionAtencionClinicaRepository.saveAndFlush(version);
 
         atencion.setEstado("CONFIRMADO");
         atencion.setFechaConfirmacion(now);
         atencionClinicaRepository.save(atencion);
 
         // nuevo: Sincronización automatica de la cita vinculada
-        if (atencion.getCita() != null) {
-            Appointment cita = atencion.getCita();
+        if (linked != null && !"FINALIZADA".equals(linked.getEstado())) {
+            Appointment cita = linked;
             cita.setEstado("FINALIZADA");
             cita.setEstadoAsistencia("ASISTIO");
             appointmentRepository.save(cita);
@@ -221,8 +280,10 @@ public class ClinicalAttentionService {
     public ClinicalEncounterResponseDto createCorrectionVersion(Long atencionId, CreateClinicalVersionDto dto) {
         UserPrincipal principal = requireAuthorizedOdontologist();
 
-        AtencionClinica atencion = atencionClinicaRepository.findByIdAndClinicaId(atencionId, principal.getClinicaId())
+        AtencionClinica atencion = atencionClinicaRepository.findLockedByIdAndClinicaId(atencionId, principal.getClinicaId())
                 .orElseThrow(() -> new NoSuchElementException("Atención clínica no encontrada con ID: " + atencionId));
+
+        requireDraftAuthor(atencion, principal);
 
         VersionAtencionClinica previousVersion = versionAtencionClinicaRepository
                 .findTopByAtencionClinicaIdOrderByNumeroVersionDesc(atencionId)
@@ -264,6 +325,7 @@ public class ClinicalAttentionService {
                 : previousVersion.getTextoPendienteRevision());
 
         if (Boolean.TRUE.equals(dto.getConfirmarInmediatamente())) {
+            validateSignature(newVersion);
             OffsetDateTime now = OffsetDateTime.now();
             newVersion.setEstaConfirmado(true);
             newVersion.setFirmadoPor(principal.getMembership());
@@ -385,6 +447,7 @@ public class ClinicalAttentionService {
     private ClinicalVersionResponseDto mapToVersionDto(VersionAtencionClinica v) {
         ClinicalVersionResponseDto dto = new ClinicalVersionResponseDto();
         dto.setId(v.getId());
+        dto.setRevision(v.getRevision());
         dto.setClinicaId(v.getClinica().getId());
         dto.setAtencionClinicaId(v.getAtencionClinica().getId());
         dto.setVersionAnteriorId(v.getVersionAnterior() != null ? v.getVersionAnterior().getId() : null);

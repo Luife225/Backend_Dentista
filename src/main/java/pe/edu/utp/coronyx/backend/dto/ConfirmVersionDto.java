@@ -1,6 +1,10 @@
 package pe.edu.utp.coronyx.backend.dto;
 
 public class ConfirmVersionDto {
+    private Long revision;
+    public Long getRevision() { return revision; }
+    public void setRevision(Long revision) { this.revision = revision; }
+
 
     private Long versionId;
     private Integer numeroVersion;

@@ -51,6 +51,11 @@ public class Attachment {
     @Column(name = "tipo_archivo", nullable = false, length = 24)
     private String tipoArchivo;
 
+    @Column(name = "ambito", nullable = false, length = 20)
+    private String ambito = "CLINICO";
+    public String getAmbito() { return ambito; }
+    public void setAmbito(String ambito) { this.ambito = ambito; }
+
     @NotBlank
     @Size(max = 500)
     @Column(name = "clave_almacenamiento", nullable = false, unique = true, length = 500)

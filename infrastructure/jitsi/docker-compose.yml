@@ -1,0 +1,94 @@
+version: '3.8'
+
+services:
+  web:
+    image: jitsi/web:stable-9457
+    restart: ${RESTART_POLICY:-unless-stopped}
+    ports:
+      - "${HTTP_PORT:-8080}:80"
+      - "${HTTPS_PORT:-8443}:443"
+    volumes:
+      - ${CONFIG:-./jitsi-config}/web:/config:Z
+      - ${CONFIG:-./jitsi-config}/web/crontabs:/var/spool/cron/crontabs:Z
+      - ${CONFIG:-./jitsi-config}/transcripts:/usr/share/jitsi-meet/transcripts:Z
+    environment:
+      - ENABLE_AUTH=${ENABLE_AUTH:-1}
+      - ENABLE_GUESTS=${ENABLE_GUESTS:-0}
+      - AUTH_TYPE=${AUTH_TYPE:-jwt}
+      - JWT_APP_ID=${JWT_APP_ID:-coronyx-telemed}
+      - PUBLIC_URL=${PUBLIC_URL:-https://localhost:8443}
+      - XMPP_DOMAIN=meet.jitsi
+      - XMPP_AUTH_DOMAIN=auth.meet.jitsi
+      - XMPP_BOSH_URL_BASE=http://prosody:5280
+      - XMPP_MUC_DOMAIN=muc.meet.jitsi
+      - TZ=${TZ:-America/Lima}
+    networks:
+      meet.jitsi:
+
+  prosody:
+    image: jitsi/prosody:stable-9457
+    restart: ${RESTART_POLICY:-unless-stopped}
+    expose:
+      - '5222'
+      - '5347'
+      - '5280'
+    volumes:
+      - ${CONFIG:-./jitsi-config}/prosody/config:/config:Z
+      - ${CONFIG:-./jitsi-config}/prosody/prosody-plugins-custom:/prosody-plugins-custom:Z
+    environment:
+      - AUTH_TYPE=${AUTH_TYPE:-jwt}
+      - ENABLE_AUTH=${ENABLE_AUTH:-1}
+      - ENABLE_GUESTS=${ENABLE_GUESTS:-0}
+      - JWT_APP_ID=${JWT_APP_ID:-coronyx-telemed}
+      - JWT_APP_SECRET=${JWT_APP_SECRET:-coronyx-dental-system-secret-key-2026-super-secure-token-jwt-utp-platform}
+      - JWT_ACCEPTED_ISSUERS=${JWT_ACCEPTED_ISSUERS:-coronyx-telemed}
+      - JWT_ACCEPTED_AUDIENCES=${JWT_ACCEPTED_AUDIENCES:-jitsi}
+      - XMPP_DOMAIN=meet.jitsi
+      - XMPP_AUTH_DOMAIN=auth.meet.jitsi
+      - XMPP_MUC_DOMAIN=muc.meet.jitsi
+      - XMPP_INTERNAL_MUC_DOMAIN=internal-muc.meet.jitsi
+      - XMPP_MODULES=token_verification
+      - TZ=${TZ:-America/Lima}
+    networks:
+      meet.jitsi:
+        aliases:
+          - meet.jitsi
+
+  jicofo:
+    image: jitsi/jicofo:stable-9457
+    restart: ${RESTART_POLICY:-unless-stopped}
+    volumes:
+      - ${CONFIG:-./jitsi-config}/jicofo:/config:Z
+    environment:
+      - AUTH_TYPE=${AUTH_TYPE:-jwt}
+      - ENABLE_AUTH=${ENABLE_AUTH:-1}
+      - XMPP_DOMAIN=meet.jitsi
+      - XMPP_AUTH_DOMAIN=auth.meet.jitsi
+      - XMPP_INTERNAL_MUC_DOMAIN=internal-muc.meet.jitsi
+      - XMPP_SERVER=prosody
+      - TZ=${TZ:-America/Lima}
+    depends_on:
+      - prosody
+    networks:
+      meet.jitsi:
+
+  jvb:
+    image: jitsi/jvb:stable-9457
+    restart: ${RESTART_POLICY:-unless-stopped}
+    ports:
+      - "10000:10000/udp"
+    volumes:
+      - ${CONFIG:-./jitsi-config}/jvb:/config:Z
+    environment:
+      - DOCKER_HOST_ADDRESS=127.0.0.1
+      - XMPP_AUTH_DOMAIN=auth.meet.jitsi
+      - XMPP_INTERNAL_MUC_DOMAIN=internal-muc.meet.jitsi
+      - XMPP_SERVER=prosody
+      - TZ=${TZ:-America/Lima}
+    depends_on:
+      - prosody
+    networks:
+      meet.jitsi:
+
+networks:
+  meet.jitsi:

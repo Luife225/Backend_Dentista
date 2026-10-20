@@ -1,0 +1,442 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "titulo": "Manifiesto de Carga Controlada para Presentación Coronyx Dental (R2)",
+  "caso_clinico": "CARIES_Y_RESTAURACIONES",
+  "version_plan": "Revisión 2 - Sin brackets, base de datos actual del backend",
+  "fecha_real_carga": "2026-10-10T23:25:00-05:00",
+  "zona_horaria": "America/Lima",
+  "nota_timestamps": "Las marcas de tiempo de citas, atenciones y odontogramas son sintéticas históricas y futuras respetando la cronología clínica; la fecha real de ejecución y validación es 2026-10-10.",
+  "entorno_destino": {
+    "motor": "PostgreSQL 18.0",
+    "base_datos": "coronyx",
+    "host": "localhost:5432",
+    "usuario": "akise",
+    "migraciones_flyway": "V1..V10 aplicadas exitosamente en flyway_schema_history",
+    "mecanismo_carga": "Transacción atómica con guardias de seguridad, sin DROP DATABASE ni DROP SCHEMA"
+  },
+  "respaldos_y_seguridad": {
+    "backup_bd_sql": "Planificacion_CORONYX/Privado_Presentacion/backup_coronyx_pre_demo.sql",
+    "backup_bd_sha256": "C120CC392E746373E75254333A0D75CE4082F4E2336EC41F34ABD321548E5C81",
+    "backup_storage_dir": "Planificacion_CORONYX/Privado_Presentacion/storage_backup/",
+    "backup_storage_hashes": "Planificacion_CORONYX/Privado_Presentacion/storage_backup_hashes.txt",
+    "archivo_storage_unreferenced": "Planificacion_CORONYX/Privado_Presentacion/storage_archived_pre_demo/",
+    "credenciales_privadas": "Planificacion_CORONYX/Privado_Presentacion/CREDENCIALES_DEMO.md",
+    "nota_secretos": "Sin contraseñas en texto claro en repositorios públicos, git, logs ni Postman"
+  },
+  "conteos_verificados": {
+    "clinica": 1,
+    "usuario": 9,
+    "usuario_clinica": 9,
+    "paciente": 5,
+    "cita": 11,
+    "citas_historicas": 6,
+    "citas_futuras": 5,
+    "atencion_clinica": 6,
+    "version_atencion_clinica": 6,
+    "version_odontograma": 6,
+    "hallazgo_odontograma": 9,
+    "super_admin": 0
+  },
+  "clinica": {
+    "id": "1",
+    "nombre": "Sede Central Coronyx",
+    "razon_social": "Coronyx Dental System S.A.C.",
+    "ruc": "20601234567",
+    "telefono": "+51 1 456 7890",
+    "correo": "contacto@coronyx.pe",
+    "direccion": "Av. Javier Prado Este 2465, San Borja, Lima"
+  },
+  "cuentas_usuarios": [
+    {
+      "usuario_id": "1",
+      "usuario_clinica_id": "1",
+      "rol": "ADMIN_CLINICA",
+      "rol_id": "1",
+      "nombres": "Elena",
+      "apellidos": "Demo",
+      "correo": "admin@coronyx-demo.example",
+      "estado": "ACTIVO",
+      "expediente_paciente_id": null
+    },
+    {
+      "usuario_id": "2",
+      "usuario_clinica_id": "2",
+      "rol": "ODONTOLOGO",
+      "rol_id": "2",
+      "nombres": "Camila",
+      "apellidos": "Soto Demo",
+      "correo": "odontologo1@coronyx-demo.example",
+      "estado": "ACTIVO",
+      "expediente_paciente_id": null,
+      "rol_clinico": "Odontóloga tratante principal (P001 y P004)"
+    },
+    {
+      "usuario_id": "3",
+      "usuario_clinica_id": "3",
+      "rol": "ODONTOLOGO",
+      "rol_id": "2",
+      "nombres": "Andrés",
+      "apellidos": "Vega Demo",
+      "correo": "odontologo2@coronyx-demo.example",
+      "estado": "ACTIVO",
+      "expediente_paciente_id": null,
+      "rol_clinico": "Odontólogo tratante (P002, P003 y P005)"
+    },
+    {
+      "usuario_id": "4",
+      "usuario_clinica_id": "4",
+      "rol": "RECEPCIONISTA",
+      "rol_id": "3",
+      "nombres": "Rosa",
+      "apellidos": "Demo",
+      "correo": "recepcion@coronyx-demo.example",
+      "estado": "ACTIVO",
+      "expediente_paciente_id": null,
+      "rol_operativo": "Gestión de agenda y citas"
+    },
+    {
+      "usuario_id": "5",
+      "usuario_clinica_id": "5",
+      "rol": "PACIENTE",
+      "rol_id": "4",
+      "nombres": "Marina",
+      "apellidos": "Ríos Demo",
+      "correo": "paciente1@coronyx-demo.example",
+      "estado": "ACTIVO",
+      "expediente_paciente_id": "1",
+      "documento": "DNI 71234501"
+    },
+    {
+      "usuario_id": "6",
+      "usuario_clinica_id": "6",
+      "rol": "PACIENTE",
+      "rol_id": "4",
+      "nombres": "Diego",
+      "apellidos": "Torres Demo",
+      "correo": "paciente2@coronyx-demo.example",
+      "estado": "ACTIVO",
+      "expediente_paciente_id": "2",
+      "documento": "DNI 71234502"
+    },
+    {
+      "usuario_id": "7",
+      "usuario_clinica_id": "7",
+      "rol": "PACIENTE",
+      "rol_id": "4",
+      "nombres": "Lucía",
+      "apellidos": "Paredes Demo",
+      "correo": "paciente3@coronyx-demo.example",
+      "estado": "ACTIVO",
+      "expediente_paciente_id": "3",
+      "documento": "DNI 71234503"
+    },
+    {
+      "usuario_id": "8",
+      "usuario_clinica_id": "8",
+      "rol": "PACIENTE",
+      "rol_id": "4",
+      "nombres": "Nadia",
+      "apellidos": "Solís Demo",
+      "correo": "paciente4@coronyx-demo.example",
+      "estado": "ACTIVO",
+      "expediente_paciente_id": "4",
+      "documento": "DNI 71234504"
+    },
+    {
+      "usuario_id": "9",
+      "usuario_clinica_id": "9",
+      "rol": "PACIENTE",
+      "rol_id": "4",
+      "nombres": "Mateo",
+      "apellidos": "Luna Demo",
+      "correo": "paciente5@coronyx-demo.example",
+      "estado": "ACTIVO",
+      "expediente_paciente_id": "5",
+      "documento": "DNI 71234505"
+    }
+  ],
+  "historial_clinico_p001": {
+    "paciente": {
+      "paciente_id": "1",
+      "usuario_id": "5",
+      "nombre_completo": "Marina Ríos Demo"
+    },
+    "odontologo_tratante": {
+      "usuario_clinica_id": "2",
+      "usuario_id": "2",
+      "nombre": "Dra. Camila Soto Demo"
+    },
+    "visitas": [
+      {
+        "visita_numero": 1,
+        "fecha": "2026-08-03",
+        "horario": "09:00 - 10:00 Lima",
+        "cita": {
+          "id": "1",
+          "estado": "FINALIZADA",
+          "estado_asistencia": "ASISTIO",
+          "modalidad": "PRESENCIAL",
+          "consultorio": "Sillón 1",
+          "creado_por_usuario_clinica_id": "4",
+          "fecha_creacion": "2026-07-28T14:30:00-05:00"
+        },
+        "atencion_clinica": {
+          "id": "1",
+          "estado": "CONFIRMADO",
+          "fecha_creacion": "2026-08-03T09:10:00-05:00",
+          "fecha_confirmacion": "2026-08-03T09:55:00-05:00"
+        },
+        "version_atencion_clinica": {
+          "id": "1",
+          "numero_version": 1,
+          "firmado_por_usuario_clinica_id": "2",
+          "esta_confirmado": true,
+          "motivo_consulta": "Dolor intermitente a la masticación en zona posterior superior derecha e izquierda.",
+          "diagnostico": "K02.1 Caries de la dentina en piezas 16 y 26 (caras oclusales).",
+          "fecha_registro": "2026-08-03T09:12:00-05:00",
+          "fecha_confirmacion": "2026-08-03T09:55:00-05:00"
+        },
+        "version_odontograma": {
+          "id": "1",
+          "numero_version": 1,
+          "firmado_por_usuario_clinica_id": "2",
+          "estado": "CONFIRMADO",
+          "fecha_creacion": "2026-08-03T09:15:00-05:00",
+          "fecha_confirmacion": "2026-08-03T09:50:00-05:00",
+          "hallazgos": [
+            { "id": "1", "pieza": "16", "superficie": "OCLUSAL", "condicion": "CARIES", "nota": "Caries oclusal media en esmalte y dentina" },
+            { "id": "2", "pieza": "26", "superficie": "OCLUSAL", "condicion": "CARIES", "nota": "Caries oclusal incipiente en fosas y fisuras" }
+          ]
+        }
+      },
+      {
+        "visita_numero": 2,
+        "fecha": "2026-08-17",
+        "horario": "09:00 - 10:00 Lima",
+        "cita": {
+          "id": "2",
+          "estado": "FINALIZADA",
+          "estado_asistencia": "ASISTIO",
+          "modalidad": "PRESENCIAL",
+          "consultorio": "Sillón 1",
+          "creado_por_usuario_clinica_id": "4",
+          "fecha_creacion": "2026-08-03T09:58:00-05:00"
+        },
+        "atencion_clinica": {
+          "id": "2",
+          "estado": "CONFIRMADO",
+          "fecha_creacion": "2026-08-17T09:05:00-05:00",
+          "fecha_confirmacion": "2026-08-17T09:50:00-05:00"
+        },
+        "version_atencion_clinica": {
+          "id": "2",
+          "numero_version": 1,
+          "firmado_por_usuario_clinica_id": "2",
+          "esta_confirmado": true,
+          "motivo_consulta": "Sesión programada para restauración de molar superior derecho 16.",
+          "diagnostico": "K02.1 Caries dentinaria tratada en pieza 16; caries oclusal activa en pieza 26.",
+          "fecha_registro": "2026-08-17T09:10:00-05:00",
+          "fecha_confirmacion": "2026-08-17T09:50:00-05:00"
+        },
+        "version_odontograma": {
+          "id": "2",
+          "numero_version": 2,
+          "version_anterior_id": "1",
+          "firmado_por_usuario_clinica_id": "2",
+          "estado": "CONFIRMADO",
+          "fecha_creacion": "2026-08-17T09:40:00-05:00",
+          "fecha_confirmacion": "2026-08-17T09:48:00-05:00",
+          "hallazgos": [
+            { "id": "3", "pieza": "16", "superficie": "OCLUSAL", "condicion": "RESTAURADO", "nota": "Resina compuesta nanohíbrida oclusal adaptada" },
+            { "id": "4", "pieza": "26", "superficie": "OCLUSAL", "condicion": "CARIES", "nota": "Caries oclusal pendiente de restauración" }
+          ]
+        }
+      },
+      {
+        "visita_numero": 3,
+        "fecha": "2026-09-07",
+        "horario": "09:00 - 10:00 Lima",
+        "cita": {
+          "id": "3",
+          "estado": "FINALIZADA",
+          "estado_asistencia": "ASISTIO",
+          "modalidad": "PRESENCIAL",
+          "consultorio": "Sillón 1",
+          "creado_por_usuario_clinica_id": "4",
+          "fecha_creacion": "2026-08-17T09:52:00-05:00"
+        },
+        "atencion_clinica": {
+          "id": "3",
+          "estado": "CONFIRMADO",
+          "fecha_creacion": "2026-09-07T09:05:00-05:00",
+          "fecha_confirmacion": "2026-09-07T09:52:00-05:00"
+        },
+        "version_atencion_clinica": {
+          "id": "3",
+          "numero_version": 1,
+          "firmado_por_usuario_clinica_id": "2",
+          "esta_confirmado": true,
+          "motivo_consulta": "Restauración programada de molar superior izquierdo 26.",
+          "diagnostico": "K02.1 Caries dentinaria tratada en pieza 26.",
+          "fecha_registro": "2026-09-07T09:10:00-05:00",
+          "fecha_confirmacion": "2026-09-07T09:52:00-05:00"
+        },
+        "version_odontograma": {
+          "id": "3",
+          "numero_version": 3,
+          "version_anterior_id": "2",
+          "firmado_por_usuario_clinica_id": "2",
+          "estado": "CONFIRMADO",
+          "fecha_creacion": "2026-09-07T09:42:00-05:00",
+          "fecha_confirmacion": "2026-09-07T09:50:00-05:00",
+          "hallazgos": [
+            { "id": "5", "pieza": "16", "superficie": "OCLUSAL", "condicion": "RESTAURADO", "nota": "Resina oclusal 16 en excelente estado" },
+            { "id": "6", "pieza": "26", "superficie": "OCLUSAL", "condicion": "RESTAURADO", "nota": "Resina compuesta oclusal 26 recién realizada" }
+          ]
+        }
+      },
+      {
+        "visita_numero": 4,
+        "fecha": "2026-09-21",
+        "horario": "09:00 - 10:00 Lima",
+        "cita": {
+          "id": "4",
+          "estado": "FINALIZADA",
+          "estado_asistencia": "ASISTIO",
+          "modalidad": "PRESENCIAL",
+          "consultorio": "Sillón 1",
+          "creado_por_usuario_clinica_id": "4",
+          "fecha_creacion": "2026-09-07T09:55:00-05:00"
+        },
+        "atencion_clinica": {
+          "id": "4",
+          "estado": "CONFIRMADO",
+          "fecha_creacion": "2026-09-21T09:08:00-05:00",
+          "fecha_confirmacion": "2026-09-21T09:45:00-05:00"
+        },
+        "version_atencion_clinica": {
+          "id": "4",
+          "numero_version": 1,
+          "firmado_por_usuario_clinica_id": "2",
+          "esta_confirmado": true,
+          "motivo_consulta": "Control clínico evolutivo de restauraciones molares.",
+          "diagnostico": "Z01.2 Examen odontológico de control y seguimiento post-restauración satisfactorio.",
+          "fecha_registro": "2026-09-21T09:12:00-05:00",
+          "fecha_confirmacion": "2026-09-21T09:45:00-05:00"
+        },
+        "version_odontograma": {
+          "id": "4",
+          "numero_version": 4,
+          "version_anterior_id": "3",
+          "firmado_por_usuario_clinica_id": "2",
+          "estado": "CONFIRMADO",
+          "fecha_creacion": "2026-09-21T09:30:00-05:00",
+          "fecha_confirmacion": "2026-09-21T09:42:00-05:00",
+          "hallazgos": [
+            { "id": "7", "pieza": "16", "superficie": "OCLUSAL", "condicion": "RESTAURADO", "nota": "Sellado marginal óptimo y asintomático" },
+            { "id": "8", "pieza": "26", "superficie": "OCLUSAL", "condicion": "RESTAURADO", "nota": "Sellado marginal óptimo y asintomático" }
+          ]
+        }
+      }
+    ]
+  },
+  "historial_otros_pacientes": [
+    {
+      "paciente_id": "2",
+      "paciente_nombre": "Diego Torres Demo",
+      "visita": {
+        "fecha": "2026-09-08",
+        "horario": "10:00 - 11:00 Lima",
+        "cita_id": "5",
+        "atencion_id": "5",
+        "version_atencion_id": "5",
+        "version_odontograma_id": "5",
+        "firmado_por_usuario_clinica_id": "3",
+        "hallazgos": [
+          { "id": "9", "pieza": "36", "superficie": "OCLUSAL", "condicion": "RESTAURADO", "nota": "Restauración oclusal con resina en primer molar inferior" }
+        ]
+      }
+    },
+    {
+      "paciente_id": "3",
+      "paciente_nombre": "Lucía Paredes Demo",
+      "visita": {
+        "fecha": "2026-09-15",
+        "horario": "11:00 - 12:00 Lima",
+        "cita_id": "6",
+        "atencion_id": "6",
+        "version_atencion_id": "6",
+        "version_odontograma_id": "6",
+        "firmado_por_usuario_clinica_id": "3",
+        "diagnostico": "Z01.2 Examen odontológico de rutina sin hallazgos patológicos activos. Profilaxis dental.",
+        "hallazgos": []
+      }
+    }
+  ],
+  "citas_futuras_sin_conflictos": [
+    {
+      "cita_id": "7",
+      "paciente_id": "1",
+      "paciente_nombre": "Marina Ríos Demo",
+      "odontologo_id": "2",
+      "odontologo_nombre": "Dra. Camila Soto Demo",
+      "inicio_en": "2026-10-13T10:00:00-05:00",
+      "fin_en": "2026-10-13T10:30:00-05:00",
+      "consultorio": "Sillón 1",
+      "estado": "CONFIRMADA",
+      "motivo": "Control semestral preventivo y revisión de restauraciones"
+    },
+    {
+      "cita_id": "8",
+      "paciente_id": "2",
+      "paciente_nombre": "Diego Torres Demo",
+      "odontologo_id": "3",
+      "odontologo_nombre": "Dr. Andrés Vega Demo",
+      "inicio_en": "2026-10-14T11:00:00-05:00",
+      "fin_en": "2026-10-14T11:30:00-05:00",
+      "consultorio": "Sillón 2",
+      "estado": "PROGRAMADA",
+      "motivo": "Control y seguimiento post-operatorio de pieza 36"
+    },
+    {
+      "cita_id": "9",
+      "paciente_id": "3",
+      "paciente_nombre": "Lucía Paredes Demo",
+      "odontologo_id": "3",
+      "odontologo_nombre": "Dr. Andrés Vega Demo",
+      "inicio_en": "2026-10-15T11:00:00-05:00",
+      "fin_en": "2026-10-15T11:30:00-05:00",
+      "consultorio": "Sillón 2",
+      "estado": "CONFIRMADA",
+      "motivo": "Seguimiento semestral programado y control gingival"
+    },
+    {
+      "cita_id": "10",
+      "paciente_id": "4",
+      "paciente_nombre": "Nadia Solís Demo",
+      "odontologo_id": "2",
+      "odontologo_nombre": "Dra. Camila Soto Demo",
+      "inicio_en": "2026-10-16T10:00:00-05:00",
+      "fin_en": "2026-10-16T10:30:00-05:00",
+      "consultorio": "Sillón 1",
+      "estado": "PROGRAMADA",
+      "motivo": "Consulta inicial de diagnóstico integral y plan de tratamiento"
+    },
+    {
+      "cita_id": "11",
+      "paciente_id": "5",
+      "paciente_nombre": "Mateo Luna Demo",
+      "odontologo_id": "3",
+      "odontologo_nombre": "Dr. Andrés Vega Demo",
+      "inicio_en": "2026-10-19T11:30:00-05:00",
+      "fin_en": "2026-10-19T12:00:00-05:00",
+      "consultorio": "Sillón 2",
+      "estado": "PROGRAMADA",
+      "motivo": "Evaluación clínica general de primera visita y profilaxis"
+    }
+  ],
+  "entregables_pendientes": {
+    "adjuntos": "paquete de 5 PDF/2 PNG y publicación pendientes de Codex/petición 2",
+    "git": "Sin commit/push/deploy en esta petición por instrucción expresa"
+  }
+}

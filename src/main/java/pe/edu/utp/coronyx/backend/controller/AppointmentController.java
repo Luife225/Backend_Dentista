@@ -18,9 +18,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/citas")
-@CrossOrigin(origins = "*", allowedHeaders = "*", methods = {
-        RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.PATCH, RequestMethod.DELETE, RequestMethod.OPTIONS
-})
 public class AppointmentController {
 
     private final AppointmentService appointmentService;

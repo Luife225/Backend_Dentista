@@ -4,11 +4,14 @@ import java.time.OffsetDateTime;
 
 public class ClinicalVersionResponseDto {
 
-    private Long id;
-    private Long clinicaId;
-    private Long atencionClinicaId;
-    private Long versionAnteriorId;
-    private Long firmadoPorId;
+    private String id;
+    private String revision;
+    public String getRevision() { return revision; }
+    public void setRevision(long revision) { this.revision = Long.toString(revision); }
+    private String clinicaId;
+    private String atencionClinicaId;
+    private String versionAnteriorId;
+    private String firmadoPorId;
     private String firmadoPorNombre;
     private Integer numeroVersion;
     private String motivoConsulta;
@@ -29,44 +32,44 @@ public class ClinicalVersionResponseDto {
     public ClinicalVersionResponseDto() {
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
     public void setId(Long id) {
-        this.id = id;
+        this.id = id == null ? null : id.toString();
     }
 
-    public Long getClinicaId() {
+    public String getClinicaId() {
         return clinicaId;
     }
 
     public void setClinicaId(Long clinicaId) {
-        this.clinicaId = clinicaId;
+        this.clinicaId = clinicaId == null ? null : clinicaId.toString();
     }
 
-    public Long getAtencionClinicaId() {
+    public String getAtencionClinicaId() {
         return atencionClinicaId;
     }
 
     public void setAtencionClinicaId(Long atencionClinicaId) {
-        this.atencionClinicaId = atencionClinicaId;
+        this.atencionClinicaId = atencionClinicaId == null ? null : atencionClinicaId.toString();
     }
 
-    public Long getVersionAnteriorId() {
+    public String getVersionAnteriorId() {
         return versionAnteriorId;
     }
 
     public void setVersionAnteriorId(Long versionAnteriorId) {
-        this.versionAnteriorId = versionAnteriorId;
+        this.versionAnteriorId = versionAnteriorId == null ? null : versionAnteriorId.toString();
     }
 
-    public Long getFirmadoPorId() {
+    public String getFirmadoPorId() {
         return firmadoPorId;
     }
 
     public void setFirmadoPorId(Long firmadoPorId) {
-        this.firmadoPorId = firmadoPorId;
+        this.firmadoPorId = firmadoPorId == null ? null : firmadoPorId.toString();
     }
 
     public String getFirmadoPorNombre() {
