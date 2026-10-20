@@ -107,6 +107,15 @@ class CoroVozTest {
         assertNull(correction.proposal());
     }
 
+    @Test void selectedToothContextIsValidatedBeforeAClinicalProposal() {
+        var proposal = parser.parse("Ahora registra caries en ese diente", 14);
+        assertTrue(proposal.understood(), proposal.message());
+        assertEquals(14, proposal.proposal().piece());
+        assertEquals("CARIES", proposal.proposal().condition());
+        assertNull(parser.parse("caries en ese diente").proposal());
+        assertNull(parser.parse("caries en ese diente", 2).proposal());
+    }
+
     @Test void rejectsAmbiguityInvalidTeethNegationsAndDeletion() {
         for (String text : new String[]{"caries en 14 y 15", "corona en 99", "caries sin pieza", "no hay caries en 14", "caries y corona en 14", "caries en 14 mesial y distal", "elimina caries en 14", "necesita corona en 14", "caries en 14 cara incisal", "caries profunda en 14", "caries en 14 superficie rara"}) {
             var result = parser.parse(text);

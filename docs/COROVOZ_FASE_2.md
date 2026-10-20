@@ -12,6 +12,7 @@
 - El detector de actividad ajusta el umbral al ruido de fondo y a la intensidad de la frase. El modo automático espera 3,5 segundos desde la última actividad vocal detectada; el modo manual solo envía al pulsar «Terminé». Durante transcripción y respuesta hablada se descarta la captura para evitar eco y duplicados.
 - El servicio de pacientes reconoce más formas de preguntar por próximas citas y búsquedas por nombre, y sigue resolviendo la identidad con los servicios autorizados. Si hay varias coincidencias, pide elegir una. No se amplió el acceso a historia clínica.
 - «Selecciona el catorce» y «No, no era el catorce, era el trece» devuelven una pieza validada, sin propuesta clínica. Cuando hay una propuesta pendiente, la corrección exige que la pieza anterior coincida y sigue requiriendo confirmación antes de agregarla al borrador.
+- «Caries en ese diente» usa la pieza seleccionada del odontograma activo, solo si es FDI válida. Sin una selección pide el número; el contexto se invalida al cambiar de paciente o versión.
 - Se simplificaron los estados y errores visibles de CoroVoz. El texto de ayuda sobre voz describe el uso del producto sin exponer detalles de implementación.
 
 ## Arquitectura y límites

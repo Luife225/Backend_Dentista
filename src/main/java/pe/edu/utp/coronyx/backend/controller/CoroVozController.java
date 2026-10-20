@@ -26,8 +26,9 @@ public class CoroVozController {
     }
 
     public record Prompt(@NotBlank @Size(max = 600) String text,
-                         @Pattern(regexp = "[1-9][0-9]{0,17}") String patientId) {
-        public Prompt(String text) { this(text, null); }
+                         @Pattern(regexp = "[1-9][0-9]{0,17}") String patientId,
+                         Integer contextPiece) {
+        public Prompt(String text) { this(text, null, null); }
     }
 
     @PostMapping("/general")
@@ -42,7 +43,7 @@ public class CoroVozController {
     public DentalCommandParser.Result interpret(@Valid @RequestBody Prompt prompt,
             @AuthenticationPrincipal UserPrincipal principal) {
         requireRole(principal, "ODONTOLOGO");
-        return parser.parse(prompt.text());
+        return parser.parse(prompt.text(), prompt.contextPiece());
     }
 
     private void requireRole(UserPrincipal principal, String... roles) {

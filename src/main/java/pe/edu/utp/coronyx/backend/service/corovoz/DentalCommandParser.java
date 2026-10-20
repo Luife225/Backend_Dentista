@@ -43,13 +43,20 @@ public class DentalCommandParser {
         }
     }
 
-    public Result parse(String input) {
+    public Result parse(String input) { return parse(input, null); }
+
+    public Result parse(String input, Integer contextPiece) {
         if (input == null || input.isBlank() || input.length() > 600) return unclear("Escribe o dicta una pieza y su condición.");
         String[] parts = input.split("(?iu)\\b(?:observaci[oó]n|nota)\\s*:?\\s*", 2);
         String command = IntentClassifier.plain(parts[0]);
         // Normalizaciones de segmentación observadas al dictar; no infieren condiciones.
         command = command.replaceAll("\\bempieza(?: a)?\\b", "en pieza")
                 .replaceAll("\\bcar[ao]\\s*oclusal\\b", "cara oclusal");
+        if (Pattern.compile("\\b(?:ese|esa|este|esta) (?:diente|pieza)(?: dental)?\\b").matcher(command).find()) {
+            if (contextPiece == null || !TEETH.contains(contextPiece))
+                return unclear("¿A qué pieza te refieres? Selecciónala o indica su número FDI.");
+            command = command.replaceAll("\\b(?:ese|esa|este|esta) (?:diente|pieza)(?: dental)?\\b", "pieza " + contextPiece);
+        }
         String note = parts.length > 1 ? parts[1].trim() : "";
         if (note.length() > 300) return unclear("La observación puede tener hasta 300 caracteres.");
         for (var number : NUMBERS.entrySet()) command = command.replaceAll("\\b" + number.getKey() + "\\b", number.getValue());
@@ -88,7 +95,7 @@ public class DentalCommandParser {
         String remainder = command;
         for (String aliases : CONDITIONS.values()) remainder = remainder.replaceAll("\\b(?:" + aliases + ")\\b", " ");
         for (String aliases : SURFACES.values()) remainder = remainder.replaceAll("\\b(?:" + aliases + ")\\b", " ");
-        remainder = remainder.replaceAll("\\b(?:\\d+|pieza|dental|diente|numero|en|el|la|cara|superficie|con|un|una|de|del|al|a|coro|voz|corovoz|registrar|registra|marcar|marca|agregar|agrega|poner|tiene|presenta|hay|por|favor|odontograma)\\b", " ").trim();
+        remainder = remainder.replaceAll("\\b(?:\\d+|pieza|dental|diente|numero|en|el|la|cara|superficie|con|un|una|de|del|al|a|coro|voz|corovoz|registrar|registra|marcar|marca|agregar|agrega|poner|tiene|presenta|hay|por|favor|odontograma|ahora)\\b", " ").trim();
         if (!remainder.isBlank()) return unclear("Hay palabras que no pude interpretar. Usa pieza, condición y una cara válida; agrega detalles después de «observación».");
         if (piece == null || conditions.isEmpty()) {
             if (piece == null && conditions.isEmpty() && surfaces.isEmpty()) return unclear("Indica la pieza y su condición.");
