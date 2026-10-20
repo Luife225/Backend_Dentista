@@ -1,0 +1,57 @@
+# Preguntas de evaluación separadas de training.tsv; nunca se entrenan con este archivo.
+CORONYX|Me explicas qué es Coronix
+CORONYX|Para qué utilizaría Coronyx en mi consultorio
+COROVOZ|Qué es CoroVoz y qué hace
+COROVOZ|Cuál es la función del asistente
+SALUDO|Hola buenas tardes
+CITA_NUEVA|Quisiera reservar una consulta para mañana
+CITA_NUEVA|Cómo puedo hacer una cita nueva
+CITA_CAMBIO|Necesito mover la cita a otra fecha
+CITA_CAMBIO|Cómo se anula una cita
+CITA_ASISTENCIA|Dónde marco que un paciente no vino
+CITA_ASISTENCIA|Qué significa NO_SHOW en la asistencia
+CITA_SOLICITUD|Quién resuelve las solicitudes pendientes de cambio
+CITA_HORARIO|No me aparece ningún horario disponible para reservar
+AGENDA_FILTROS|Quiero ver el calendario de un doctor
+PACIENTE_NUEVO|Dónde doy de alta un paciente nuevo
+PACIENTE_BUSCAR|Necesito encontrar la ficha de una persona
+PACIENTE_EDITAR|Dónde puedo corregir el correo de un paciente
+PACIENTE_INACTIVO|Cómo encuentro los pacientes que están inactivos
+PACIENTE_INACTIVO|Puedo buscar una ficha archivada
+PACIENTE_CUENTA|Cómo se asocia una cuenta al expediente
+PACIENTE_DOCUMENTO|Me rechaza el documento porque ya está registrado
+PACIENTE_CONSULTA|Qué información de los pacientes sabes consultar
+ODONTOGRAMA|Cómo entro al odontograma de una persona
+ODONTOGRAMA_GUARDAR|Por qué no puedo cambiar una versión confirmada del odontograma
+ODONTOGRAMA_CARAS|Qué numeración dental usa el odontograma
+VOZ_COMANDOS|Dime las palabras para controlar CoroVoz
+VOZ_MICROFONO|No me escucha el micrófono de Brave
+VOZ_PAUSAS|Necesito que espere más antes de responder al dictado
+VOZ_MODELO|Hay que pagar por cada audio de CoroVoz
+HISTORIA|Cómo consulto la historia clínica de una persona
+HISTORIA_VERSION|Cómo creo otra versión de una atención confirmada
+DOCUMENTOS|Cómo adjunto un documento en la ficha
+DOCUMENTO_VISIBILIDAD|Cómo hago que el paciente vea su archivo
+RADIOGRAFIAS|En qué pestaña puedo subir una radiografía
+NOTIFICACIONES|Dónde reviso los avisos que no he leído
+DASHBOARD|Dónde encuentro un resumen de indicadores
+INVENTARIO|Cómo reviso materiales con existencias bajas
+CAJA|Cómo puedo consultar ingresos y egresos
+TELEODONTOLOGIA|Dónde inicio una consulta virtual
+USUARIOS_INACTIVOS|Cómo veo usuarios que se encuentran inactivos
+USUARIOS_CREAR|Cómo doy acceso a una nueva recepcionista
+USUARIOS_ESTADO|Cómo se reactiva una cuenta deshabilitada
+ROLES|Cuáles son los permisos de cada tipo de usuario
+CLINICA_CONFIG|Dónde actualiza el administrador los datos del consultorio
+HORARIOS_CONFIG|Necesito registrar vacaciones de un odontólogo
+INTEGRACIONES|Dónde se revisa si están conectados los proveedores externos
+ACCESO|No logro ingresar porque mi sesión expiró
+PERMISO_DENEGADO|Me aparece sin acceso al entrar a un módulo
+CONEXION|Me sale not found cuando pregunto al asistente
+GUARDADO_ERROR|Qué hago cuando mis cambios no quedan guardados
+CERRAR_SESION|Quiero salir y entrar con otra cuenta
+UNKNOWN|Qué medicamento tomo para una infección dental
+UNKNOWN|Va a llover el próximo fin de semana
+UNKNOWN|Haz un diagnóstico de esta radiografía
+UNKNOWN|Escribe un poema sobre la luna
+UNKNOWN|asdasdf xyz

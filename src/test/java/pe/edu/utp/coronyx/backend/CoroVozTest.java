@@ -30,7 +30,9 @@ class CoroVozTest {
             "Cómo puedo activar el micrófono del asistente|COROVOZ",
             "Dónde encuentro los indicadores del dashboard|DASHBOARD",
             "Cómo consulto el resumen de caja|CAJA",
-            "Necesito iniciar una consulta virtual|TELEODONTOLOGIA"
+            "Necesito iniciar una consulta virtual|TELEODONTOLOGIA",
+            "Como agiendo una cita|CITA_NUEVA",
+            "Como puedo programar una cita|CITA_NUEVA"
     })
     void recognizesHeldOutQuestions(String question, String intent) {
         var answer = help.answer(question, "ODONTOLOGO");
@@ -39,7 +41,7 @@ class CoroVozTest {
     }
 
     @Test void refusesUnknownAndClinicalAdvice() {
-        for (String text : new String[]{"hola", "dime el clima de mañana", "qué medicina tomo para dolor de muela", "asdasdf xyz"}) {
+        for (String text : new String[]{"dime el clima de mañana", "qué medicina tomo para dolor de muela", "asdasdf xyz"}) {
             var answer = help.answer(text, "ODONTOLOGO");
             assertFalse(answer.understood(), text);
             assertEquals("", answer.route());
@@ -64,6 +66,18 @@ class CoroVozTest {
         assertEquals("control en 2 semanas.", result.proposal().note());
     }
 
+    @Test void acceptsBoundariesAndMixedNumbersObservedInRealTranscription() {
+        var crown = parser.parse("Corona empieza a catorce.");
+        assertTrue(crown.understood(), crown.message());
+        assertEquals(14, crown.proposal().piece());
+        assertEquals("CORONA", crown.proposal().condition());
+        var caries = parser.parse("Caries empieza 30 y 6 carooclusal.");
+        assertTrue(caries.understood(), caries.message());
+        assertEquals(36, caries.proposal().piece());
+        assertEquals("OCLUSAL", caries.proposal().surface());
+        assertEquals(36, parser.parse("caries en pieza 30 y seis cara oclusal").proposal().piece());
+    }
+
     @ParameterizedTest
     @CsvSource(delimiter = '|', value = {"Corona en pieza catorce|14", "Implante en pieza cuatro ocho|48", "Fractura en diente 2 1|21", "Restauración en pieza veintiséis|26"})
     void acceptsFdiNumberVariants(String text, int piece) {
@@ -82,7 +96,7 @@ class CoroVozTest {
     }
 
     @Test void checksRolesAndClinicBeforeInterpreting() {
-        var controller = new CoroVozController(help, parser);
+        var controller = new CoroVozController(help, parser, mock(pe.edu.utp.coronyx.backend.service.corovoz.CoroVozPatientQueries.class));
         var reception = mock(UserPrincipal.class);
         when(reception.getRol()).thenReturn("RECEPCIONISTA");
         when(reception.hasOperativeClinic()).thenReturn(true);

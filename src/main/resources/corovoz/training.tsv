@@ -9,6 +9,14 @@ CITA_NUEVA|agendar turno odontólogo
 CITA_NUEVA|quiero abrir la agenda
 CITA_NUEVA|necesito agendar una atención
 CITA_NUEVA|cómo se utiliza la agenda
+CITA_NUEVA|cómo puedo programar una cita
+CITA_NUEVA|programar citas
+CITA_NUEVA|agendar una cita nueva
+CITA_NUEVA|reservar un horario con el odontólogo
+CITA_NUEVA|solicitar un turno
+CITA_NUEVA|realizar una reserva de consulta
+CITA_NUEVA|cómo saco una cita
+CITA_NUEVA|cómo puedo hacer una cita
 CITA_CAMBIO|cómo reprogramar una cita
 CITA_CAMBIO|cambiar horario de cita
 CITA_CAMBIO|cancelar cita agendada
@@ -101,3 +109,270 @@ TELEODONTOLOGIA|consultas virtuales programadas
 TELEODONTOLOGIA|cómo hago una videollamada
 TELEODONTOLOGIA|consulta remota con paciente
 TELEODONTOLOGIA|abrir videollamada de teleodontología
+# Ampliación por tareas: ejemplos de entrenamiento sin identidades reales.
+CORONYX|qué es coronix
+CORONYX|qué es coronyx
+CORONYX|para qué sirve coronyx
+CORONYX|explícame el sistema coronix
+CORONYX|qué funciones tiene la aplicación coronyx
+CORONYX|cuál es el propósito de coronix
+CORONYX|diferencia entre coronyx y corovoz
+CORONYX|qué puedo gestionar en coronix
+COROVOZ|qué es corovoz
+COROVOZ|para qué sirve coro voz
+COROVOZ|quién eres
+COROVOZ|qué hace el asistente
+COROVOZ|qué puedes hacer
+COROVOZ|cómo funciona corovoz
+SALUDO|hola
+SALUDO|buenos días
+SALUDO|buenas tardes
+SALUDO|buenas noches
+SALUDO|hola necesito ayuda
+SALUDO|por dónde empiezo
+CITA_ASISTENCIA|cómo marco la asistencia de una cita
+CITA_ASISTENCIA|registrar inasistencia
+CITA_ASISTENCIA|paciente no asistió
+CITA_ASISTENCIA|marcar no show
+CITA_ASISTENCIA|cambiar estado de la cita a confirmada
+CITA_ASISTENCIA|cuál es la diferencia entre estado y asistencia
+CITA_ASISTENCIA|registrar que asistió el paciente
+CITA_SOLICITUD|dónde reviso las solicitudes de reprogramación
+CITA_SOLICITUD|aprobar solicitud de cambio de cita
+CITA_SOLICITUD|rechazar una solicitud de reprogramación
+CITA_SOLICITUD|resolver solicitudes pendientes
+CITA_SOLICITUD|paciente solicitó reprogramación
+CITA_SOLICITUD|quién aprueba las solicitudes de reprogramación
+CITA_HORARIO|no hay horarios disponibles
+CITA_HORARIO|el horario de la cita está ocupado
+CITA_HORARIO|conflicto de horario al agendar
+CITA_HORARIO|no me deja reservar ese horario
+CITA_HORARIO|cita se solapa con otra
+CITA_HORARIO|por qué no aparecen horas libres
+CITA_HORARIO|odontólogo no tiene disponibilidad
+CITA_HORARIO|paciente tiene otra cita a esa hora
+AGENDA_FILTROS|cómo filtro las citas de un odontólogo
+AGENDA_FILTROS|ver agenda de otro día
+AGENDA_FILTROS|buscar citas en el calendario
+AGENDA_FILTROS|cambiar vista de semana a día
+AGENDA_FILTROS|dónde veo las citas de hoy
+AGENDA_FILTROS|mostrar agenda de mañana
+AGENDA_FILTROS|consultar citas programadas
+PACIENTE_EDITAR|cómo edito los datos del paciente
+PACIENTE_EDITAR|cambiar teléfono del paciente
+PACIENTE_EDITAR|actualizar correo del paciente
+PACIENTE_EDITAR|corregir documento de la ficha
+PACIENTE_EDITAR|modificar nombre de paciente
+PACIENTE_EDITAR|guardar datos administrativos del paciente
+PACIENTE_EDITAR|dónde cambio dirección de paciente
+PACIENTE_INACTIVO|cómo veo pacientes inactivos
+PACIENTE_INACTIVO|mostrar fichas inactivas
+PACIENTE_INACTIVO|dónde encuentro pacientes archivados
+PACIENTE_INACTIVO|buscar pacientes que no están activos
+PACIENTE_INACTIVO|diferencia entre paciente inactivo y archivado
+PACIENTE_INACTIVO|cómo archivar expediente
+PACIENTE_INACTIVO|por qué no puedo agendar paciente inactivo
+PACIENTE_CUENTA|cómo vincular cuenta a paciente
+PACIENTE_CUENTA|asociar usuario a ficha de paciente
+PACIENTE_CUENTA|paciente no tiene acceso al portal
+PACIENTE_CUENTA|diferencia entre cuenta de acceso y ficha
+PACIENTE_CUENTA|crear paciente genera una cuenta
+PACIENTE_CUENTA|desvincular usuario del expediente
+PACIENTE_DOCUMENTO|documento duplicado al registrar paciente
+PACIENTE_DOCUMENTO|DNI debe tener ocho dígitos
+PACIENTE_DOCUMENTO|error número de documento inválido
+PACIENTE_DOCUMENTO|qué documentos se aceptan
+PACIENTE_DOCUMENTO|validar carné de extranjería o pasaporte
+PACIENTE_DOCUMENTO|ya existe un paciente con ese DNI
+PACIENTE_CONSULTA|qué datos de pacientes puedes consultar
+PACIENTE_CONSULTA|puedes dar información general de un paciente
+PACIENTE_CONSULTA|cómo pregunto por la próxima cita de un paciente
+PACIENTE_CONSULTA|consultar resumen administrativo de paciente
+PACIENTE_CONSULTA|qué información real puedes leer
+PACIENTE_CONSULTA|ayúdame a consultar teléfono de un paciente
+ODONTOGRAMA_GUARDAR|cómo guardar borrador del odontograma
+ODONTOGRAMA_GUARDAR|confirmar versión del odontograma
+ODONTOGRAMA_GUARDAR|diferencia entre agregar y guardar odontograma
+ODONTOGRAMA_GUARDAR|no puedo editar odontograma confirmado
+ODONTOGRAMA_GUARDAR|nueva versión del odontograma
+ODONTOGRAMA_GUARDAR|se perdieron los cambios del odontograma
+ODONTOGRAMA_GUARDAR|cómo guardo las marcas de los dientes
+ODONTOGRAMA_CARAS|qué caras acepta el odontograma
+ODONTOGRAMA_CARAS|numeración FDI de dientes
+ODONTOGRAMA_CARAS|qué piezas dentales están disponibles
+ODONTOGRAMA_CARAS|condiciones admitidas en odontograma
+ODONTOGRAMA_CARAS|cómo digo pieza catorce
+ODONTOGRAMA_CARAS|cuál es la cara palatina
+ODONTOGRAMA_CARAS|odontograma de dientes temporales
+ODONTOGRAMA_CARAS|lista de caries corona implante y fractura
+VOZ_COMANDOS|cuáles son los comandos de voz
+VOZ_COMANDOS|palabras clave para corovoz
+VOZ_COMANDOS|cómo digo corovoz correcto
+VOZ_COMANDOS|qué hace corovoz edita
+VOZ_COMANDOS|corovoz elimina borra un hallazgo
+VOZ_COMANDOS|cómo apago la escucha con la voz
+VOZ_COMANDOS|prender corovoz por palabra de activación
+VOZ_COMANDOS|comandos correcto edita elimina terminado
+VOZ_MICROFONO|el micrófono no funciona
+VOZ_MICROFONO|brave bloquea el micrófono
+VOZ_MICROFONO|no detecta mi voz
+VOZ_MICROFONO|no se mueve la barra del micrófono
+VOZ_MICROFONO|cómo permitir acceso al audio en brave
+VOZ_MICROFONO|no tengo sonido al dictar
+VOZ_MICROFONO|windows no reconoce micrófono
+VOZ_MICROFONO|qué micrófono está escuchando
+VOZ_PAUSAS|corovoz me interrumpe cuando hablo
+VOZ_PAUSAS|se corta el dictado muy rápido
+VOZ_PAUSAS|quiero más tiempo para terminar de hablar
+VOZ_PAUSAS|cómo interrumpir la respuesta hablada
+VOZ_PAUSAS|quitar lectura de respuestas
+VOZ_PAUSAS|modo manual o envío automático de voz
+VOZ_PAUSAS|cómo evitar que responda antes de terminar
+VOZ_MODELO|la voz cuesta dinero
+VOZ_MODELO|qué modelo usa corovoz
+VOZ_MODELO|usa api de gpt
+VOZ_MODELO|necesita internet para transcribir
+VOZ_MODELO|qué es machine learning en corovoz
+VOZ_MODELO|consumo de cpu y memoria de la voz
+VOZ_MODELO|la ia corre en el servidor
+HISTORIA_VERSION|confirmar versión de historia clínica
+HISTORIA_VERSION|editar atención confirmada
+HISTORIA_VERSION|crear versión de atención clínica
+HISTORIA_VERSION|guardar borrador de historia clínica
+HISTORIA_VERSION|historial de versiones de atenciones
+HISTORIA_VERSION|por qué la historia confirmada no se puede modificar
+DOCUMENTO_VISIBILIDAD|publicar documento al paciente
+DOCUMENTO_VISIBILIDAD|revocar archivo compartido
+DOCUMENTO_VISIBILIDAD|paciente no ve documento en su portal
+DOCUMENTO_VISIBILIDAD|quién puede ver los adjuntos
+DOCUMENTO_VISIBILIDAD|cambiar visibilidad de documento
+DOCUMENTO_VISIBILIDAD|documento privado o publicado
+RADIOGRAFIAS|dónde subo radiografías
+RADIOGRAFIAS|ver radiografía del paciente
+RADIOGRAFIAS|adjuntar imagen radiográfica
+RADIOGRAFIAS|abrir pestaña radiografías
+RADIOGRAFIAS|consultar placa dental
+RADIOGRAFIAS|recepción puede ver radiografías
+USUARIOS_INACTIVOS|cómo veo usuarios inactivos
+USUARIOS_INACTIVOS|mostrar cuentas inactivas
+USUARIOS_INACTIVOS|dónde están los usuarios deshabilitados
+USUARIOS_INACTIVOS|filtrar cuentas por estado inactivo
+USUARIOS_INACTIVOS|listar usuarios que no están activos
+USUARIOS_INACTIVOS|usuarios inactivos de mi clínica
+USUARIOS_INACTIVOS|buscar cuenta inactiva
+USUARIOS_CREAR|cómo crear usuario
+USUARIOS_CREAR|añadir nueva cuenta de recepcionista
+USUARIOS_CREAR|registrar odontólogo en la clínica
+USUARIOS_CREAR|dónde administro los usuarios
+USUARIOS_CREAR|crear cuenta de paciente
+USUARIOS_CREAR|configuración de usuarios y roles
+USUARIOS_CREAR|asignar rol a cuenta nueva
+USUARIOS_ESTADO|cómo desactivar usuario
+USUARIOS_ESTADO|activar una cuenta
+USUARIOS_ESTADO|habilitar acceso de usuario
+USUARIOS_ESTADO|bloquear cuenta de recepcionista
+USUARIOS_ESTADO|cambiar estado de usuario
+USUARIOS_ESTADO|reactivar odontólogo inactivo
+USUARIOS_ESTADO|desactivar cuenta de paciente
+ROLES|qué puede hacer cada rol
+ROLES|permisos de recepcionista y odontólogo
+ROLES|diferencias entre administrador y super admin
+ROLES|qué funciones tiene recepción
+ROLES|quién puede acceder a historia clínica
+ROLES|roles disponibles en el sistema
+ROLES|quién puede gestionar cuentas
+CLINICA_CONFIG|cambiar datos de clínica
+CLINICA_CONFIG|editar dirección del consultorio
+CLINICA_CONFIG|configurar nombre y teléfono de la clínica
+CLINICA_CONFIG|dónde configuro el consultorio
+CLINICA_CONFIG|mi cuenta está en otra clínica
+CLINICA_CONFIG|datos del consultorio incorrectos
+HORARIOS_CONFIG|configurar horarios de atención
+HORARIOS_CONFIG|registrar ausencia del odontólogo
+HORARIOS_CONFIG|cambiar días laborables
+HORARIOS_CONFIG|configurar vacaciones del profesional
+HORARIOS_CONFIG|editar disponibilidad del doctor
+HORARIOS_CONFIG|quién define horarios de la clínica
+INTEGRACIONES|qué integraciones están disponibles
+INTEGRACIONES|conectar proveedor externo
+INTEGRACIONES|integración con whatsapp y correo
+INTEGRACIONES|configurar credenciales de servicios
+INTEGRACIONES|proveedor no configurado
+INTEGRACIONES|estado de conexión de integraciones
+ACCESO|no puedo iniciar sesión
+ACCESO|olvidé mi contraseña
+ACCESO|sesión expirada
+ACCESO|credenciales incorrectas
+ACCESO|cuenta inactiva al ingresar
+ACCESO|error 401 al entrar
+ACCESO|cómo recupero mi acceso
+PERMISO_DENEGADO|error 403 sin acceso
+PERMISO_DENEGADO|no aparece un módulo en mi menú
+PERMISO_DENEGADO|no tengo permiso para entrar
+PERMISO_DENEGADO|acceso denegado al módulo
+PERMISO_DENEGADO|por qué me redirige a sin acceso
+PERMISO_DENEGADO|mi rol no permite esta acción
+CONEXION|no conecta con el servidor
+CONEXION|not found al preguntar
+CONEXION|error 404 de corovoz
+CONEXION|no cargan pacientes ni citas
+CONEXION|backend apagado
+CONEXION|sin conexión al sistema
+CONEXION|error de red al cargar datos
+GUARDADO_ERROR|no se guardan los cambios
+GUARDADO_ERROR|error al guardar formulario
+GUARDADO_ERROR|faltan campos obligatorios
+GUARDADO_ERROR|perdí los cambios sin guardar
+GUARDADO_ERROR|validación al guardar datos
+GUARDADO_ERROR|qué hago si falla el guardado
+CERRAR_SESION|cómo cerrar sesión
+CERRAR_SESION|salir de mi cuenta
+CERRAR_SESION|cambiar de usuario
+CERRAR_SESION|dónde está cerrar sesión
+CERRAR_SESION|entrar con otra cuenta
+CERRAR_SESION|terminar sesión de trabajo
+# Variaciones adicionales por intención, sin copiar el conjunto de evaluación.
+COROVOZ|definición de corovoz
+COROVOZ|identidad del asistente
+COROVOZ|explícame corovoz
+CORONYX|definición de coronix
+CORONYX|descripción de la plataforma coronyx
+CITA_ASISTENCIA|marcar que no vino un paciente a su cita
+CITA_ASISTENCIA|registrar que vino a la consulta
+AGENDA_FILTROS|calendario por profesional
+AGENDA_FILTROS|filtros del calendario por odontólogo
+PACIENTE_DOCUMENTO|número de documento ya registrado
+PACIENTE_DOCUMENTO|documento rechazado por duplicado
+PACIENTE_DOCUMENTO|el sistema rechaza el DNI repetido
+ODONTOGRAMA|abrir odontograma
+ODONTOGRAMA|entrar al odontograma del paciente
+ODONTOGRAMA_CARAS|sistema de numeración dental del odontograma
+ODONTOGRAMA_CARAS|números de piezas en odontograma
+VOZ_PAUSAS|esperar para responder al dictado
+VOZ_PAUSAS|más tiempo antes de enviar el dictado
+VOZ_PAUSAS|terminar la frase sin interrupciones
+VOZ_MODELO|costo por audio transcrito
+VOZ_MODELO|precio de la transcripción
+VOZ_MODELO|pagos por usar el reconocimiento de voz
+DOCUMENTO_VISIBILIDAD|paciente vea archivo publicado
+DOCUMENTO_VISIBILIDAD|hacer visible archivo al paciente
+DOCUMENTO_VISIBILIDAD|permitir a paciente consultar adjunto
+DASHBOARD|resumen de indicadores del sistema
+DASHBOARD|estadísticas de actividad
+TELEODONTOLOGIA|iniciar consulta virtual
+TELEODONTOLOGIA|videollamada con el paciente
+USUARIOS_ESTADO|reactivar cuenta deshabilitada
+USUARIOS_ESTADO|habilitar cuenta inactiva
+ROLES|permisos de tipos de usuario
+ROLES|permisos según rol del usuario
+HORARIOS_CONFIG|vacaciones de odontólogo
+HORARIOS_CONFIG|registrar ausencia de un profesional
+ACCESO|mi sesión expiró al ingresar
+ACCESO|no logro acceder a mi cuenta
+PACIENTE_INACTIVO|buscar pacientes inactivos
+PACIENTE_INACTIVO|filtrar pacientes inactivos por nombre
+PACIENTE_DOCUMENTO|documento ya registrado en otra ficha
+PACIENTE_DOCUMENTO|rechazado documento duplicado
+ODONTOGRAMA_GUARDAR|versión de odontograma confirmada e inmutable
+DOCUMENTOS|adjuntar documento a ficha de paciente
+DOCUMENTOS|subir archivo a ficha

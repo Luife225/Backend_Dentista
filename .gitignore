@@ -1,5 +1,6 @@
 HELP.md
 target/
+.corovoz/
 .mvn/wrapper/maven-wrapper.jar
 .env
 .env.*

@@ -1,41 +1,58 @@
-# CoroVoz — primera versión sin API de pago
+# CoroVoz: conocimiento, pacientes y voz local
 
-## Qué hace cada parte
+## Cambios y finalidad
 
-- `IntentClassifier`: modelo supervisado de centroides TF-IDF. Se entrena al iniciar el backend con las preguntas etiquetadas de `src/main/resources/corovoz/training.tsv`. Calcula la similitud entre la pregunta y cada categoría. No es un modelo generativo y no se reentrena con consultas de pacientes.
-- `CoroVozHelp`: respuestas revisadas y destinos permitidos para trece categorías: citas nuevas, cambios de citas, nuevos pacientes, búsqueda de pacientes, odontograma, historia clínica, documentos, notificaciones, uso del asistente, dashboard, inventario, caja y teleodontología. Similitud, diferencia entre las dos mejores categorías y cobertura del vocabulario determinan cuándo pedir aclaración. La similitud no es una probabilidad de acierto.
-- `DentalCommandParser`: gramática de comandos, no ML. Reconoce una pieza permanente FDI, una condición y una cara. No hace diagnósticos. Si omites la cara propone GENERAL, visible en la confirmación. Observaciones solo después de «observación» o «nota».
-- `CoroVozController`: recibe texto con la sesión JWT existente. General se permite a ODONTOLOGO y RECEPCIONISTA; interpretar odontograma solo a ODONTOLOGO con clínica activa. Los endpoints no escriben en BD ni llaman proveedores externos.
+- `IntentClassifier`: combina el ejemplo más cercano de cada intención (80%) y su centroide TF-IDF (20%). Normaliza acentos, plurales, variantes de verbos y sinónimos del dominio. Tolera una errata solo cuando existe una corrección inequívoca. Se entrena al iniciar, sin enviar datos a una API ni aprender automáticamente de pacientes.
+- `training.tsv`: 375 ejemplos de preguntas etiquetadas para 45 temas. Incluye definiciones de Coronyx/CoroVoz, cuentas inactivas, citas, pacientes, documentos, versiones, permisos, acceso, micrófono y problemas comunes.
+- `knowledge.tsv`: respuestas revisadas y permisos de cada tema. Se separó del código Java para poder ampliar contenido y entrenamiento. Las pantallas actuales de Inventario, Caja y Teleodontología usan demostración; las respuestas lo explican y no presentan sus datos como registros reales.
+- `CoroVozHelp`: elige una respuesta solo si supera mínimos de similitud, cobertura y separación entre categorías. La similitud no es una probabilidad de acierto. Cuando faltan datos o hay ambigüedad, pide aclaración. No es un modelo generativo de conocimiento universal.
+- `CoroVozPatientQueries`: distingue preguntas administrativas de instrucciones. Consulta la ficha mediante el servicio existente y citas filtradas por paciente y clínica. No realiza escrituras, SQL generado por IA ni consultas clínicas. Los datos personales no forman parte del corpus.
+- `DentalCommandParser`: gramática validada; transforma números dictados a FDI, normaliza errores conocidos del reconocimiento y permite completar fragmentos como «pieza catorce» y luego «corona». No diagnostica ni registra sin revisión.
 
-## Contrato
+## Consultas administrativas de pacientes
 
-`POST /api/v1/corovoz/general` con `{ "text": "¿Cómo registro un paciente?" }` devuelve `intent`, `answer`, `route`, `targetLabel`, `understood`. Una consulta desconocida devuelve `understood=false` y ningún enlace. Recepción no recibe instrucciones clínicas ni enlace al odontograma/historia.
+`POST /api/v1/corovoz/general` recibe `{ "text": "Próxima cita del paciente Ana Pérez", "patientId": null }` y devuelve `intent`, `answer`, `route`, `targetLabel`, `understood`, `patients`, `patientId` y `patientName`. El nombre permanece visible para identificar a quién se refieren las preguntas posteriores.
 
-`POST /api/v1/corovoz/odontograma/interpretar` con `{ "text": "Caries en pieza treinta y seis cara oclusal. Nota: control." }` devuelve `understood`, `message` y `proposal` (`piece`, `surface`, `condition`, `note`). Si es ambiguo, `proposal=null`. Máximo de entrada: 600 caracteres; observación: 300.
+Puede consultar resumen, teléfono, correo, contacto, estado de ficha, próxima cita activa y última cita registrada. Los resultados se obtienen del backend en cada pregunta; no se inventan desde ejemplos. Las fechas se presentan en hora de Perú, igual que el módulo de citas. La última cita registrada no acredita asistencia.
 
-Condiciones: CARIES, RESTAURADO, CORONA, EXTRAIDO, ENDODONCIA, IMPLANTE, FRACTURA.
-Caras: GENERAL, OCLUSAL, VESTIBULAR, LINGUAL, MESIAL, DISTAL. «Palatina» se normaliza al código LINGUAL que admite la interfaz actual.
-Piezas: 11–18, 21–28, 31–38, 41–48. La interfaz actual no incluye dentición temporal.
-Se rechazan múltiples piezas, condiciones o caras por frase, números inválidos y expresiones de negación, incertidumbre o eliminación. Los comandos de control se procesan en la interfaz antes de llamar al parser.
+La identidad se busca por términos completos del nombre, sin acentos, o documento exacto dentro de la clínica activa. Con dos a seis coincidencias devuelve opciones con ID, nombre y últimos cuatro caracteres del documento. Con más coincidencias pide precisar; sin identidad no lista todos los pacientes. Una consulta posterior puede enviar el ID seleccionado y preguntar «¿Y su teléfono?». Se vuelve a validar ese ID; un nombre nuevo hace una nueva búsqueda. «Olvidar paciente» limpia el contexto en el navegador.
 
-## Guardado y paciente
+El acceso exige rol ODONTOLOGO o RECEPCIONISTA y clínica operativa. Incluso un ID proporcionado directamente se valida mediante `PatientService.getPatientById`. Las citas se consultan con `findByPacienteIdAndClinicaIdOrderByInicioEnDesc`; se excluyen cancelaciones y reprogramaciones. Próxima cita exige fecha futura y estado PROGRAMADA, CONFIRMADA o EN_CURSO. No se devuelve historia clínica ni se usa un proveedor externo.
 
-La propuesta se revisa en el frontend. «Correcto» agrega el hallazgo al borrador local del odontograma abierto. «Guardar borrador», en el asistente o en el odontograma, usa el guardado existente y conserva el resto del mapa de hallazgos local. Incluye también cambios manuales pendientes del mismo borrador.
+La búsqueda reutiliza el listado de pacientes de la clínica; para clínicas con muchos expedientes se debe pasar a búsqueda paginada en base de datos y medir concurrencia antes de producción.
 
-Una condición GENERAL reemplaza las marcas por caras de esa pieza. Una condición en una cara reemplaza esa marca y retira una marca GENERAL previa. El asistente advierte si hay marcas afectadas antes de aceptar. «Eliminar propuesta» descarta solo la propuesta pendiente, no borra hallazgos ya aplicados.
+## Odontograma y guardado
 
-Cambiar de paciente, versión o pestaña descarta propuestas pendientes. Un odontograma confirmado, en carga, con error o guardándose no admite dictado. La confirmación definitiva de una versión sigue en el flujo original.
+`POST /api/v1/corovoz/odontograma/interpretar` recibe texto y devuelve `understood`, `message`, `proposal`, `incomplete` y `fragment`.
 
-## Voz y costos
+- «Pieza catorce» devuelve `incomplete=true`, fragmento «pieza 14» y pide la condición. El frontend conserva ese fragmento para la siguiente frase del mismo paciente y versión.
+- «Corona en pieza catorce» devuelve propuesta con pieza numérica 14. Revisa paciente, pieza, condición, cara y observación antes de confirmar.
+- Piezas permanentes admitidas: 11–18, 21–28, 31–38, 41–48. No hay dentición temporal en la interfaz actual.
+- Condiciones: CARIES, RESTAURADO, CORONA, EXTRAIDO, ENDODONCIA, IMPLANTE, FRACTURA. Caras: GENERAL, OCLUSAL, VESTIBULAR, LINGUAL, MESIAL, DISTAL; palatina se convierte al código LINGUAL que admite la interfaz.
+- Se rechazan negaciones, incertidumbre, tratamientos pendientes, varias piezas/condiciones/caras y palabras no interpretadas. Notas solo después de «observación» o «nota», con máximo 300 caracteres; texto completo máximo 600.
 
-La voz se implementa con SpeechRecognition/webkitSpeechRecognition y speechSynthesis en el navegador. La primera activación requiere pulsar «Iniciar escucha». Decir «Prender CoroVoz» sirve dentro de una sesión ya iniciada; no hay escucha oculta con el micrófono apagado. Mientras CoroVoz habla o procesa se pausa la captura para evitar que se reconozca su propia respuesta. «CoroVoz terminado», cerrar el panel o cambiar de contexto detiene la escucha.
+«CoroVoz correcto» agrega solo al borrador visible. «CoroVoz edita» descarta la propuesta y permite corregir el texto. «CoroVoz elimina» descarta la propuesta pendiente; no elimina hallazgos guardados. «Guardar borrador» utiliza la operación existente del odontograma y conserva los cambios manuales del mismo borrador. Confirmar versión sigue siendo una acción del odontograma, no un comando de voz.
 
-Sin clave OpenAI, modelos descargados ni GPU. El clasificador se aloja en el backend Java existente. Algunos navegadores usan un servicio externo para reconocer voz y requieren Internet; su disponibilidad depende del navegador, idioma y permisos. La aplicación no almacena audio. Texto siempre disponible.
+Una condición GENERAL reemplaza marcas por caras de la pieza; una marca de cara reemplaza esa cara y retira la GENERAL previa. La interfaz advierte los cambios antes de aceptar. Cambiar de paciente, versión o pestaña descarta propuesta, fragmento y captura. Las versiones confirmadas, en carga, con error o guardándose no admiten dictado.
 
-## Pruebas y mejora
+## Voz y pausas
 
-Ejecutar `./mvnw.cmd "-Dtest=CoroVozTest,CoroVozHttpTest" test` en Windows. No abre una conexión a la BD. Incluye frases de evaluación distintas del corpus, validación dental, límites de entrada, JSON HTTP y rechazo por rol.
+El navegador captura audio con getUserMedia y AudioWorklet y lo convierte a WAV PCM16 mono a 16 kHz. Brave no necesita el servicio SpeechRecognition. El modo inicial es manual: espera a «Terminé: enviar». La opción automática espera 3,5 segundos de silencio. Al llegar a 25 segundos, el audio se transcribe a texto para revisión y no ejecuta una frase posiblemente cortada. El servidor limita el audio a 30 segundos.
 
-Para mejorar el modelo, agregar preguntas etiquetadas al corpus y reiniciar backend. Mantener además un conjunto independiente de preguntas y audios reales anonimizados. Medir acierto por categoría, rechazos correctos, errores de pieza/cara/condición, latencia y fallos del micrófono. El conjunto inicial es pequeño: no acredita precisión clínica ni cobertura de todas las preguntas del sistema.
+Hay indicador de volumen, botón para interrumpir la lectura y opción Leer respuestas. Los errores recuperables de transcripción no apagan el micrófono. Mientras habla o procesa no envía audio para evitar reconocer su propia voz; al terminar vuelve a escuchar. Los comandos se procesan tras transcribir: correcto, edita, elimina, terminado, iniciar, y sus formas con CoroVoz. En modo manual también hay que pulsar Terminé para enviar un comando hablado. No hay activación si el micrófono está apagado.
 
-Las pruebas de interfaz usaron respuestas de API simuladas y datos ficticios para comprobar navegación, revisión, edición, descarte, guardado y cambio de paciente sin modificar expedientes reales. La precisión del micrófono debe probarse en el equipo y navegador de la clínica. No se desplegó esta versión.
+`GET /api/v1/corovoz/status` devuelve versión 4 y `speechReady`. `POST /api/v1/corovoz/transcribir` recibe `audio/wav` y devuelve `{ "text": "..." }`. Un backend que ya estaba abierto antes de cambiar controladores o corpus requiere reinicio. El frontend muestra un mensaje específico si recibe 404 o detecta una versión anterior.
+
+## Instalación y recursos
+
+En Windows x64 ejecutar una vez `java tools/InstallCoroVozModel.java` desde Backend_Dentista. Descarga whisper.cpp CPU oficial b5130 y el modelo multilingüe base Q5_1 de unos 57 MB. Verifica SHA256 y guarda pesos y ejecutables en `.corovoz/`, ignorado por Git. No usa una API de GPT ni paga por audio.
+
+En Linux instalar whisper-cli y definir `COROVOZ_WHISPER_COMMAND` con ruta absoluta. `COROVOZ_MODEL_PATH` cambia la ruta de pesos GGML. Se procesan cuatro hilos y un audio por vez, con tiempo máximo de 60 segundos por transcripción. El proceso consume CPU y memoria al trabajar; no requiere GPU ni un tercer servidor permanente. El audio temporal se elimina al terminar, incluso al fallar. La lectura utiliza speechSynthesis del navegador.
+
+## Verificaciones y límites
+
+Pruebas: `./mvnw.cmd "-Dtest=CoroVozTest,CoroVozHttpTest,CoroVozSpeechTest,CoroVozKnowledgeTest,CoroVozPatientTest" test`.
+
+El conjunto `src/test/resources/corovoz/evaluation.tsv` tiene 56 preguntas de regresión separadas del corpus: incluye definiciones, tareas, restricciones y consultas desconocidas. Se usa para desarrollar y comprobar cambios; no acredita precisión en preguntas de usuarios nuevos. También se verifican las 32 piezas permanentes dictadas, fragmentos, aislamiento por clínica, coincidencias, revalidación de identidad, datos administrativos y límites de audio sin conectarse a BD en los tests.
+
+Además se verifican autenticación y peticiones contra el backend local, comparando consultas administrativas con la ficha sin imprimir datos personales ni guardar hallazgos. Las pruebas de voz usan audio sintético; faltan mediciones de precisión y latencia con voces humanas y ruido real. Para producción: corpus más amplio y evaluaciones independientes, búsqueda paginada, carga concurrente, despliegue del binario compatible con el servidor y revisión de los flujos con profesionales. Esta versión no se desplegó.

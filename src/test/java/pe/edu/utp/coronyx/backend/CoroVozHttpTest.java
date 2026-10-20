@@ -22,7 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /** Contrato HTTP real de Spring MVC sin conexión a la BD del proyecto. */
 class CoroVozHttpTest {
     private final MockMvc mvc = MockMvcBuilders
-            .standaloneSetup(new CoroVozController(new CoroVozHelp(), new DentalCommandParser()))
+            .standaloneSetup(new CoroVozController(new CoroVozHelp(), new DentalCommandParser(), mock(pe.edu.utp.coronyx.backend.service.corovoz.CoroVozPatientQueries.class)))
             .setControllerAdvice(new GlobalExceptionHandler())
             .setCustomArgumentResolvers(new AuthenticationPrincipalArgumentResolver()).build();
 
@@ -79,5 +79,13 @@ class CoroVozHttpTest {
                             .content("{\"text\":\"" + text + "\"}"))
                     .andExpect(status().isBadRequest());
         }
+    }
+
+    @Test void rejectsInvalidPatientIdentityBeforeReadingData() throws Exception {
+        login("RECEPCIONISTA");
+        for (String id : new String[]{"-1", "0", "abc", "99999999999999999999"})
+            mvc.perform(post("/api/v1/corovoz/general").contentType(MediaType.APPLICATION_JSON)
+                    .content("{\"text\":\"y su teléfono\",\"patientId\":\"" + id + "\"}"))
+                    .andExpect(status().isBadRequest());
     }
 }
