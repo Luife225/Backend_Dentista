@@ -8,6 +8,7 @@ import pe.edu.utp.coronyx.backend.security.UserPrincipal;
 import pe.edu.utp.coronyx.backend.service.corovoz.CoroVozHelp;
 import pe.edu.utp.coronyx.backend.service.corovoz.DentalCommandParser;
 import org.springframework.security.access.AccessDeniedException;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -85,6 +86,25 @@ class CoroVozTest {
         assertTrue(result.understood(), result.message());
         assertEquals(piece, result.proposal().piece());
         assertEquals("GENERAL", result.proposal().surface());
+    }
+
+    @Test void selectionDoesNotCreateAClinicalFinding() {
+        for (String text : List.of("Selecciona el catorce", "Elige la pieza 14", "Selecciona el diente número uno cuatro")) {
+            var result = parser.parse(text);
+            assertTrue(result.understood(), result.message());
+            assertEquals(14, result.selectedPiece());
+            assertNull(result.proposal());
+        }
+        for (String text : List.of("Selecciona el diente dos", "Selecciona el diente 3")) {
+            var result = parser.parse(text);
+            assertFalse(result.understood());
+            assertNull(result.selectedPiece());
+        }
+        var correction = parser.parse("No, no era el catorce, era el trece");
+        assertTrue(correction.understood(), correction.message());
+        assertEquals(13, correction.selectedPiece());
+        assertEquals(14, correction.correctedFrom());
+        assertNull(correction.proposal());
     }
 
     @Test void rejectsAmbiguityInvalidTeethNegationsAndDeletion() {

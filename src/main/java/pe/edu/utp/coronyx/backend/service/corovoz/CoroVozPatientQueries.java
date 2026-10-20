@@ -29,7 +29,10 @@ public class CoroVozPatientQueries {
             "informacion", "general", "datos", "dato", "resumen", "administrativo", "administrativa", "dame", "dime", "puedes",
             "saber", "necesito", "ver", "buscar", "busca", "consultar", "muestra", "muestrame", "favor", "corovoz", "dni",
             "documento", "identidad", "llama", "llamado", "llamada", "persona", "ese", "esa", "este", "seleccionado",
-            "acerca", "sobre", "quisiera", "podrias", "dar", "darme", "mostrar", "obtener", "hora", "fecha", "dia");
+            "acerca", "sobre", "quisiera", "podrias", "dar", "darme", "mostrar", "obtener", "hora", "fecha", "dia",
+            "viene", "venir", "vuelve", "volver", "regresa", "regresar", "retorna", "retornar", "otra", "vez", "le", "toca",
+            "programada", "programado", "pendiente", "encuentra", "encontrar", "localiza", "localizar", "ubica", "ubicar",
+            "senor", "senora", "llamarse", "nombre", "ficha", "entrar", "entro", "revisa", "revisar", "se");
 
     public CoroVozPatientQueries(PatientService patients, AppointmentRepository appointments) {
         this.patients = patients; this.appointments = appointments;
@@ -44,6 +47,10 @@ public class CoroVozPatientQueries {
         return has(q, "telefono|celular|correo|email|contacto|resumen")
                 || has(q, "proxima|proximo|siguiente|ultima|ultimo") && has(q, "cita|consulta")
                 || has(q, "cuando") && has(q, "cita|consulta")
+                || has(q, "dia|fecha|hora") && has(q, "cita|consulta")
+                || has(q, "dia|fecha|hora|cuando") && has(q, "programado|programada") && has(q, "paciente")
+                || has(q, "cuando|proxima|proximo|siguiente|pendiente") && has(q, "viene|volver|vuelve|regresa|regresar|retorna|retornar|toca")
+                || has(q, "buscar|busca|encuentra|encontrar|localiza|localizar|ubica|ubicar") && has(q, "paciente|dni|documento|\\ba \\w+")
                 || has(q, "su") && has(q, "estado")
                 || has(q, "paciente") && has(q, "datos|informacion|estado|activo|activa|alergias|antecedentes|medicamentos|diagnostico");
     }
@@ -93,11 +100,11 @@ public class CoroVozPatientQueries {
                 var next = records.stream().filter(a -> a.getInicioEn() != null && a.getInicioEn().isAfter(now) && ACTIVE_APPOINTMENTS.contains(a.getEstado()))
                         .min(Comparator.comparing(Appointment::getInicioEn));
                 String nextText = next.map(a -> "Próxima cita: " + describe(a) + ".").orElse("No tiene una próxima cita activa registrada.");
-                info = has(q, "cita|consulta|cuando|proxima|siguiente") ? nextText :
+                info = has(q, "cita|consulta|cuando|dia|fecha|hora|programado|programada|proxima|siguiente|viene|vuelve|volver|regresa|regresar|retorna|retornar|toca") ? nextText :
                         "Estado: " + value(patient.getEstado()) + ". Teléfono: " + value(patient.getTelefono()) + ". Correo: " + value(patient.getCorreo()) + ". " + nextText;
             }
         }
-        boolean agenda = has(q, "cita|consulta|cuando|proxima|siguiente|ultima");
+        boolean agenda = has(q, "cita|consulta|cuando|dia|fecha|hora|programado|programada|proxima|siguiente|ultima|viene|vuelve|volver|regresa|regresar|retorna|retornar|toca");
         return new Answer("PACIENTE_DATOS", prefix + info, agenda ? "/app/agenda" : "/app/pacientes", agenda ? "Ir a Agenda" : "Ir a Pacientes", true, List.of(), patient.getId(), name(patient));
     }
 

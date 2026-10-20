@@ -51,7 +51,7 @@ public class CoroVozHelp {
         var prediction = classifier.predict(text);
         Article article = articles.get(prediction.intent());
         if (article == null || prediction.similarity() < 0.36 || prediction.margin() < 0.035 || prediction.coverage() < 0.45)
-            return new Answer("UNKNOWN", "No encontré una respuesta suficientemente clara. Puedo ayudarte con citas, pacientes, documentos, odontogramas, usuarios y permisos, acceso o problemas de micrófono. Para datos reales prueba «¿Cuándo es la próxima cita del paciente [nombre o DNI]?». Si buscas instrucciones, indica la tarea que necesitas hacer.", "", "", false);
+            return new Answer("UNKNOWN", "¿Qué necesitas hacer en Coronyx? Puedes preguntarme por citas, pacientes, documentos, odontogramas, acceso o el micrófono. Si buscas una cita concreta, indícame el nombre o DNI del paciente.", "", "", false);
         if (!article.roles().equals("*") && !List.of(article.roles().split(",")).contains(role))
             return new Answer(prediction.intent(), "Esta función está reservada a " + article.roles() + ". " + article.answer(), "", "", true);
         return new Answer(prediction.intent(), article.answer(), article.route(), article.label(), true);

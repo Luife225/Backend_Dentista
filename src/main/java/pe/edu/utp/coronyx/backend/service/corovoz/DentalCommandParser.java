@@ -8,8 +8,11 @@ import java.util.regex.Pattern;
 @Service
 public class DentalCommandParser {
     public record Proposal(int piece, String surface, String condition, String note) {}
-    public record Result(boolean understood, String message, Proposal proposal, boolean incomplete, String fragment) {
-        public Result(boolean understood, String message, Proposal proposal) { this(understood, message, proposal, false, ""); }
+    public record Result(boolean understood, String message, Proposal proposal, boolean incomplete, String fragment, Integer selectedPiece, Integer correctedFrom) {
+        public Result(boolean understood, String message, Proposal proposal) { this(understood, message, proposal, false, "", null, null); }
+        public Result(boolean understood, String message, Proposal proposal, boolean incomplete, String fragment) {
+            this(understood, message, proposal, incomplete, fragment, null, null);
+        }
     }
     private static final Set<Integer> TEETH = Set.of(
             11, 12, 13, 14, 15, 16, 17, 18, 21, 22, 23, 24, 25, 26, 27, 28,
@@ -49,9 +52,6 @@ public class DentalCommandParser {
                 .replaceAll("\\bcar[ao]\\s*oclusal\\b", "cara oclusal");
         String note = parts.length > 1 ? parts[1].trim() : "";
         if (note.length() > 300) return unclear("La observación puede tener hasta 300 caracteres.");
-        if (Pattern.compile("\\b(no|sin|posible|sospecha|descartar|descarta|elimina|eliminar|borra|borrar|quita|quitar|necesita|requiere|pendiente|planificar)\\b").matcher(command).find()) {
-            return unclear("La frase contiene una negación o duda. Dicta solo el hallazgo que deseas registrar.");
-        }
         for (var number : NUMBERS.entrySet()) command = command.replaceAll("\\b" + number.getKey() + "\\b", number.getValue());
         String[] spokenUnits = {"uno", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho"};
         for (int unit = 1; unit <= 8; unit++) {
@@ -61,6 +61,15 @@ public class DentalCommandParser {
                 .replaceAll(m -> Integer.toString(Integer.parseInt(m.group(1)) + Integer.parseInt(m.group(2))));
         // También admite «pieza 1 4» producido por algunos reconocedores.
         command = command.replaceAll("\\b([1-4]) ([1-8])\\b", "$1$2");
+        var correction = Pattern.compile("^no (?:no )?era (?:el )?(?:diente |pieza )?(\\d{2}) era (?:el )?(?:diente |pieza )?(\\d{2})$").matcher(command);
+        if (correction.matches() && note.isEmpty()) {
+            int previous = Integer.parseInt(correction.group(1)), corrected = Integer.parseInt(correction.group(2));
+            if (TEETH.contains(previous) && TEETH.contains(corrected))
+                return new Result(true, "Pieza corregida a " + corrected + ". Revisa antes de confirmar.", null, false, "", corrected, previous);
+        }
+        if (Pattern.compile("\\b(no|sin|posible|sospecha|descartar|descarta|elimina|eliminar|borra|borrar|quita|quitar|necesita|requiere|pendiente|planificar)\\b").matcher(command).find()) {
+            return unclear("La frase contiene una negación o duda. Dicta solo el hallazgo que deseas registrar.");
+        }
         var matcher = Pattern.compile("\\b\\d+\\b").matcher(command);
         List<String> numbers = matcher.results().map(m -> m.group()).toList();
         if (numbers.size() > 1 || !numbers.isEmpty() && numbers.getFirst().length() != 2) {
@@ -72,6 +81,10 @@ public class DentalCommandParser {
         if (conditions.size() > 1) return unclear("Indica una sola condición: caries, restauración, corona, extraído, endodoncia, implante o fractura.");
         List<String> surfaces = matches(command, SURFACES);
         if (surfaces.size() > 1) return unclear("Dicta una sola cara por vez: oclusal, vestibular, lingual, mesial, distal o general.");
+        if (piece != null && conditions.isEmpty() && surfaces.isEmpty() && note.isEmpty() &&
+                command.matches("(?:por favor )?(?:selecciona|seleccionar|elige|elegir|muestra|mostrar|resalta|resaltar) (?:el |la )?(?:pieza dental |diente |pieza )?(?:numero )?" + piece + "(?: por favor)?")) {
+            return new Result(true, "Pieza " + piece + " seleccionada. No se registró ningún hallazgo.", null, false, "", piece, null);
+        }
         String remainder = command;
         for (String aliases : CONDITIONS.values()) remainder = remainder.replaceAll("\\b(?:" + aliases + ")\\b", " ");
         for (String aliases : SURFACES.values()) remainder = remainder.replaceAll("\\b(?:" + aliases + ")\\b", " ");

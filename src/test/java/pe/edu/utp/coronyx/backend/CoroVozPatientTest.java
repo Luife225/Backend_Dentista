@@ -32,8 +32,23 @@ class CoroVozPatientTest {
     }
 
     @Test void routesAdministrativeQuestionsAndLeavesInstructionsToKnowledgeModel() {
-        for (String text : List.of("próxima cita de Ana Pérez", "¿cuándo será su próxima cita?", "teléfono del paciente Ana", "información del paciente Juan", "y su correo")) assertTrue(service.handles(text), text);
+        for (String text : List.of("próxima cita de Ana Pérez", "¿cuándo será su próxima cita?", "teléfono del paciente Ana", "información del paciente Juan", "y su correo",
+                "¿Cuándo viene otra vez Juan?", "¿Para qué día está programado el paciente Juan Pérez?", "¿Qué día tiene consulta el señor que se llama Juan Pérez?", "Busca a Juan Pérez")) assertTrue(service.handles(text), text);
         for (String text : List.of("qué es coronix", "qué es corovoz", "cómo veo usuarios inactivos", "cómo cambiar teléfono del paciente", "cómo registro un paciente", "cómo consulto historia clínica", "última versión del odontograma", "teléfono de la clínica")) assertFalse(service.handles(text), text);
+    }
+
+    @Test void colloquialAppointmentQuestionsQueryTheBackendAndPreserveIdentity() {
+        var session = principal("RECEPCIONISTA"); var juan = patient("3", "Juan");
+        when(patients.getAllPatients(session)).thenReturn(List.of(juan));
+        when(patients.getPatientById(3L, session)).thenReturn(juan);
+        when(appointments.findByPacienteIdAndClinicaIdOrderByInicioEnDesc(3L, 8L))
+                .thenReturn(List.of(appointment("2099-05-03T15:00:00Z", "PROGRAMADA")));
+        for (String question : List.of("¿Cuándo viene otra vez Juan?", "¿Para qué día está programado el paciente Juan Pérez?",
+                "¿Qué día tiene consulta el señor que se llama Juan Pérez?")) {
+            var answer = service.answer(question, null, session);
+            assertEquals("3", answer.patientId(), question);
+            assertTrue(answer.answer().contains("Próxima cita:"), question + ": " + answer.answer());
+        }
     }
 
     @Test void nextAppointmentIsActualNearestActiveRecordScopedToClinicForBothRoles() {
