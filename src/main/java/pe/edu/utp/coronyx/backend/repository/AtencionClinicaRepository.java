@@ -12,6 +12,10 @@ import java.util.Optional;
 @Repository
 public interface AtencionClinicaRepository extends JpaRepository<AtencionClinica, Long> {
 
+    @org.springframework.data.jpa.repository.Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)
+    @Query("select a from AtencionClinica a where a.id = :id and a.clinica.id = :clinicaId")
+    Optional<AtencionClinica> findLockedByIdAndClinicaId(@Param("id") Long id, @Param("clinicaId") Long clinicaId);
+
     @Query("SELECT DISTINCT a FROM AtencionClinica a " +
            "LEFT JOIN FETCH a.versiones v " +
            "WHERE a.paciente.id = :pacienteId AND a.clinica.id = :clinicaId " +

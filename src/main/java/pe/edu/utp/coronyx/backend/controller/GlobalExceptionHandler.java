@@ -65,6 +65,12 @@ public class GlobalExceptionHandler {
                 .body(buildErrorResponse(HttpStatus.CONFLICT, "Los datos entran en conflicto con un registro existente", req.getRequestURI()));
     }
 
+    @ExceptionHandler(org.springframework.dao.ConcurrencyFailureException.class)
+    public ResponseEntity<Map<String, Object>> handleConcurrentUpdate(org.springframework.dao.ConcurrencyFailureException ex, HttpServletRequest req) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(buildErrorResponse(HttpStatus.CONFLICT, "Otro usuario está modificando este registro. Actualice e intente de nuevo.", req.getRequestURI()));
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, Object>> handleBadRequest(IllegalArgumentException ex, HttpServletRequest req) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -85,5 +91,23 @@ public class GlobalExceptionHandler {
         Map<String, Object> body = buildErrorResponse(HttpStatus.BAD_REQUEST, "Error de validación en los campos enviados", req.getRequestURI());
         body.put("errors", errors);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+    }
+
+    @ExceptionHandler(org.springframework.web.HttpMediaTypeNotSupportedException.class)
+    public ResponseEntity<Map<String, Object>> handleUnsupportedMediaType(
+            org.springframework.web.HttpMediaTypeNotSupportedException ex, HttpServletRequest req) {
+        log.warn("[MEDIA-TYPE-EX] 415 en {}: {}", req.getRequestURI(), ex.getMessage());
+        return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+                .body(buildErrorResponse(HttpStatus.UNSUPPORTED_MEDIA_TYPE,
+                        "El formato de la petición no es soportado. Se requiere cabecera 'Content-Type: application/json'.",
+                        req.getRequestURI()));
+    }
+
+    @ExceptionHandler(Throwable.class)
+    public ResponseEntity<Map<String, Object>> handleGeneral(Throwable ex, HttpServletRequest req) {
+        log.error("[SERVER-EX] 500 en {}: {}", req.getRequestURI(), ex.getMessage(), ex);
+        Map<String, Object> body = buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), req.getRequestURI());
+        body.put("exception", ex.getClass().getName());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
     }
 }

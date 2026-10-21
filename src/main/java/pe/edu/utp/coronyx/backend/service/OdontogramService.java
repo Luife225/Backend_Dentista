@@ -38,8 +38,8 @@ public class OdontogramService {
         if (principal == null || principal.getClinicaId() == null) {
             throw new AccessDeniedException("No se encontró una sesión activa autorizada");
         }
-        if (principal.isSuperAdmin()) {
-            throw new AccessDeniedException("Acceso denegado: SUPER_ADMIN no tiene acceso clínico operativo");
+        if (!"ODONTOLOGO".equalsIgnoreCase(principal.getRol())) {
+            throw new AccessDeniedException("Acceso denegado: solo el odontólogo puede acceder al odontograma técnico");
         }
     }
 
@@ -66,6 +66,7 @@ public class OdontogramService {
     public OdontogramaVersionDto getCurrentOdontogram(Long pacienteId, UserPrincipal principal) {
         validateSecurity(principal);
         Patient patient = validateAndGetPatient(pacienteId, principal);
+        patientRepository.findLockedById(patient.getId()).orElseThrow();
 
         // 1. Si hay borrador activo, retornarlo
         var borradorOpt = versionRepository.findBorradorByPacienteId(patient.getId());
@@ -123,6 +124,7 @@ public class OdontogramService {
             throw new AccessDeniedException("Acceso denegado: solo el odontólogo tratante puede editar el odontograma");
         }
         Patient patient = validateAndGetPatient(pacienteId, principal);
+        patientRepository.findLockedById(patient.getId()).orElseThrow();
 
         VersionOdontograma version = versionRepository.findBorradorByPacienteId(patient.getId())
                 .orElseGet(() -> {
@@ -171,6 +173,8 @@ public class OdontogramService {
             throw new AccessDeniedException("Acceso denegado: solo un odontólogo puede confirmar una versión de odontograma");
         }
 
+        patientRepository.lockByOdontogramVersion(versionId, principal.getClinicaId())
+                .orElseThrow(() -> new NoSuchElementException("Odontograma no encontrado"));
         VersionOdontograma version = versionRepository.findById(versionId)
                 .orElseThrow(() -> new NoSuchElementException("Versión de odontograma no encontrada con ID: " + versionId));
 
@@ -201,6 +205,8 @@ public class OdontogramService {
             throw new AccessDeniedException("Acceso denegado: solo un odontólogo puede generar una nueva versión de odontograma");
         }
 
+        patientRepository.lockByOdontogramVersion(versionId, principal.getClinicaId())
+                .orElseThrow(() -> new NoSuchElementException("Odontograma no encontrado"));
         VersionOdontograma prevVersion = versionRepository.findById(versionId)
                 .orElseThrow(() -> new NoSuchElementException("Versión de odontograma no encontrada con ID: " + versionId));
 
@@ -223,7 +229,7 @@ public class OdontogramService {
         newVersion.setClinica(principal.getClinic());
         newVersion.setPaciente(prevVersion.getPaciente());
         newVersion.setVersionAnterior(prevVersion);
-        newVersion.setNumeroVersion(prevVersion.getNumeroVersion() + 1);
+        newVersion.setNumeroVersion(versionRepository.findMaxNumeroVersionByPacienteId(prevVersion.getPaciente().getId()) + 1);
         newVersion.setEstado("BORRADOR");
         newVersion.setFechaCreacion(OffsetDateTime.now());
 
@@ -252,6 +258,8 @@ public class OdontogramService {
             throw new AccessDeniedException("Acceso denegado: solo el odontólogo tratante puede editar el odontograma");
         }
 
+        patientRepository.lockByOdontogramVersion(versionId, principal.getClinicaId())
+                .orElseThrow(() -> new NoSuchElementException("Odontograma no encontrado"));
         VersionOdontograma version = versionRepository.findById(versionId)
                 .orElseThrow(() -> new NoSuchElementException("Versión de odontograma no encontrada con ID: " + versionId));
 
@@ -289,6 +297,7 @@ public class OdontogramService {
             throw new AccessDeniedException("Acceso denegado: solo el odontólogo tratante puede generar una nueva versión");
         }
         Patient patient = validateAndGetPatient(pacienteId, principal);
+        patientRepository.findLockedById(patient.getId()).orElseThrow();
 
         var existingDraft = versionRepository.findBorradorByPacienteId(patient.getId());
         if (existingDraft.isPresent()) {

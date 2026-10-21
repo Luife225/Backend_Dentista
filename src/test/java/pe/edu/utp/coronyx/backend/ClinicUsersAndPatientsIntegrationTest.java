@@ -39,6 +39,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
+@org.springframework.transaction.annotation.Transactional
 class ClinicUsersAndPatientsIntegrationTest {
 
     @Autowired
@@ -71,6 +72,9 @@ class ClinicUsersAndPatientsIntegrationTest {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    private Patient adminFixture;
+    private Patient linkFixture;
+    private User linkUser;
     private String tokenAdmin;
     private String tokenRecepcion;
     private String tokenOdontologo;
@@ -82,6 +86,15 @@ class ClinicUsersAndPatientsIntegrationTest {
                 .webAppContextSetup(webApplicationContext)
                 .addFilter(springSecurityFilterChain)
                 .build();
+
+        Clinic clinic=clinicRepository.findById(1L).orElseThrow();
+        String fixtureKey=java.util.UUID.randomUUID().toString().substring(0,8);
+        adminFixture=new Patient(clinic,"Paciente","Administrativo","DNI",fixtureKey);
+        adminFixture.setAlergias("Penicilina"); adminFixture=patientRepository.saveAndFlush(adminFixture);
+        linkFixture=patientRepository.saveAndFlush(new Patient(clinic,"Paciente","Vinculación","DNI",fixtureKey+"1"));
+        patientRepository.saveAndFlush(new Patient(clinic,"Paciente","Listado","DNI",fixtureKey+"2"));
+        linkUser=userRepository.saveAndFlush(new User("vinculo-"+fixtureKey+"@example.invalid",passwordEncoder.encode("123456"),"Cuenta","Vinculación"));
+        clinicUserRepository.saveAndFlush(new ClinicUser(clinic,linkUser,roleRepository.findByCodigo("PACIENTE").orElseThrow(),null,"ACTIVO"));
 
         tokenAdmin = loginAndGetToken("admin@coronyx.pe", "123456");
         tokenRecepcion = loginAndGetToken("recepcion@coronyx.pe", "123456");
@@ -175,7 +188,7 @@ class ClinicUsersAndPatientsIntegrationTest {
     @DisplayName("A03: Desactivar membresía invalida sesión previa con token ya emitido")
     void testA03_DesactivarCuentaAfectaSesionPrevia() throws Exception {
         // 1. Odontólogo tiene token válido y puede consultar pacientes
-        mockMvc.perform(get("/api/v1/patients/1")
+        mockMvc.perform(get("/api/v1/patients/"+adminFixture.getId())
                         .header("Authorization", "Bearer " + tokenOdontologo))
                 .andExpect(status().isOk());
 
@@ -189,7 +202,7 @@ class ClinicUsersAndPatientsIntegrationTest {
                 .andExpect(jsonPath("$.estado").value("INACTIVO"));
 
         // 3. Petición inmediata con el token previo del odontólogo DEBE FALLAR con 401
-        mockMvc.perform(get("/api/v1/patients/1")
+        mockMvc.perform(get("/api/v1/patients/"+adminFixture.getId())
                         .header("Authorization", "Bearer " + tokenOdontologo))
                 .andExpect(status().isUnauthorized());
 
@@ -204,7 +217,7 @@ class ClinicUsersAndPatientsIntegrationTest {
 
         // 5. Tras reactivar, genera nueva sesión y funciona
         String nuevoTokenOdonto = loginAndGetToken("odontologo@coronyx.pe", "123456");
-        mockMvc.perform(get("/api/v1/patients/1")
+        mockMvc.perform(get("/api/v1/patients/"+adminFixture.getId())
                         .header("Authorization", "Bearer " + nuevoTokenOdonto))
                 .andExpect(status().isOk());
     }
@@ -305,14 +318,14 @@ class ClinicUsersAndPatientsIntegrationTest {
                 }
                 """;
 
-        mockMvc.perform(put("/api/v1/patients/1")
+        mockMvc.perform(put("/api/v1/patients/"+adminFixture.getId())
                         .header("Authorization", "Bearer " + tokenAdmin)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonUpdate))
                 .andExpect(status().isOk());
 
         // Comprobar con odontólogo que la alergia en BD sigue siendo la original ("Penicilina")
-        MvcResult resOdonto = mockMvc.perform(get("/api/v1/patients/1")
+        MvcResult resOdonto = mockMvc.perform(get("/api/v1/patients/"+adminFixture.getId())
                         .header("Authorization", "Bearer " + tokenOdontologo))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -376,7 +389,7 @@ class ClinicUsersAndPatientsIntegrationTest {
                 }
                 """;
 
-        mockMvc.perform(put("/api/v1/patients/1")
+        mockMvc.perform(put("/api/v1/patients/"+adminFixture.getId())
                         .header("Authorization", "Bearer " + tokenRecepcion)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonUpdate))
@@ -389,19 +402,19 @@ class ClinicUsersAndPatientsIntegrationTest {
     @DisplayName("Vincular cuenta de paciente explícitamente manteniendo IDs diferenciados")
     void testVincularCuentaPacienteDiferenciandoIds() throws Exception {
         // Paciente con ID 2 vinculado al Usuario 4
-        mockMvc.perform(patch("/api/v1/patients/2/link-user")
+        mockMvc.perform(patch("/api/v1/patients/"+linkFixture.getId()+"/link-user")
                         .header("Authorization", "Bearer " + tokenAdmin)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(Map.of("usuarioId", "4"))))
+                        .content(objectMapper.writeValueAsString(Map.of("usuarioId", linkUser.getId().toString()))))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value("2"))
-                .andExpect(jsonPath("$.usuarioId").value("4"));
+                .andExpect(jsonPath("$.id").value(linkFixture.getId().toString()))
+                .andExpect(jsonPath("$.usuarioId").value(linkUser.getId().toString()));
 
         // Comprobar persistencia en BD
-        Patient p = patientRepository.findById(2L).orElseThrow();
-        assertEquals(2L, p.getId());
+        Patient p = patientRepository.findById(linkFixture.getId()).orElseThrow();
+        assertEquals(linkFixture.getId(), p.getId());
         assertNotNull(p.getUsuario());
-        assertEquals(4L, p.getUsuario().getId());
+        assertEquals(linkUser.getId(), p.getUsuario().getId());
     }
 
     // --- Pruebas Negativas de Seguridad ---

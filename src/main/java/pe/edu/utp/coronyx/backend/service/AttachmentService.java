@@ -72,9 +72,7 @@ public class AttachmentService {
             }
             // Los archivos subidos por el propio paciente son visibles para él de forma predeterminada
             esVisiblePaciente = true;
-        } else if (!"ODONTOLOGO".equalsIgnoreCase(userRol) &&
-                !"ADMIN_CLINICA".equalsIgnoreCase(userRol) &&
-                !"RECEPCIONISTA".equalsIgnoreCase(userRol)) {
+        } else if (!"ODONTOLOGO".equalsIgnoreCase(userRol) && !isAdministrative(userRol)) {
             throw new AccessDeniedException("Rol no autorizado para cargar archivos en esta clínica.");
         }
 
@@ -104,6 +102,9 @@ public class AttachmentService {
                     ". Tipos válidos: " + ALLOWED_TIPOS_ARCHIVO);
         }
 
+        if (isAdministrative(userRol) && !"DOCUMENTO".equals(tipoFinal)) {
+            throw new AccessDeniedException("El personal administrativo solo puede subir documentos administrativos");
+        }
         // 4. Validar cita si se proporciona
         Appointment cita = null;
         if (citaId != null) {
@@ -126,9 +127,7 @@ public class AttachmentService {
         String originalName = file.getOriginalFilename() != null && !file.getOriginalFilename().isBlank()
                 ? file.getOriginalFilename()
                 : "archivo_sin_nombre";
-        String contentType = file.getContentType() != null && !file.getContentType().isBlank()
-                ? file.getContentType()
-                : "application/octet-stream";
+        String contentType = FileContentValidator.detect(file);
         long pesoBytes = file.getSize();
         boolean visible = Boolean.TRUE.equals(esVisiblePaciente);
 
@@ -150,6 +149,7 @@ public class AttachmentService {
                     regionAnatomica,
                     visible
             );
+            attachment.setAmbito(isAdministrative(userRol) ? "ADMINISTRATIVO" : "CLINICO");
             if (cita != null) {
                 attachment.setCita(cita);
             }
@@ -213,10 +213,9 @@ public class AttachmentService {
             return attachment;
         }
 
-        // Control de acceso por rol: ODONTOLOGO, ADMIN_CLINICA, RECEPCIONISTA
-        if ("ODONTOLOGO".equalsIgnoreCase(userRol) ||
-                "ADMIN_CLINICA".equalsIgnoreCase(userRol) ||
-                "RECEPCIONISTA".equalsIgnoreCase(userRol)) {
+        if (isAdministrative(userRol) && "ADMINISTRATIVO".equals(attachment.getAmbito())) return attachment;
+        // El odontólogo accede al expediente clínico; administración solo a su ámbito.
+        if ("ODONTOLOGO".equalsIgnoreCase(userRol)) {
             return attachment;
         }
 
@@ -243,8 +242,8 @@ public class AttachmentService {
         }
 
         String userRol = principal.getRol();
-        if (!"ODONTOLOGO".equalsIgnoreCase(userRol) && !"ADMIN_CLINICA".equalsIgnoreCase(userRol)) {
-            throw new AccessDeniedException("Solo los odontólogos o administradores de la clínica pueden publicar o revocar archivos.");
+        if (!"ODONTOLOGO".equalsIgnoreCase(userRol) && !isAdministrative(userRol)) {
+            throw new AccessDeniedException("Rol no autorizado para publicar archivos");
         }
 
         Attachment attachment = attachmentRepository.findById(attachmentId)
@@ -254,6 +253,9 @@ public class AttachmentService {
             throw new NoSuchElementException("Archivo no encontrado con ID: " + attachmentId);
         }
 
+        if (isAdministrative(userRol) && !"ADMINISTRATIVO".equals(attachment.getAmbito())) {
+            throw new AccessDeniedException("Solo el odontólogo puede publicar archivos clínicos");
+        }
         attachment.setEsVisiblePaciente(esVisiblePaciente);
         Attachment updated = attachmentRepository.save(attachment);
         log.info("[ATTACHMENT] Visibilidad actualizada para ID={}: esVisiblePaciente={}", updated.getId(), esVisiblePaciente);
@@ -299,11 +301,12 @@ public class AttachmentService {
             }
             list = attachmentRepository.findByClinicaIdAndPacienteIdAndEsVisiblePacienteTrueOrderByFechaCreacionDesc(
                     principal.getClinicaId(), pacienteId);
-        } else if ("ODONTOLOGO".equalsIgnoreCase(userRol) ||
-                "ADMIN_CLINICA".equalsIgnoreCase(userRol) ||
-                "RECEPCIONISTA".equalsIgnoreCase(userRol)) {
+        } else if ("ODONTOLOGO".equalsIgnoreCase(userRol)) {
             list = attachmentRepository.findByClinicaIdAndPacienteIdOrderByFechaCreacionDesc(
                     principal.getClinicaId(), pacienteId);
+        } else if (isAdministrative(userRol)) {
+            list = attachmentRepository.findByClinicaIdAndPacienteIdOrderByFechaCreacionDesc(principal.getClinicaId(), pacienteId)
+                    .stream().filter(a -> "ADMINISTRATIVO".equals(a.getAmbito())).toList();
         } else {
             throw new AccessDeniedException("Rol no autorizado para consultar archivos.");
         }
@@ -311,5 +314,8 @@ public class AttachmentService {
         return list.stream()
                 .map(AttachmentResponseDto::fromEntity)
                 .toList();
+    }
+    private boolean isAdministrative(String role) {
+        return "ADMIN_CLINICA".equalsIgnoreCase(role) || "RECEPCIONISTA".equalsIgnoreCase(role);
     }
 }

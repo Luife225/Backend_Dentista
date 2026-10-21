@@ -13,6 +13,10 @@ import java.util.Optional;
 @Repository
 public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
 
+    @org.springframework.data.jpa.repository.Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)
+    @Query("select a from Appointment a where a.id = :id and a.clinica.id = :clinicaId")
+    Optional<Appointment> findLockedByIdAndClinicaId(@Param("id") Long id, @Param("clinicaId") Long clinicaId);
+
     List<Appointment> findByClinicaIdAndInicioEnBetweenOrderByInicioEnAsc(
             Long clinicaId, OffsetDateTime desde, OffsetDateTime hasta);
 
@@ -31,11 +35,11 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     /**
      * Valida si el odontólogo ya tiene una cita activa que se solape con el horario deseado.
      * Regla: Una cita se solapa si (inicioEn < nuevoFin) Y (finEn > nuevoInicio).
-     * Excluye citas CANCELADAS o REPROGRAMADAS.
+     * La cita reprogramada ocupa su nuevo intervalo. Solo la cancelación libera la reserva.
      */
     @Query("SELECT COUNT(a) > 0 FROM Appointment a " +
            "WHERE a.odontologo.id = :odontologoId " +
-           "AND a.estado NOT IN ('CANCELADA', 'REPROGRAMADA') " +
+           "AND a.estado <> 'CANCELADA' " +
            "AND (:excludeId IS NULL OR a.id != :excludeId) " +
            "AND (a.inicioEn < :finEn AND a.finEn > :inicioEn)")
     boolean existsOverlapping(
@@ -50,7 +54,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     @Query("SELECT COUNT(a) > 0 FROM Appointment a " +
            "WHERE a.clinica.id = :clinicaId " +
            "AND LOWER(a.consultorio) = LOWER(:consultorio) " +
-           "AND a.estado NOT IN ('CANCELADA', 'REPROGRAMADA') " +
+           "AND a.estado <> 'CANCELADA' " +
            "AND (:excludeId IS NULL OR a.id != :excludeId) " +
            "AND (a.inicioEn < :finEn AND a.finEn > :inicioEn)")
     boolean existsConsultorioOverlapping(
@@ -65,7 +69,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
      */
     @Query("SELECT COUNT(a) > 0 FROM Appointment a " +
            "WHERE a.paciente.id = :pacienteId " +
-           "AND a.estado NOT IN ('CANCELADA', 'REPROGRAMADA') " +
+           "AND a.estado <> 'CANCELADA' " +
            "AND (:excludeId IS NULL OR a.id != :excludeId) " +
            "AND (a.inicioEn < :finEn AND a.finEn > :inicioEn)")
     boolean existsPacienteOverlapping(

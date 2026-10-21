@@ -13,9 +13,6 @@ import pe.edu.utp.coronyx.backend.service.ClinicService;
 
 @RestController
 @RequestMapping({"/api/v1/clinic/profile", "/api/v1/clinicas/me", "/api/v1/clinic"})
-@CrossOrigin(origins = "*", allowedHeaders = "*", methods = {
-        RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.PATCH, RequestMethod.DELETE, RequestMethod.OPTIONS
-})
 public class ClinicController {
 
     private final ClinicService clinicService;

@@ -1,6 +1,10 @@
 package pe.edu.utp.coronyx.backend.dto;
 
 public class UpdateClinicalDraftDto {
+    private Long revision;
+    public Long getRevision() { return revision; }
+    public void setRevision(Long revision) { this.revision = revision; }
+
 
     private String motivoConsulta;
     private String examenClinico;

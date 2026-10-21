@@ -42,6 +42,9 @@ build/
 .env
 .env.*
 !.env.example
+/src/main/resources/application.yml.local_backup
+infrastructure/jitsi/jitsi-config/
+infrastructure/jitsi/.env
 
 ### Tests & Temporary Scripts ###
 test_*.mjs
@@ -53,3 +56,10 @@ tmp/
 Entregables_Avance_2/
 Entregables_Sprints_Corregidos/
 Planificacion_CORONYX/
+
+# Validación reproducible sin incluir otros scripts temporales
+!scripts/
+scripts/*
+!scripts/test-functional-closure.ps1
+!scripts/start-closure-preview.ps1
+!scripts/preview-fixture.sql
