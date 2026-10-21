@@ -447,52 +447,31 @@ Tras la validación exitosa, `JwtService` genera un **JSON Web Token** firmado d
   }
   ```
 - **Persistencia en Cliente:** El front-end (`authService.ts` / `AuthContext.tsx`) almacena el token de forma segura en `localStorage` (`coronyx_jwt_token`), permitiendo la persistencia de sesión y adjuntándolo en las cabeceras `Authorization: Bearer <token>` de las peticiones subsiguientes.
-- **Auditoría Segura en Servidor (SLF4J / OWASP):** Siguiendo las directrices de seguridad de OWASP, los tokens y datos sensibles **no se exponen en la consola del navegador** (`console.log`) para evitar vectores de ataque XSS o fugas de información. La auditoría se centraliza en el logger oficial de Spring Boot (`AuthController`), registrando de forma controlada el correo, rol, clínica emisora y estado de la sesión.
 
 ---
 
-### 5.2. Autorización (Roles y Permisos Granulares)
+### 5.2. Autorización (RBAC y Permisos JSONB)
 
-El sistema materializa un modelo de **Control de Acceso Basado en Roles (RBAC Granular)** articulado en dos niveles:
+El sistema materializa un modelo de **Control de Acceso Basado en Roles (RBAC Granular)**. Las facultades y permisos no están hardcodeados en el código fuente, sino serializados en la columna `permisos_json` de la tabla `rol` en formato `JSONB`:
 
-1. **Nivel Base de Datos (PostgreSQL):** Las facultades y permisos no están cableados rígidamente en el código fuente, sino serializados en la columna `permisos_json` de la tabla `rol` en formato `JSONB`, vinculados al usuario a través de la tabla asociativa `usuario_clinica`.
-2. **Nivel Interfaz (Frontend):** El contexto de autenticación (`AuthContext.tsx`) y las vistas protegen dinámicamente las rutas y componentes según el rol obtenido en el token JWT. Por ejemplo, en el módulo de pacientes (`PacientePerfil.tsx`), el rol `RECEPCIONISTA` tiene acceso restringido a citas y agenda, bloqueando la edición de historiales médicos o prescripciones odontológicas.
-
-#### Matriz de Roles y Permisos (`permisos_json`)
-
-| Rol Institucional | Descripción Operativa y Alcance | Matriz de Permisos (`permisos_json`) |
+| Rol Institucional | Descripción Operativa | Matriz de Permisos (`permisos_json`) |
 | :--- | :--- | :--- |
-| **`SUPER_ADMIN`** | Administrador global de la plataforma SaaS multi-sede. Gestiona contratos, suscripciones y clínicas. | `["ALL_PRIVILEGES", "CLINICA_MANAGE", "USER_MANAGE", "GLOBAL_VIEW"]` |
-| **`ADMIN_CLINICA`** | Gestor administrativo de la clínica dental. Administra el personal, tarifas, reportes e inventario de la sede. | `["CLINICA_MANAGE", "USER_MANAGE", "REPORT_VIEW", "PATIENT_VIEW", "APPOINTMENT_MANAGE"]` |
-| **`ODONTOLOGO`** | Facultativo responsable de la atención odontológica. Control total sobre historias clínicas, diagnósticos, odontograma interactivo y aprobación de hallazgos IA. | `["PATIENT_VIEW", "APPOINTMENT_VIEW", "CLINICAL_WRITE", "ODONTOGRAM_WRITE", "AI_REVIEW"]` |
-| **`RECEPCIONISTA`** | Personal de admisión y atención al cliente. Control de agenda de citas, admisión de pacientes y consulta de datos generales en modo lectura. | `["PATIENT_MANAGE", "APPOINTMENT_MANAGE", "PATIENT_VIEW"]` |
-| **`PACIENTE`** | Usuario titular del portal de salud dental. Acceso exclusivo a su propio historial, citas programadas, prescripciones y estados de cuenta. | `["MY_APPOINTMENTS_VIEW", "MY_RECORDS_VIEW"]` |
+| **`SUPER_ADMIN`** | Administrador global de la plataforma SaaS multi-sede. | `["ALL_PRIVILEGES", "CLINICA_MANAGE", "USER_MANAGE", "GLOBAL_VIEW"]` |
+| **`ADMIN_CLINICA`** | Gestor administrativo de la clínica dental. | `["CLINICA_MANAGE", "USER_MANAGE", "REPORT_VIEW", "PATIENT_VIEW", "APPOINTMENT_MANAGE"]` |
+| **`ODONTOLOGO`** | Facultativo responsable de la atención clínica y diagnósticos. | `["PATIENT_VIEW", "APPOINTMENT_VIEW", "CLINICAL_WRITE", "ODONTOGRAM_WRITE", "AI_REVIEW"]` |
+| **`RECEPCIONISTA`** | Personal de admisión, agendamiento de citas y recepción. | `["PATIENT_MANAGE", "APPOINTMENT_MANAGE", "PATIENT_VIEW"]` |
+| **`PACIENTE`** | Usuario titular del portal de salud dental. | `["MY_APPOINTMENTS_VIEW", "MY_RECORDS_VIEW"]` |
 
-Esta arquitectura permite revocar, añadir o auditar permisos para cualquier rol en tiempo real mediante sentencias SQL directas sobre la columna `JSONB`, sin necesidad de recompilar la aplicación ni reiniciar los microservicios.
+Esta arquitectura permite revocar o añadir permisos a cualquier rol en tiempo real mediante un comando SQL sobre el JSONB sin necesidad de recompilar la aplicación ni reiniciar los microservicios.
 
 ---
 
-### 5.3. Protección de la Información y Mecanismos de Seguridad
+### 5.3. Protección de la Información y Criptografía
 
-El sistema implementa una defensa en profundidad que abarca almacenamiento, transporte y capa de presentación:
-
-#### 5.3.1. Manejo Seguro de Contraseñas y Criptografía
-- **Hashing Adaptativo BCrypt:** Las credenciales de usuario nunca se almacenan en texto claro. Se utiliza el algoritmo **BCrypt** (`spring-security-crypto`) con un factor de trabajo (*work factor*) de **12 rondas** (`$2a$12$...`).
-- **Inmunidad ante Tablas Arcoíris:** Cada contraseña genera un *salt* criptográfico aleatorio único de 128 bits embebido en el hash, neutralizando ataques por diccionario y precomputación.
-- **Migración Transparente:** La arquitectura implementada en `AuthService` detecta si un usuario migrado o inicial posee una clave previa y la re-encripta automáticamente en su primer inicio de sesión válido.
-
-#### 5.3.2. Protección de Integridad de Sesión (JWT HS256)
-- **Firma Criptográfica HMAC-SHA256:** Los tokens emitidos contienen una firma digital basada en una clave secreta simétrica de 256 bits custodiada en el servidor. Cualquier alteración de claims en el cliente (como intentar elevar privilegios a `SUPER_ADMIN`) invalida matemáticamente la firma en el backend.
-- **Expiración Acotada:** Los tokens cuentan con vigencia fija de 24 horas (`exp`), reduciendo la ventana de riesgo ante un eventual robo de credenciales en reposo.
-
-#### 5.3.3. Protección de Datos Sensibles y Aislamiento Multi-Tenant
-- **Aislamiento Multi-Tenant Estricto:** Toda consulta y mutación sobre entidades clínicas (`paciente`, `cita`, `historial_medico`, `archivo_adjunto`) exige el filtro mandatario `clinica_id`, impidiendo fugas de datos (*data leakage*) entre sedes o clínicas diferentes dentro de la misma base de datos.
-- **Firma Obligatoria e Inmutabilidad Médica:** Los registros de historia clínica y notas de evolución requieren la relación mandataria `firmado_por` vinculada al odontólogo colegiado que realizó el procedimiento. Los registros cerrados no permiten edición destructiva arbitraria.
-- **Generación Criptográfica con `pgcrypto`:** La base de datos PostgreSQL utiliza la extensión `pgcrypto` nativa para la generación de identificadores UUID v4 (`gen_random_uuid()`), impidiendo ataques de enumeración predecible de identificadores (`IDOR`).
-
-#### 5.3.4. Seguridad en Transporte y Capa de Presentación
-- **Política de Fuga Cero en Cliente (Zero Console Leakage):** Se eliminó cualquier impresión de credenciales o tokens en la consola del navegador (`console.log`), mitigando vulnerabilidades frente a extensiones de navegador no confiables o ataques XSS reflejados.
-- **Políticas de Origen Cruzado (CORS Controlado):** Los controladores REST implementan `@CrossOrigin` delimitando los métodos permitidos (`GET`, `POST`, `PUT`, `DELETE`, `OPTIONS`) para proteger los recursos frente a peticiones forjadas desde dominios no autorizados.
+1. **Manejo Seguro de Contraseñas:** Se utiliza el algoritmo de hashing adaptativo **BCrypt** con factor de costo configurable (`$2a$12$...`), haciendo inviables los ataques por fuerza bruta o tablas arcoíris (*rainbow tables*).
+2. **Extensión `pgcrypto` en Base de Datos:** Se garantizó la habilitación de la extensión criptográfica en PostgreSQL para operaciones nativas de hashing y generación de identificadores UUID v4 (`gen_random_uuid()`).
+3. **Aislamiento Multi-Tenant de Datos Médicos:** Cada consulta y mutación en las entidades clínicas exige el filtro mandatario `clinica_id`, impidiendo fugas de datos entre diferentes clínicas u organizaciones.
+4. **Protección de Datos Sensibles:** Los historiales clínicos y hallazgos radiográficos permanecen protegidos bajo auditoría de firma obligatoria (`firmado_por` FK hacia `usuario_clinica`), impidiendo que personal no médico modifique registros diagnósticos consolidados.
 
 ---
 
@@ -558,33 +537,12 @@ class PatientIntegrationTest {
         assertEquals(HttpStatus.OK, listResponse.getStatusCode());
         assertTrue(listResponse.getBody().stream().anyMatch(p -> "77889900".equals(p.getNumeroDocumento())));
     }
-
-    @Test
-    void testUpdatePatient() {
-        // Prueba de actualización de datos clínicos y contacto
-        PatientDto dto = new PatientDto();
-        dto.setNombres("Carlos");
-        dto.setApellidos("Gamboa Velasquez");
-        dto.setTelefono("+51 999888777");
-        dto.setAlergias("Penicilina y AINEs");
-
-        ResponseEntity<PatientDto> updateResponse = patientController.updatePatient(patientId, dto);
-        assertEquals(HttpStatus.OK, updateResponse.getStatusCode());
-        assertEquals("+51 999888777", updateResponse.getBody().getTelefono());
-    }
-
-    @Test
-    void testArchivePatient() {
-        // Prueba de borrado lógico / archivado para trazabilidad legal
-        ResponseEntity<Void> archiveResponse = patientController.archivePatient(patientId);
-        assertEquals(HttpStatus.NO_CONTENT, archiveResponse.getStatusCode());
-    }
 }
 ```
 
 **Resultado de Pruebas:**
-- `AuthIntegrationTest`: **PASSED (100% éxito)** - Emisión de JWT y hashing BCrypt validados.
-- `PatientIntegrationTest`: **PASSED (100% éxito)** - CRUD integral (POST, GET, PUT, PATCH archive) validado.
+- `AuthIntegrationTest`: **PASSED (100% éxito)**.
+- `PatientIntegrationTest`: **PASSED (100% éxito)**.
 - `CoronyxBackendApplicationTests`: **PASSED (100% éxito)**.
 
 ---
@@ -616,15 +574,20 @@ class PatientIntegrationTest {
   [INFO]   - V1__initial_schema.sql (12 tables)
   [INFO]   - V2__seed_users_and_roles.sql (roles and users seed)
   ```
-- Tabla `paciente` reflejando pacientes insertados, editados y archivados desde la interfaz web con IDs UUID generados por el servidor.
+- Tabla `paciente` reflejando pacientes insertados desde la interfaz web con IDs UUID generados por el servidor.
 
 ### 7.4. Evidencia del Sistema Integrado (Front-End + Back-End)
-- Formulario de inicio de sesión en React/Vite consumiendo `/api/v1/auth/login` con credenciales reales del odontólogo (`odontologo@coronyx.pe` / `123456`), recibiendo el token JWT (`coronyx_jwt_token`) y redirigiendo al módulo clínico.
-- Formulario de alta, actualización modal y archivado de pacientes interactuando con PostgreSQL en tiempo real.
+- Formulario de inicio de sesión en React/Vite consumiendo `/api/v1/auth/login` con credenciales reales del odontólogo (`odontologo@coronyx.pe` / `123456`), redirigiendo correctamente al módulo clínico.
+- Formulario de alta de pacientes guardando en PostgreSQL y actualizando la grilla en tiempo real.
 
 ### 7.5. Evidencia de Control de Versiones Git
-- Rama de trabajo Back-End: `feature/postgresql-modelo-gamboa` con commits atómicos de persistencia, CRUD completo y seguridad JWT/BCrypt.
-- Rama de trabajo Front-End: `feature/login-base-gamboa` con conexión a servicios REST, diseño minimalista limpio y animaciones GSAP integradas.
+- Rama de trabajo Back-End: `feature/postgresql-modelo-gamboa` con commits atómicos de funcionalidades.
+- Rama de trabajo Front-End: `feature/login-base-gamboa` con conexión a servicios REST.
+- Registro de commits:
+  - `46975a5 feat(auth): V1: autenticacion real con PostgreSQL, migracion Flyway V2 y roles institucionales (#91-#94)`
+  - `c003621 feat(api): V1: conectar endpoints REST de pacientes con PostgreSQL (#91-#94)`
+  - `9167bdf feat(database): V1: configurar base técnica PostgreSQL, Flyway y entidades JPA (#91-#94)`
+  - `f69d654 feat(auth): V1: conectar autenticacion real con PostgreSQL y eliminar datos mock (#91-#94)`
 
 ---
 
@@ -632,14 +595,14 @@ class PatientIntegrationTest {
 
 1. **Madurez Operativa del Back-End:** Se completó exitosamente la Fase 2 del proyecto, logrando que el Back-End en Spring Boot 4 y Java 21 compile de manera impecable y gestione el ciclo de persistencia real en PostgreSQL 17.
 2. **Erradicación de Datos Mock:** Se eliminó la dependencia de datos simulados en memoria para los módulos de autenticación y pacientes, demostrando una integración real y funcional de extremo a extremo entre el Front-End y la Base de Datos.
-3. **Seguridad y Control de Acceso Riguroso:** La integración del patrón RBAC respaldado por estructuras `JSONB`, el hashing criptográfico de contraseñas con **BCrypt** y la emisión de tokens **JWT HS256** proporcionan una base sólida para la confidencialidad médica requerida por la normativa sanitaria.
+3. **Seguridad y Control de Acceso Riguroso:** La integración del patrón RBAC respaldado por estructuras `JSONB` y el hashing criptográfico de contraseñas proporciona una base sólida para la confidencialidad médica requerida por la normativa sanitaria.
 4. **Automatización y Confiabilidad:** La suite de pruebas de integración (`@SpringBootTest`) y el versionamiento determinista de base de datos con Flyway aseguran que el sistema pueda desplegarse de manera continua y predecible.
 
 ---
 
 ## 9. RECOMENDACIONES
 
-1. **Incorporar Refresh Tokens y Revocación en Cache:** Para el Sprint 05, se recomienda complementar la emisión actual de tokens JWT con un mecanismo de *Refresh Tokens* y lista negra de revocación (*token blacklisting*) almacenada en Redis.
+1. **Incorporar Filtros de Seguridad Stateless con Spring Security y JWT:** Para el Sprint 05, se recomienda evolucionar el mecanismo actual de autenticación hacia tokens JWT firmados criptográficamente (HMAC-SHA256 / RSA), permitiendo que cada llamada HTTP transporte la identidad y roles en la cabecera `Authorization: Bearer <token>`.
 2. **Implementar Endpoints Restantes del Dominio Clínico:** Desarrollar los controladores y servicios para `Appointment` (gestión de citas omnicanal), `ClinicalCare` (versiones inmutables de atención) y `Odontogram` (hallazgos FDI 11-85).
 3. **Contenedorización Completa con Docker Compose:** Empaquetar el Back-End (`Dockerfile` multi-stage con OpenJDK 21) y orquestarlo junto con la base de datos PostgreSQL para permitir despliegues de un solo comando en entornos de homologación.
 4. **Manejo Centralizado de Excepciones:** Extender el uso de un `@ControllerAdvice` global para traducir de forma uniforme las violaciones de integridad referencial y validaciones de DTOs en códigos de error legibles por el cliente web.

@@ -1,0 +1,19 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://127.0.0.1:55431/coronyx_block1
+    username: coronyx_test
+    password: ""
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    enabled: true
+storage:
+  local:
+    directory: target/block1-isolated/storage
+jwt:
+  secret: block1-isolated-test-secret-not-for-any-production-environment-2026
+  expiration-ms: 3600000
+logging:
+  level:
+    pe.edu.utp.coronyx.backend: WARN

@@ -1,27 +1,62 @@
 package pe.edu.utp.coronyx.backend.dto;
 
-import java.util.UUID;
-
 public class LoginResponseDto {
 
-    private UUID id;
+    private String id;
+    private String usuarioId;
+    private String usuarioClinicaId;
+    private String clinicaId;
+    private String pacienteId;
     private String correo;
     private String nombres;
     private String apellidos;
     private String nombreCompleto;
     private String rol;
-    private UUID clinicaId;
     private String clinicaNombre;
+    private String token;
+    private String tipoToken = "Bearer";
 
     public LoginResponseDto() {
     }
 
-    public UUID getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(String id) {
         this.id = id;
+    }
+
+    public String getUsuarioId() {
+        return usuarioId;
+    }
+
+    public void setUsuarioId(String usuarioId) {
+        this.usuarioId = usuarioId;
+    }
+
+    public String getUsuarioClinicaId() {
+        return usuarioClinicaId;
+    }
+
+    public void setUsuarioClinicaId(String usuarioClinicaId) {
+        this.usuarioClinicaId = usuarioClinicaId;
+    }
+
+    public String getClinicaId() {
+        return clinicaId;
+    }
+
+    public void setClinicaId(String clinicaId) {
+        this.clinicaId = clinicaId;
+    }
+
+    public String getPacienteId() {
+        return pacienteId;
+    }
+
+    public void setPacienteId(String pacienteId) {
+        this.pacienteId = pacienteId;
     }
 
     public String getCorreo() {
@@ -64,14 +99,6 @@ public class LoginResponseDto {
         this.rol = rol;
     }
 
-    public UUID getClinicaId() {
-        return clinicaId;
-    }
-
-    public void setClinicaId(UUID clinicaId) {
-        this.clinicaId = clinicaId;
-    }
-
     public String getClinicaNombre() {
         return clinicaNombre;
     }
@@ -79,9 +106,6 @@ public class LoginResponseDto {
     public void setClinicaNombre(String clinicaNombre) {
         this.clinicaNombre = clinicaNombre;
     }
-
-    private String token;
-    private String tipoToken = "Bearer";
 
     public String getToken() {
         return token;

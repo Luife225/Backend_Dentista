@@ -5,9 +5,8 @@ import org.springframework.stereotype.Repository;
 import pe.edu.utp.coronyx.backend.model.Clinic;
 
 import java.util.Optional;
-import java.util.UUID;
 
 @Repository
-public interface ClinicRepository extends JpaRepository<Clinic, UUID> {
+public interface ClinicRepository extends JpaRepository<Clinic, Long> {
     Optional<Clinic> findFirstByOrderByFechaCreacionAsc();
 }

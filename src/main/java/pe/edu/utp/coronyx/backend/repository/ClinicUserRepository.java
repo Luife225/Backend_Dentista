@@ -6,10 +6,12 @@ import pe.edu.utp.coronyx.backend.model.ClinicUser;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Repository
-public interface ClinicUserRepository extends JpaRepository<ClinicUser, UUID> {
-    List<ClinicUser> findByUsuarioId(UUID usuarioId);
-    Optional<ClinicUser> findFirstByUsuarioId(UUID usuarioId);
+public interface ClinicUserRepository extends JpaRepository<ClinicUser, Long> {
+    List<ClinicUser> findByUsuarioId(Long usuarioId);
+    Optional<ClinicUser> findFirstByUsuarioId(Long usuarioId);
+    List<ClinicUser> findByClinicaId(Long clinicaId);
+    List<ClinicUser> findByClinicaIdOrderByFechaAsignacionDesc(Long clinicaId);
+    Optional<ClinicUser> findByUsuarioIdAndClinicaId(Long usuarioId, Long clinicaId);
 }

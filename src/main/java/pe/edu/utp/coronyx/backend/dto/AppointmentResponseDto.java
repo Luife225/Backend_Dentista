@@ -1,24 +1,23 @@
 package pe.edu.utp.coronyx.backend.dto;
 
 import java.time.OffsetDateTime;
-import java.util.UUID;
 
 public class AppointmentResponseDto {
 
-    private UUID id;
-    private UUID clinicaId;
+    private String id;
+    private String clinicaId;
     private String clinicaNombre;
 
-    private UUID pacienteId;
+    private String pacienteId;
     private String pacienteNombreCompleto;
     private String pacienteNumeroDocumento;
     private String pacienteTelefono;
 
-    private UUID odontologoId;
+    private String odontologoId;
     private String odontologoNombreCompleto;
     private String odontologoCorreo;
 
-    private UUID creadoPorId;
+    private String creadoPorId;
     private String creadoPorNombreCompleto;
 
     private OffsetDateTime inicioEn;
@@ -35,19 +34,19 @@ public class AppointmentResponseDto {
     public AppointmentResponseDto() {
     }
 
-    public UUID getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public UUID getClinicaId() {
+    public String getClinicaId() {
         return clinicaId;
     }
 
-    public void setClinicaId(UUID clinicaId) {
+    public void setClinicaId(String clinicaId) {
         this.clinicaId = clinicaId;
     }
 
@@ -59,11 +58,11 @@ public class AppointmentResponseDto {
         this.clinicaNombre = clinicaNombre;
     }
 
-    public UUID getPacienteId() {
+    public String getPacienteId() {
         return pacienteId;
     }
 
-    public void setPacienteId(UUID pacienteId) {
+    public void setPacienteId(String pacienteId) {
         this.pacienteId = pacienteId;
     }
 
@@ -91,11 +90,11 @@ public class AppointmentResponseDto {
         this.pacienteTelefono = pacienteTelefono;
     }
 
-    public UUID getOdontologoId() {
+    public String getOdontologoId() {
         return odontologoId;
     }
 
-    public void setOdontologoId(UUID odontologoId) {
+    public void setOdontologoId(String odontologoId) {
         this.odontologoId = odontologoId;
     }
 
@@ -115,11 +114,11 @@ public class AppointmentResponseDto {
         this.odontologoCorreo = odontologoCorreo;
     }
 
-    public UUID getCreadoPorId() {
+    public String getCreadoPorId() {
         return creadoPorId;
     }
 
-    public void setCreadoPorId(UUID creadoPorId) {
+    public void setCreadoPorId(String creadoPorId) {
         this.creadoPorId = creadoPorId;
     }
 

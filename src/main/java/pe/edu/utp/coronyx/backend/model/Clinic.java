@@ -6,16 +6,15 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.time.OffsetDateTime;
-import java.util.UUID;
 
 @Entity
 @Table(name = "clinica")
 public class Clinic {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", updatable = false, nullable = false)
-    private UUID id;
+    private Long id;
 
     @NotBlank
     @Size(max = 160)
@@ -44,6 +43,26 @@ public class Clinic {
     @Column(name = "fecha_actualizacion", nullable = false)
     private OffsetDateTime fechaActualizacion;
 
+    @Size(max = 20)
+    @Column(name = "ruc", length = 20)
+    private String ruc;
+
+    @Size(max = 30)
+    @Column(name = "telefono", length = 30)
+    private String telefono;
+
+    @Size(max = 254)
+    @Column(name = "correo", length = 254)
+    private String correo;
+
+    @Size(max = 100)
+    @Column(name = "ciudad", length = 100)
+    private String ciudad;
+
+    @Size(max = 255)
+    @Column(name = "direccion", length = 255)
+    private String direccion;
+
     public Clinic() {
     }
 
@@ -70,11 +89,11 @@ public class Clinic {
         fechaActualizacion = OffsetDateTime.now();
     }
 
-    public UUID getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -124,5 +143,45 @@ public class Clinic {
 
     public void setFechaActualizacion(OffsetDateTime fechaActualizacion) {
         this.fechaActualizacion = fechaActualizacion;
+    }
+
+    public String getRuc() {
+        return ruc;
+    }
+
+    public void setRuc(String ruc) {
+        this.ruc = ruc;
+    }
+
+    public String getTelefono() {
+        return telefono;
+    }
+
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
+    }
+
+    public String getCorreo() {
+        return correo;
+    }
+
+    public void setCorreo(String correo) {
+        this.correo = correo;
+    }
+
+    public String getCiudad() {
+        return ciudad;
+    }
+
+    public void setCiudad(String ciudad) {
+        this.ciudad = ciudad;
+    }
+
+    public String getDireccion() {
+        return direccion;
+    }
+
+    public void setDireccion(String direccion) {
+        this.direccion = direccion;
     }
 }

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CORONYX — Diagrama Físico de Base de Datos (12 Tablas Oficiales)</title>
+  <title>CORONYX — Diagrama Físico de Base de Datos (Modelo objetivo BIGINT · 15 tablas · 39 FK)</title>
   <!-- Cytoscape.js para visualización de grafos de alta performance -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.28.1/cytoscape.min.js"></script>
   <!-- Dagre layout para organización jerárquica automática de entidades -->
@@ -254,9 +254,9 @@
 <body>
 
   <header>
-    <div class="brand">
+    <div class="brand" title="Esquema implementado V10 con Flyway en PostgreSQL. Claves primarias y foráneas BIGINT identity validadas.">
       <h1>🦷 CORONYX · Modelo Físico Relacional</h1>
-      <span>12 Tablas Oficiales (PostgreSQL 17 / Supabase)</span>
+      <span>Esquema Implementado V10 · BIGINT IDENTITY · 15 tablas · 39 FK</span>
     </div>
     <div class="controls">
       <button onclick="toggleVista()" id="btn-vista">👁️ Modo: Todas las Columnas</button>
@@ -276,8 +276,8 @@
   </div>
 
   <div class="legend">
-    <div class="legend-item"><span class="color-dot" style="background: #1E8C82;"></span> Seguridad y Multi-Sede (4)</div>
-    <div class="legend-item"><span class="color-dot" style="background: #059669;"></span> Pacientes y Citas (2)</div>
+    <div class="legend-item"><span class="color-dot" style="background: #1E8C82;"></span> Seguridad y Multi-Sede (6)</div>
+    <div class="legend-item"><span class="color-dot" style="background: #059669;"></span> Pacientes y Citas (3)</div>
     <div class="legend-item"><span class="color-dot" style="background: #D97706;"></span> Historia Clínica y Odontograma (4)</div>
     <div class="legend-item"><span class="color-dot" style="background: #7C3AED;"></span> Archivos e Inteligencia Artificial (1)</div>
     <div class="legend-item"><span class="color-dot" style="background: #475569;"></span> Notificaciones (1)</div>
@@ -287,257 +287,1027 @@
     let modoVista = 'FULL';
 
     // =========================================================================
-    // DICCIONARIO OFICIAL DE LAS 12 TABLAS (100% IDÉNTICO A LA IMAGEN APROBADA POR EL DOCENTE)
+    // DICCIONARIO DEL MODELO IMPLEMENTADO V10 · BIGINT IDENTITY · 15 TABLAS · 39 FK
     // =========================================================================
     const tablasData = {
-      clinica: {
-        nombre: "clinica",
-        icono: "🏥",
-        dominio: "Seguridad y Multi-Sede",
-        color: "#1E8C82",
-        desc: "Tenant principal del sistema multi-inquilino. Todas las transacciones se aíslan por clinica_id (RF-03).",
-        cols: [
-          { name: "id", type: "UUID", pk: true },
-          { name: "nombre", type: "VARCHAR(160)" },
-          { name: "razon_social", type: "VARCHAR(200)" },
-          { name: "zona_horaria", type: "VARCHAR(64)" },
-          { name: "estado", type: "VARCHAR(16)" },
-          { name: "fecha_creacion", type: "TIMESTAMPTZ" },
-          { name: "fecha_actualizacion", type: "TIMESTAMPTZ" }
-        ]
+      "clinica": {
+            "nombre": "clinica",
+            "dominio": "Seguridad y Multi-Sede",
+            "color": "#1E8C82",
+            "icono": "🏥",
+            "desc": "Tenant principal del sistema multi-inquilino. Todas las transacciones se aíslan por clinica_id (RF-03).",
+            "cols": [
+                  {
+                        "name": "id",
+                        "type": "BIGINT",
+                        "pk": true
+                  },
+                  {
+                        "name": "nombre",
+                        "type": "VARCHAR(160)"
+                  },
+                  {
+                        "name": "razon_social",
+                        "type": "VARCHAR(200)"
+                  },
+                  {
+                        "name": "zona_horaria",
+                        "type": "VARCHAR(64)"
+                  },
+                  {
+                        "name": "estado",
+                        "type": "VARCHAR(16)"
+                  },
+                  {
+                        "name": "ruc",
+                        "type": "VARCHAR(20)"
+                  },
+                  {
+                        "name": "telefono",
+                        "type": "VARCHAR(30)"
+                  },
+                  {
+                        "name": "correo",
+                        "type": "VARCHAR(254)"
+                  },
+                  {
+                        "name": "ciudad",
+                        "type": "VARCHAR(100)"
+                  },
+                  {
+                        "name": "direccion",
+                        "type": "VARCHAR(255)"
+                  },
+                  {
+                        "name": "fecha_creacion",
+                        "type": "TIMESTAMPTZ"
+                  },
+                  {
+                        "name": "fecha_actualizacion",
+                        "type": "TIMESTAMPTZ"
+                  }
+            ]
       },
-      usuario: {
-        nombre: "usuario",
-        icono: "👤",
-        dominio: "Seguridad y Multi-Sede",
-        color: "#1E8C82",
-        desc: "Cuentas universales de acceso. Absorbe directamente los tokens de restablecimiento de contraseña (RF-01).",
-        cols: [
-          { name: "id", type: "UUID", pk: true },
-          { name: "correo", type: "VARCHAR(254) UNQ" },
-          { name: "clave_hash", type: "VARCHAR(255)" },
-          { name: "nombres", type: "VARCHAR(100)" },
-          { name: "apellidos", type: "VARCHAR(100)" },
-          { name: "estado", type: "VARCHAR(20)" },
-          { name: "correo_verificado_en", type: "TIMESTAMPTZ" },
-          { name: "token_recuperacion_hash", type: "VARCHAR(255)" },
-          { name: "token_recuperacion_expira_en", type: "TIMESTAMPTZ" },
-          { name: "token_recuperacion_usado_en", type: "TIMESTAMPTZ" },
-          { name: "fecha_creacion", type: "TIMESTAMPTZ" },
-          { name: "fecha_actualizacion", type: "TIMESTAMPTZ" }
-        ]
+      "usuario": {
+            "nombre": "usuario",
+            "dominio": "Seguridad y Multi-Sede",
+            "color": "#1E8C82",
+            "icono": "👤",
+            "desc": "Cuentas universales de acceso. Absorbe directamente los tokens de restablecimiento de contraseña (RF-01).",
+            "cols": [
+                  {
+                        "name": "id",
+                        "type": "BIGINT",
+                        "pk": true
+                  },
+                  {
+                        "name": "correo",
+                        "type": "VARCHAR(254)"
+                  },
+                  {
+                        "name": "clave_hash",
+                        "type": "VARCHAR(255)"
+                  },
+                  {
+                        "name": "nombres",
+                        "type": "VARCHAR(100)"
+                  },
+                  {
+                        "name": "apellidos",
+                        "type": "VARCHAR(100)"
+                  },
+                  {
+                        "name": "estado",
+                        "type": "VARCHAR(20)"
+                  },
+                  {
+                        "name": "correo_verificado_en",
+                        "type": "TIMESTAMPTZ"
+                  },
+                  {
+                        "name": "token_recuperacion_hash",
+                        "type": "VARCHAR(255)"
+                  },
+                  {
+                        "name": "token_recuperacion_expira_en",
+                        "type": "TIMESTAMPTZ"
+                  },
+                  {
+                        "name": "token_recuperacion_usado_en",
+                        "type": "TIMESTAMPTZ"
+                  },
+                  {
+                        "name": "session_version",
+                        "type": "BIGINT"
+                  },
+                  {
+                        "name": "fecha_creacion",
+                        "type": "TIMESTAMPTZ"
+                  },
+                  {
+                        "name": "fecha_actualizacion",
+                        "type": "TIMESTAMPTZ"
+                  }
+            ]
       },
-      rol: {
-        nombre: "rol",
-        icono: "🛡️",
-        dominio: "Seguridad y Multi-Sede",
-        color: "#1E8C82",
-        desc: "Catálogo maestro de roles y gobierno de permisos RBAC granulares en formato JSONB (RF-02).",
-        cols: [
-          { name: "id", type: "UUID", pk: true },
-          { name: "codigo", type: "VARCHAR(40) UNQ" },
-          { name: "nombre", type: "VARCHAR(80)" },
-          { name: "descripcion", type: "TEXT" },
-          { name: "permisos_json", type: "JSONB" },
-          { name: "activo", type: "BOOLEAN" },
-          { name: "fecha_creacion", type: "TIMESTAMPTZ" }
-        ]
+      "rol": {
+            "nombre": "rol",
+            "dominio": "Seguridad y Multi-Sede",
+            "color": "#1E8C82",
+            "icono": "🛡️",
+            "desc": "Catálogo maestro de roles y gobierno de permisos RBAC granulares en formato JSONB (RF-02).",
+            "cols": [
+                  {
+                        "name": "id",
+                        "type": "BIGINT",
+                        "pk": true
+                  },
+                  {
+                        "name": "codigo",
+                        "type": "VARCHAR(40)"
+                  },
+                  {
+                        "name": "nombre",
+                        "type": "VARCHAR(80)"
+                  },
+                  {
+                        "name": "descripcion",
+                        "type": "TEXT"
+                  },
+                  {
+                        "name": "permisos_json",
+                        "type": "JSONB"
+                  },
+                  {
+                        "name": "activo",
+                        "type": "BOOLEAN"
+                  },
+                  {
+                        "name": "fecha_creacion",
+                        "type": "TIMESTAMPTZ"
+                  }
+            ]
       },
-      usuario_clinica: {
-        nombre: "usuario_clinica",
-        icono: "🔗",
-        dominio: "Seguridad y Multi-Sede",
-        color: "#1E8C82",
-        desc: "Membresía multi-sede que vincula un usuario y una clínica asignándole su rol correspondiente (RF-02, RF-03).",
-        cols: [
-          { name: "id", type: "UUID", pk: true },
-          { name: "clinica_id", type: "UUID", fk: true },
-          { name: "usuario_id", type: "UUID", fk: true },
-          { name: "rol_id", type: "UUID", fk: true },
-          { name: "rol_asignado_por", type: "UUID", fk: true },
-          { name: "estado", type: "VARCHAR(16)" },
-          { name: "fecha_asignacion", type: "TIMESTAMPTZ" },
-          { name: "fecha_actualizacion", type: "TIMESTAMPTZ" }
-        ]
+      "usuario_clinica": {
+            "nombre": "usuario_clinica",
+            "dominio": "Seguridad y Multi-Sede",
+            "color": "#1E8C82",
+            "icono": "🔗",
+            "desc": "Membresía multi-sede que vincula un usuario y una clínica asignándole su rol correspondiente (RF-02, RF-03).",
+            "cols": [
+                  {
+                        "name": "id",
+                        "type": "BIGINT",
+                        "pk": true
+                  },
+                  {
+                        "name": "clinica_id",
+                        "type": "BIGINT",
+                        "fk": true,
+                        "ref": "clinica.id",
+                        "nullable": false,
+                        "onDelete": "CASCADE"
+                  },
+                  {
+                        "name": "usuario_id",
+                        "type": "BIGINT",
+                        "fk": true,
+                        "ref": "usuario.id",
+                        "nullable": false,
+                        "onDelete": "CASCADE"
+                  },
+                  {
+                        "name": "rol_id",
+                        "type": "BIGINT",
+                        "fk": true,
+                        "ref": "rol.id",
+                        "nullable": false,
+                        "onDelete": "RESTRICT"
+                  },
+                  {
+                        "name": "rol_asignado_por",
+                        "type": "BIGINT",
+                        "fk": true,
+                        "ref": "usuario.id",
+                        "nullable": true,
+                        "onDelete": "SET NULL"
+                  },
+                  {
+                        "name": "estado",
+                        "type": "VARCHAR(16)"
+                  },
+                  {
+                        "name": "fecha_asignacion",
+                        "type": "TIMESTAMPTZ"
+                  },
+                  {
+                        "name": "fecha_actualizacion",
+                        "type": "TIMESTAMPTZ"
+                  }
+            ]
       },
-      paciente: {
-        nombre: "paciente",
-        icono: "🧑",
-        dominio: "Pacientes y Citas",
-        color: "#059669",
-        desc: "Expediente integral desnormalizado: absorbe datos administrativos y perfil médico confidencial (RF-04).",
-        cols: [
-          { name: "id", type: "UUID", pk: true },
-          { name: "clinica_id", type: "UUID", fk: true },
-          { name: "usuario_id", type: "UUID", fk: true },
-          { name: "medico_actualizo_id", type: "UUID", fk: true },
-          { name: "tipo_documento", type: "VARCHAR(20)" },
-          { name: "numero_documento", type: "VARCHAR(30)" },
-          { name: "nombres", type: "VARCHAR(100)" },
-          { name: "apellidos", type: "VARCHAR(100)" },
-          { name: "fecha_nacimiento", type: "DATE" },
-          { name: "telefono", type: "VARCHAR(30)" },
-          { name: "correo", type: "VARCHAR(254)" },
-          { name: "estado", type: "VARCHAR(16)" },
-          { name: "alergias", type: "TEXT" },
-          { name: "antecedentes_medicos", type: "TEXT" },
-          { name: "medicamentos", type: "TEXT" },
-          { name: "fecha_creacion", type: "TIMESTAMPTZ" },
-          { name: "fecha_actualizacion", type: "TIMESTAMPTZ" }
-        ]
+      "horario_atencion": {
+            "nombre": "horario_atencion",
+            "dominio": "Seguridad y Multi-Sede",
+            "color": "#1E8C82",
+            "icono": "⏱️",
+            "desc": "Definición de turnos y ventanas de disponibilidad semanal por clínica y por odontólogo (V09 / R05).",
+            "cols": [
+                  {
+                        "name": "id",
+                        "type": "BIGINT",
+                        "pk": true
+                  },
+                  {
+                        "name": "clinica_id",
+                        "type": "BIGINT",
+                        "fk": true,
+                        "ref": "clinica.id",
+                        "nullable": false,
+                        "onDelete": "CASCADE"
+                  },
+                  {
+                        "name": "odontologo_id",
+                        "type": "BIGINT",
+                        "fk": true,
+                        "ref": "usuario_clinica.id",
+                        "nullable": true,
+                        "onDelete": "CASCADE"
+                  },
+                  {
+                        "name": "dia_semana",
+                        "type": "INTEGER"
+                  },
+                  {
+                        "name": "hora_apertura",
+                        "type": "TIME"
+                  },
+                  {
+                        "name": "hora_cierre",
+                        "type": "TIME"
+                  },
+                  {
+                        "name": "activo",
+                        "type": "BOOLEAN"
+                  },
+                  {
+                        "name": "duracion_turno_minutos",
+                        "type": "INTEGER"
+                  },
+                  {
+                        "name": "fecha_creacion",
+                        "type": "TIMESTAMPTZ"
+                  },
+                  {
+                        "name": "fecha_actualizacion",
+                        "type": "TIMESTAMPTZ"
+                  }
+            ]
       },
-      cita: {
-        nombre: "cita",
-        icono: "📅",
-        dominio: "Pacientes y Citas",
-        color: "#059669",
-        desc: "Agenda clínica desnormalizada: controla horarios y absorbe teleconsulta WebRTC virtual (link, sala, estado) (RF-06, RF-07, RF-17).",
-        cols: [
-          { name: "id", type: "UUID", pk: true },
-          { name: "clinica_id", type: "UUID", fk: true },
-          { name: "paciente_id", type: "UUID", fk: true },
-          { name: "odontologo_id", type: "UUID", fk: true },
-          { name: "creado_por_id", type: "UUID", fk: true },
-          { name: "inicio_en", type: "TIMESTAMPTZ" },
-          { name: "fin_en", type: "TIMESTAMPTZ" },
-          { name: "modalidad", type: "VARCHAR(12)" },
-          { name: "estado", type: "VARCHAR(20)" },
-          { name: "estado_asistencia", type: "VARCHAR(16)" },
-          { name: "motivo", type: "VARCHAR(500)" },
-          { name: "enlace_teleconsulta", type: "VARCHAR(500)" },
-          { name: "consultorio", type: "VARCHAR(100)" },
-          { name: "fecha_creacion", type: "TIMESTAMPTZ" },
-          { name: "fecha_actualizacion", type: "TIMESTAMPTZ" }
-        ]
+      "ausencia_odontologo": {
+            "nombre": "ausencia_odontologo",
+            "dominio": "Seguridad y Multi-Sede",
+            "color": "#1E8C82",
+            "icono": "🏖️",
+            "desc": "Bloqueos y excepciones de agenda (vacaciones, licencias médicas, capacitaciones) para profesionales (V09 / R05).",
+            "cols": [
+                  {
+                        "name": "id",
+                        "type": "BIGINT",
+                        "pk": true
+                  },
+                  {
+                        "name": "clinica_id",
+                        "type": "BIGINT",
+                        "fk": true,
+                        "ref": "clinica.id",
+                        "nullable": false,
+                        "onDelete": "CASCADE"
+                  },
+                  {
+                        "name": "odontologo_id",
+                        "type": "BIGINT",
+                        "fk": true,
+                        "ref": "usuario_clinica.id",
+                        "nullable": false,
+                        "onDelete": "CASCADE"
+                  },
+                  {
+                        "name": "inicio_en",
+                        "type": "TIMESTAMPTZ"
+                  },
+                  {
+                        "name": "fin_en",
+                        "type": "TIMESTAMPTZ"
+                  },
+                  {
+                        "name": "motivo",
+                        "type": "VARCHAR(255)"
+                  },
+                  {
+                        "name": "tipo",
+                        "type": "VARCHAR(40)"
+                  },
+                  {
+                        "name": "fecha_creacion",
+                        "type": "TIMESTAMPTZ"
+                  }
+            ]
       },
-      atencion_clinica: {
-        nombre: "atencion_clinica",
-        icono: "🩺",
-        dominio: "Historia Clínica y Odontograma",
-        color: "#D97706",
-        desc: "Cabecera del acto médico que agrupa y conecta el historial de versiones inmutables del tratamiento (RF-08).",
-        cols: [
-          { name: "id", type: "UUID", pk: true },
-          { name: "clinica_id", type: "UUID", fk: true },
-          { name: "paciente_id", type: "UUID", fk: true },
-          { name: "cita_id", type: "UUID UNQ", fk: true },
-          { name: "odontologo_id", type: "UUID", fk: true },
-          { name: "estado", type: "VARCHAR(16)" },
-          { name: "fecha_creacion", type: "TIMESTAMPTZ" },
-          { name: "fecha_confirmacion", type: "TIMESTAMPTZ" }
-        ]
+      "paciente": {
+            "nombre": "paciente",
+            "dominio": "Pacientes y Citas",
+            "color": "#059669",
+            "icono": "🧑",
+            "desc": "Expediente integral desnormalizado: absorbe datos administrativos y perfil médico confidencial (RF-04).",
+            "cols": [
+                  {
+                        "name": "id",
+                        "type": "BIGINT",
+                        "pk": true
+                  },
+                  {
+                        "name": "clinica_id",
+                        "type": "BIGINT",
+                        "fk": true,
+                        "ref": "clinica.id",
+                        "nullable": false,
+                        "onDelete": "RESTRICT"
+                  },
+                  {
+                        "name": "usuario_id",
+                        "type": "BIGINT",
+                        "fk": true,
+                        "ref": "usuario.id",
+                        "nullable": true,
+                        "onDelete": "SET NULL"
+                  },
+                  {
+                        "name": "medico_actualizo_id",
+                        "type": "BIGINT",
+                        "fk": true,
+                        "ref": "usuario_clinica.id",
+                        "nullable": true,
+                        "onDelete": "SET NULL"
+                  },
+                  {
+                        "name": "tipo_documento",
+                        "type": "VARCHAR(20)"
+                  },
+                  {
+                        "name": "numero_documento",
+                        "type": "VARCHAR(30)"
+                  },
+                  {
+                        "name": "nombres",
+                        "type": "VARCHAR(100)"
+                  },
+                  {
+                        "name": "apellidos",
+                        "type": "VARCHAR(100)"
+                  },
+                  {
+                        "name": "fecha_nacimiento",
+                        "type": "DATE"
+                  },
+                  {
+                        "name": "telefono",
+                        "type": "VARCHAR(30)"
+                  },
+                  {
+                        "name": "correo",
+                        "type": "VARCHAR(254)"
+                  },
+                  {
+                        "name": "estado",
+                        "type": "VARCHAR(16)"
+                  },
+                  {
+                        "name": "alergias",
+                        "type": "TEXT"
+                  },
+                  {
+                        "name": "antecedentes_medicos",
+                        "type": "TEXT"
+                  },
+                  {
+                        "name": "medicamentos",
+                        "type": "TEXT"
+                  },
+                  {
+                        "name": "fecha_creacion",
+                        "type": "TIMESTAMPTZ"
+                  },
+                  {
+                        "name": "fecha_actualizacion",
+                        "type": "TIMESTAMPTZ"
+                  },
+                  {
+                        "name": "ciudad",
+                        "type": "VARCHAR(100)"
+                  },
+                  {
+                        "name": "tipo_sangre",
+                        "type": "VARCHAR(20)"
+                  },
+                  {
+                        "name": "seguro",
+                        "type": "VARCHAR(80)"
+                  },
+                  {
+                        "name": "direccion",
+                        "type": "VARCHAR(255)"
+                  }
+            ]
       },
-      version_atencion_clinica: {
-        nombre: "version_atencion_clinica",
-        icono: "📜",
-        dominio: "Historia Clínica y Odontograma",
-        color: "#D97706",
-        desc: "Ficha clínica legal inmutable: versiona diagnósticos, recetas y notas generadas por asistente de voz IA (RF-10, RF-12, RF-13).",
-        cols: [
-          { name: "id", type: "UUID", pk: true },
-          { name: "clinica_id", type: "UUID", fk: true },
-          { name: "atencion_clinica_id", type: "UUID", fk: true },
-          { name: "version_anterior_id", type: "UUID", fk: true },
-          { name: "firmado_por", type: "UUID", fk: true },
-          { name: "numero_version", type: "INTEGER" },
-          { name: "diagnostico", type: "TEXT" },
-          { name: "procedimientos", type: "TEXT" },
-          { name: "recetas_prescripciones", type: "TEXT" },
-          { name: "indicaciones", type: "TEXT" },
-          { name: "evolucion", type: "TEXT" },
-          { name: "texto_pendiente_revision", type: "TEXT" },
-          { name: "esta_confirmado", type: "BOOLEAN" },
-          { name: "fecha_registro", type: "TIMESTAMPTZ" },
-          { name: "fecha_confirmacion", type: "TIMESTAMPTZ" }
-        ]
+      "cita": {
+            "nombre": "cita",
+            "dominio": "Pacientes y Citas",
+            "color": "#059669",
+            "icono": "📅",
+            "desc": "Agenda clínica desnormalizada: controla horarios y absorbe teleconsulta WebRTC virtual (link, sala, estado) (RF-06, RF-07, RF-17).",
+            "cols": [
+                  {
+                        "name": "id",
+                        "type": "BIGINT",
+                        "pk": true
+                  },
+                  {
+                        "name": "clinica_id",
+                        "type": "BIGINT",
+                        "fk": true,
+                        "ref": "clinica.id",
+                        "nullable": false,
+                        "onDelete": "RESTRICT"
+                  },
+                  {
+                        "name": "paciente_id",
+                        "type": "BIGINT",
+                        "fk": true,
+                        "ref": "paciente.id",
+                        "nullable": false,
+                        "onDelete": "RESTRICT"
+                  },
+                  {
+                        "name": "odontologo_id",
+                        "type": "BIGINT",
+                        "fk": true,
+                        "ref": "usuario_clinica.id",
+                        "nullable": false,
+                        "onDelete": "RESTRICT"
+                  },
+                  {
+                        "name": "creado_por_id",
+                        "type": "BIGINT",
+                        "fk": true,
+                        "ref": "usuario_clinica.id",
+                        "nullable": false,
+                        "onDelete": "RESTRICT"
+                  },
+                  {
+                        "name": "inicio_en",
+                        "type": "TIMESTAMPTZ"
+                  },
+                  {
+                        "name": "fin_en",
+                        "type": "TIMESTAMPTZ"
+                  },
+                  {
+                        "name": "modalidad",
+                        "type": "VARCHAR(12)"
+                  },
+                  {
+                        "name": "estado",
+                        "type": "VARCHAR(20)"
+                  },
+                  {
+                        "name": "estado_asistencia",
+                        "type": "VARCHAR(16)"
+                  },
+                  {
+                        "name": "motivo",
+                        "type": "VARCHAR(500)"
+                  },
+                  {
+                        "name": "enlace_teleconsulta",
+                        "type": "VARCHAR(500)"
+                  },
+                  {
+                        "name": "consultorio",
+                        "type": "VARCHAR(100)"
+                  },
+                  {
+                        "name": "fecha_creacion",
+                        "type": "TIMESTAMPTZ"
+                  },
+                  {
+                        "name": "fecha_actualizacion",
+                        "type": "TIMESTAMPTZ"
+                  }
+            ]
       },
-      version_odontograma: {
-        nombre: "version_odontograma",
-        icono: "🦷",
-        dominio: "Historia Clínica y Odontograma",
-        color: "#D97706",
-        desc: "Historial inmutable del estado dental general a lo largo del tiempo, firmado digitalmente por el odontólogo (RF-09, RF-10).",
-        cols: [
-          { name: "id", type: "UUID", pk: true },
-          { name: "clinica_id", type: "UUID", fk: true },
-          { name: "paciente_id", type: "UUID", fk: true },
-          { name: "version_anterior_id", type: "UUID", fk: true },
-          { name: "firmado_por", type: "UUID", fk: true },
-          { name: "numero_version", type: "INTEGER" },
-          { name: "estado", type: "VARCHAR(16)" },
-          { name: "fecha_creacion", type: "TIMESTAMPTZ" },
-          { name: "fecha_confirmacion", type: "TIMESTAMPTZ" }
-        ]
+      "solicitud_reprogramacion": {
+            "nombre": "solicitud_reprogramacion",
+            "dominio": "Pacientes y Citas",
+            "color": "#059669",
+            "icono": "🔄",
+            "desc": "Gestión asíncrona de solicitudes de reprogramación de citas entre pacientes y recepción/médicos (F04-A).",
+            "cols": [
+                  {
+                        "name": "id",
+                        "type": "BIGINT",
+                        "pk": true
+                  },
+                  {
+                        "name": "cita_id",
+                        "type": "BIGINT",
+                        "fk": true,
+                        "ref": "cita.id",
+                        "nullable": false,
+                        "onDelete": "CASCADE"
+                  },
+                  {
+                        "name": "solicitante_usuario_id",
+                        "type": "BIGINT",
+                        "fk": true,
+                        "ref": "usuario.id",
+                        "nullable": false,
+                        "onDelete": "RESTRICT"
+                  },
+                  {
+                        "name": "nueva_fecha_hora_inicio",
+                        "type": "TIMESTAMPTZ"
+                  },
+                  {
+                        "name": "nueva_fecha_hora_fin",
+                        "type": "TIMESTAMPTZ"
+                  },
+                  {
+                        "name": "motivo",
+                        "type": "VARCHAR(500)"
+                  },
+                  {
+                        "name": "estado",
+                        "type": "VARCHAR(20)"
+                  },
+                  {
+                        "name": "resolucion_usuario_id",
+                        "type": "BIGINT",
+                        "fk": true,
+                        "ref": "usuario.id",
+                        "nullable": true,
+                        "onDelete": "RESTRICT"
+                  },
+                  {
+                        "name": "resolucion_motivo",
+                        "type": "VARCHAR(500)"
+                  },
+                  {
+                        "name": "fecha_solicitud",
+                        "type": "TIMESTAMPTZ"
+                  },
+                  {
+                        "name": "fecha_resolucion",
+                        "type": "TIMESTAMPTZ"
+                  }
+            ]
       },
-      hallazgo_odontograma: {
-        nombre: "hallazgo_odontograma",
-        icono: "📍",
-        dominio: "Historia Clínica y Odontograma",
-        color: "#D97706",
-        desc: "Marcas anatómicas por pieza dental FDI (11 a 48), superficie dental y condición clínica o tratamiento (RF-09).",
-        cols: [
-          { name: "id", type: "UUID", pk: true },
-          { name: "clinica_id", type: "UUID", fk: true },
-          { name: "version_odontograma_id", type: "UUID", fk: true },
-          { name: "codigo_pieza_dental", type: "VARCHAR(4)" },
-          { name: "codigo_superficie_cara", type: "VARCHAR(12)" },
-          { name: "codigo_condicion", type: "VARCHAR(40)" },
-          { name: "nota_observacion", type: "TEXT" }
-        ]
+      "atencion_clinica": {
+            "nombre": "atencion_clinica",
+            "dominio": "Historia Clínica y Odontograma",
+            "color": "#D97706",
+            "icono": "🩺",
+            "desc": "Cabecera del acto médico que agrupa y conecta el historial de versiones inmutables del tratamiento (RF-08).",
+            "cols": [
+                  {
+                        "name": "id",
+                        "type": "BIGINT",
+                        "pk": true
+                  },
+                  {
+                        "name": "clinica_id",
+                        "type": "BIGINT",
+                        "fk": true,
+                        "ref": "clinica.id",
+                        "nullable": false,
+                        "onDelete": "RESTRICT"
+                  },
+                  {
+                        "name": "paciente_id",
+                        "type": "BIGINT",
+                        "fk": true,
+                        "ref": "paciente.id",
+                        "nullable": false,
+                        "onDelete": "RESTRICT"
+                  },
+                  {
+                        "name": "cita_id",
+                        "type": "BIGINT UNQ",
+                        "fk": true,
+                        "ref": "cita.id",
+                        "nullable": true,
+                        "onDelete": "SET NULL"
+                  },
+                  {
+                        "name": "odontologo_id",
+                        "type": "BIGINT",
+                        "fk": true,
+                        "ref": "usuario_clinica.id",
+                        "nullable": false,
+                        "onDelete": "RESTRICT"
+                  },
+                  {
+                        "name": "estado",
+                        "type": "VARCHAR(16)"
+                  },
+                  {
+                        "name": "fecha_creacion",
+                        "type": "TIMESTAMPTZ"
+                  },
+                  {
+                        "name": "fecha_confirmacion",
+                        "type": "TIMESTAMPTZ"
+                  }
+            ]
       },
-      archivo_adjunto: {
-        nombre: "archivo_adjunto",
-        icono: "📁",
-        dominio: "Archivos e Inteligencia Artificial",
-        color: "#7C3AED",
-        desc: "Multimedia unificado: absorbe radiografías, portal paciente y detecciones IA integradas en JSONB (RF-14, RF-15, RF-16, RF-22).",
-        cols: [
-          { name: "id", type: "UUID", pk: true },
-          { name: "clinica_id", type: "UUID", fk: true },
-          { name: "paciente_id", type: "UUID", fk: true },
-          { name: "subido_por_usuario_id", type: "UUID", fk: true },
-          { name: "cita_id", type: "UUID", fk: true },
-          { name: "ia_revisado_por", type: "UUID", fk: true },
-          { name: "tipo_archivo", type: "VARCHAR(24)" },
-          { name: "clave_almacenamiento", type: "VARCHAR(500) UNQ" },
-          { name: "nombre_original", type: "VARCHAR(255)" },
-          { name: "tipo_mime", type: "VARCHAR(100)" },
-          { name: "peso_bytes", type: "BIGINT" },
-          { name: "region_anatomica", type: "VARCHAR(80)" },
-          { name: "es_visible_paciente", type: "BOOLEAN" },
-          { name: "ia_nombre_modelo", type: "VARCHAR(100)" },
-          { name: "ia_version_modelo", type: "VARCHAR(80)" },
-          { name: "ia_hallazgos_json", type: "JSONB" },
-          { name: "ia_estado_revision", type: "VARCHAR(16)" },
-          { name: "fecha_creacion", type: "TIMESTAMPTZ" }
-        ]
+      "version_atencion_clinica": {
+            "nombre": "version_atencion_clinica",
+            "dominio": "Historia Clínica y Odontograma",
+            "color": "#D97706",
+            "icono": "📜",
+            "desc": "Ficha clínica legal inmutable: versiona diagnósticos, recetas y notas generadas por asistente de voz IA (RF-10, RF-12, RF-13).",
+            "cols": [
+                  {
+                        "name": "id",
+                        "type": "BIGINT",
+                        "pk": true
+                  },
+                  {
+                        "name": "clinica_id",
+                        "type": "BIGINT",
+                        "fk": true,
+                        "ref": "clinica.id",
+                        "nullable": false,
+                        "onDelete": "RESTRICT"
+                  },
+                  {
+                        "name": "atencion_clinica_id",
+                        "type": "BIGINT",
+                        "fk": true,
+                        "ref": "atencion_clinica.id",
+                        "nullable": false,
+                        "onDelete": "CASCADE"
+                  },
+                  {
+                        "name": "version_anterior_id",
+                        "type": "BIGINT",
+                        "fk": true,
+                        "ref": "version_atencion_clinica.id",
+                        "nullable": true,
+                        "onDelete": "SET NULL"
+                  },
+                  {
+                        "name": "firmado_por",
+                        "type": "BIGINT",
+                        "fk": true,
+                        "ref": "usuario_clinica.id",
+                        "nullable": true,
+                        "onDelete": "SET NULL"
+                  },
+                  {
+                        "name": "numero_version",
+                        "type": "INTEGER"
+                  },
+                  {
+                        "name": "motivo_consulta",
+                        "type": "TEXT"
+                  },
+                  {
+                        "name": "examen_clinico",
+                        "type": "TEXT"
+                  },
+                  {
+                        "name": "diagnostico",
+                        "type": "TEXT"
+                  },
+                  {
+                        "name": "plan_tratamiento",
+                        "type": "TEXT"
+                  },
+                  {
+                        "name": "procedimientos",
+                        "type": "TEXT"
+                  },
+                  {
+                        "name": "recetas_prescripciones",
+                        "type": "TEXT"
+                  },
+                  {
+                        "name": "indicaciones",
+                        "type": "TEXT"
+                  },
+                  {
+                        "name": "evolucion",
+                        "type": "TEXT"
+                  },
+                  {
+                        "name": "signos_vitales",
+                        "type": "JSONB"
+                  },
+                  {
+                        "name": "proxima_cita_sugerida",
+                        "type": "VARCHAR(50)"
+                  },
+                  {
+                        "name": "texto_pendiente_revision",
+                        "type": "TEXT"
+                  },
+                  {
+                        "name": "esta_confirmado",
+                        "type": "BOOLEAN"
+                  },
+                  {
+                        "name": "fecha_registro",
+                        "type": "TIMESTAMPTZ"
+                  },
+                  {
+                        "name": "fecha_confirmacion",
+                        "type": "TIMESTAMPTZ"
+                  }
+            ]
       },
-      notificacion: {
-        nombre: "notificacion",
-        icono: "🔔",
-        dominio: "Notificaciones",
-        color: "#475569",
-        desc: "Bandeja transaccional por usuario para recordatorios de citas, avisos de teleconsulta y alertas del sistema (RF-19).",
-        cols: [
-          { name: "id", type: "UUID", pk: true },
-          { name: "clinica_id", type: "UUID", fk: true },
-          { name: "usuario_destinatario_id", type: "UUID", fk: true },
-          { name: "tipo_evento", type: "VARCHAR(40)" },
-          { name: "titulo", type: "VARCHAR(160)" },
-          { name: "cuerpo_mensaje", type: "VARCHAR(500)" },
-          { name: "estado", type: "VARCHAR(16)" },
-          { name: "fecha_creacion", type: "TIMESTAMPTZ" },
-          { name: "fecha_lectura", type: "TIMESTAMPTZ" }
-        ]
+      "version_odontograma": {
+            "nombre": "version_odontograma",
+            "dominio": "Historia Clínica y Odontograma",
+            "color": "#D97706",
+            "icono": "🦷",
+            "desc": "Historial inmutable del estado dental general a lo largo del tiempo, firmado digitalmente por el odontólogo (RF-09, RF-10).",
+            "cols": [
+                  {
+                        "name": "id",
+                        "type": "BIGINT",
+                        "pk": true
+                  },
+                  {
+                        "name": "clinica_id",
+                        "type": "BIGINT",
+                        "fk": true,
+                        "ref": "clinica.id",
+                        "nullable": false,
+                        "onDelete": "RESTRICT"
+                  },
+                  {
+                        "name": "paciente_id",
+                        "type": "BIGINT",
+                        "fk": true,
+                        "ref": "paciente.id",
+                        "nullable": false,
+                        "onDelete": "RESTRICT"
+                  },
+                  {
+                        "name": "version_anterior_id",
+                        "type": "BIGINT",
+                        "fk": true,
+                        "ref": "version_odontograma.id",
+                        "nullable": true,
+                        "onDelete": "SET NULL"
+                  },
+                  {
+                        "name": "firmado_por",
+                        "type": "BIGINT",
+                        "fk": true,
+                        "ref": "usuario_clinica.id",
+                        "nullable": true,
+                        "onDelete": "SET NULL"
+                  },
+                  {
+                        "name": "numero_version",
+                        "type": "INTEGER"
+                  },
+                  {
+                        "name": "estado",
+                        "type": "VARCHAR(16)"
+                  },
+                  {
+                        "name": "fecha_creacion",
+                        "type": "TIMESTAMPTZ"
+                  },
+                  {
+                        "name": "fecha_confirmacion",
+                        "type": "TIMESTAMPTZ"
+                  }
+            ]
+      },
+      "hallazgo_odontograma": {
+            "nombre": "hallazgo_odontograma",
+            "dominio": "Historia Clínica y Odontograma",
+            "color": "#D97706",
+            "icono": "📍",
+            "desc": "Marcas anatómicas por pieza dental FDI (11 a 48), superficie dental y condición clínica o tratamiento (RF-09).",
+            "cols": [
+                  {
+                        "name": "id",
+                        "type": "BIGINT",
+                        "pk": true
+                  },
+                  {
+                        "name": "clinica_id",
+                        "type": "BIGINT",
+                        "fk": true,
+                        "ref": "clinica.id",
+                        "nullable": false,
+                        "onDelete": "RESTRICT"
+                  },
+                  {
+                        "name": "version_odontograma_id",
+                        "type": "BIGINT",
+                        "fk": true,
+                        "ref": "version_odontograma.id",
+                        "nullable": false,
+                        "onDelete": "CASCADE"
+                  },
+                  {
+                        "name": "codigo_pieza_dental",
+                        "type": "VARCHAR(4)"
+                  },
+                  {
+                        "name": "codigo_superficie_cara",
+                        "type": "VARCHAR(12)"
+                  },
+                  {
+                        "name": "codigo_condicion",
+                        "type": "VARCHAR(40)"
+                  },
+                  {
+                        "name": "nota_observacion",
+                        "type": "TEXT"
+                  }
+            ]
+      },
+      "archivo_adjunto": {
+            "nombre": "archivo_adjunto",
+            "dominio": "Archivos e Inteligencia Artificial",
+            "color": "#7C3AED",
+            "icono": "📁",
+            "desc": "Multimedia unificado: absorbe radiografías, portal paciente y detecciones IA integradas en JSONB (RF-14, RF-15, RF-16, RF-22).",
+            "cols": [
+                  {
+                        "name": "id",
+                        "type": "BIGINT",
+                        "pk": true
+                  },
+                  {
+                        "name": "clinica_id",
+                        "type": "BIGINT",
+                        "fk": true,
+                        "ref": "clinica.id",
+                        "nullable": false,
+                        "onDelete": "RESTRICT"
+                  },
+                  {
+                        "name": "paciente_id",
+                        "type": "BIGINT",
+                        "fk": true,
+                        "ref": "paciente.id",
+                        "nullable": false,
+                        "onDelete": "RESTRICT"
+                  },
+                  {
+                        "name": "subido_por_usuario_id",
+                        "type": "BIGINT",
+                        "fk": true,
+                        "ref": "usuario.id",
+                        "nullable": false,
+                        "onDelete": "RESTRICT"
+                  },
+                  {
+                        "name": "cita_id",
+                        "type": "BIGINT",
+                        "fk": true,
+                        "ref": "cita.id",
+                        "nullable": true,
+                        "onDelete": "SET NULL"
+                  },
+                  {
+                        "name": "ia_revisado_por",
+                        "type": "BIGINT",
+                        "fk": true,
+                        "ref": "usuario_clinica.id",
+                        "nullable": true,
+                        "onDelete": "SET NULL"
+                  },
+                  {
+                        "name": "tipo_archivo",
+                        "type": "VARCHAR(24)"
+                  },
+                  {
+                        "name": "clave_almacenamiento",
+                        "type": "VARCHAR(500)"
+                  },
+                  {
+                        "name": "nombre_original",
+                        "type": "VARCHAR(255)"
+                  },
+                  {
+                        "name": "tipo_mime",
+                        "type": "VARCHAR(100)"
+                  },
+                  {
+                        "name": "peso_bytes",
+                        "type": "BIGINT"
+                  },
+                  {
+                        "name": "region_anatomica",
+                        "type": "VARCHAR(80)"
+                  },
+                  {
+                        "name": "es_visible_paciente",
+                        "type": "BOOLEAN"
+                  },
+                  {
+                        "name": "ia_nombre_modelo",
+                        "type": "VARCHAR(100)"
+                  },
+                  {
+                        "name": "ia_version_modelo",
+                        "type": "VARCHAR(80)"
+                  },
+                  {
+                        "name": "ia_hallazgos_json",
+                        "type": "JSONB"
+                  },
+                  {
+                        "name": "ia_estado_revision",
+                        "type": "VARCHAR(16)"
+                  },
+                  {
+                        "name": "fecha_creacion",
+                        "type": "TIMESTAMPTZ"
+                  }
+            ]
+      },
+      "notificacion": {
+            "nombre": "notificacion",
+            "dominio": "Notificaciones",
+            "color": "#475569",
+            "icono": "🔔",
+            "desc": "Bandeja transaccional por usuario para recordatorios de citas, avisos de teleconsulta y alertas del sistema (RF-19).",
+            "cols": [
+                  {
+                        "name": "id",
+                        "type": "BIGINT",
+                        "pk": true
+                  },
+                  {
+                        "name": "clinica_id",
+                        "type": "BIGINT",
+                        "fk": true,
+                        "ref": "clinica.id",
+                        "nullable": false,
+                        "onDelete": "CASCADE"
+                  },
+                  {
+                        "name": "usuario_destinatario_id",
+                        "type": "BIGINT",
+                        "fk": true,
+                        "ref": "usuario.id",
+                        "nullable": false,
+                        "onDelete": "CASCADE"
+                  },
+                  {
+                        "name": "tipo_evento",
+                        "type": "VARCHAR(40)"
+                  },
+                  {
+                        "name": "titulo",
+                        "type": "VARCHAR(160)"
+                  },
+                  {
+                        "name": "cuerpo_mensaje",
+                        "type": "VARCHAR(500)"
+                  },
+                  {
+                        "name": "estado",
+                        "type": "VARCHAR(16)"
+                  },
+                  {
+                        "name": "fecha_creacion",
+                        "type": "TIMESTAMPTZ"
+                  },
+                  {
+                        "name": "fecha_lectura",
+                        "type": "TIMESTAMPTZ"
+                  }
+            ]
       }
-    };
+};
 
     // =========================================================================
     // GENERADOR DINÁMICO DE TARJETAS FÍSICAS EN SVG
     // =========================================================================
     function generarSvgTarjeta(tablaKey, columnas, domainColor, isSelected) {
       const tabla = tablasData[tablaKey];
-      const width = 300;
+      const width = 480;
       const rowHeight = 22;
       const headerHeight = 36;
       const footerPadding = 8;
@@ -623,31 +1393,14 @@
         };
       });
 
-      const edges = [
-        // Dominio 1: Seguridad y Multi-Sede
-        { data: { source: 'clinica', target: 'usuario_clinica', cardinalidad: '1:N' } },
-        { data: { source: 'usuario', target: 'usuario_clinica', cardinalidad: '1:N' } },
-        { data: { source: 'rol', target: 'usuario_clinica', cardinalidad: '1:N' } },
-        { data: { source: 'usuario', target: 'notificacion', cardinalidad: '1:N' } },
-        { data: { source: 'usuario', target: 'archivo_adjunto', cardinalidad: '1:N (sube)' } },
-        { data: { source: 'usuario', target: 'paciente', cardinalidad: '0..1:N' } },
+      // One edge for each actual FK; different roles and self-references stay distinct.
+      const edges = Object.entries(tablasData).flatMap(([child, table]) =>
+        table.cols.filter(col => col.fk).map(col => ({ data: {
+          id: child + '.' + col.name, source: col.ref.split('.')[0], target: child,
+          cardinalidad: col.name + (col.nullable ? ' (opcional)' : ''),
+          nullable: col.nullable, onDelete: col.onDelete
+        }})));
 
-        // Dominio 2: Pacientes y Citas
-        { data: { source: 'clinica', target: 'paciente', cardinalidad: '1:N' } },
-        { data: { source: 'usuario_clinica', target: 'cita', cardinalidad: '1:N (atiende)' } },
-        { data: { source: 'paciente', target: 'cita', cardinalidad: '1:N' } },
-        { data: { source: 'cita', target: 'atencion_clinica', cardinalidad: '1:0..1' } },
-        { data: { source: 'paciente', target: 'atencion_clinica', cardinalidad: '1:N' } },
-
-        // Dominio 3: Historia Clínica y Odontograma
-        { data: { source: 'atencion_clinica', target: 'version_atencion_clinica', cardinalidad: '1:N' } },
-        { data: { source: 'paciente', target: 'version_odontograma', cardinalidad: '1:N' } },
-        { data: { source: 'version_odontograma', target: 'hallazgo_odontograma', cardinalidad: '1:N' } },
-
-        // Dominio 4: Archivos e Inteligencia Artificial
-        { data: { source: 'paciente', target: 'archivo_adjunto', cardinalidad: '1:N' } },
-        { data: { source: 'cita', target: 'archivo_adjunto', cardinalidad: '1:0..N' } }
-      ];
 
       return { nodes, edges };
     }
@@ -694,7 +1447,7 @@
             'curve-style': 'bezier',
             'label': 'data(cardinalidad)',
             'font-family': "'Fira Code', monospace",
-            'font-size': '11px',
+            'font-size': '10px',
             'font-weight': '600',
             'color': '#8b949e',
             'text-background-color': '#0d1117',
@@ -801,7 +1554,7 @@
       const png64 = cy.png({ full: true, scale: 3, bg: '#0d1117' });
       const downloadLink = document.createElement('a');
       downloadLink.href = png64;
-      downloadLink.download = 'modelo_fisico_coronyx_12_tablas.png';
+      downloadLink.download = 'modelo_objetivo_coronyx_bigint_15_tablas_39_fk.png';
       document.body.appendChild(downloadLink);
       downloadLink.click();
       document.body.removeChild(downloadLink);

@@ -3,12 +3,12 @@ package pe.edu.utp.coronyx.backend.dto;
 import jakarta.validation.constraints.*;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
-import java.util.UUID;
 
 public class PatientDto {
 
-    private UUID id;
-    private UUID clinicaId;
+    private String id;
+    private String clinicaId;
+    private String usuarioId;
 
     @NotBlank(message = "Los nombres son obligatorios")
     @Size(min = 2, max = 100, message = "Los nombres deben tener entre 2 y 100 caracteres")
@@ -50,26 +50,37 @@ public class PatientDto {
     @Size(max = 80, message = "El seguro no puede exceder 80 caracteres")
     private String seguro = "PARTICULAR";
 
+    @Size(max = 255, message = "La dirección no puede exceder 255 caracteres")
+    private String direccion;
+
     private OffsetDateTime fechaCreacion;
     private OffsetDateTime fechaActualizacion;
 
     public PatientDto() {
     }
 
-    public UUID getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public UUID getClinicaId() {
+    public String getClinicaId() {
         return clinicaId;
     }
 
-    public void setClinicaId(UUID clinicaId) {
+    public void setClinicaId(String clinicaId) {
         this.clinicaId = clinicaId;
+    }
+
+    public String getUsuarioId() {
+        return usuarioId;
+    }
+
+    public void setUsuarioId(String usuarioId) {
+        this.usuarioId = usuarioId;
     }
 
     public String getNombres() {
@@ -190,6 +201,14 @@ public class PatientDto {
 
     public void setFechaCreacion(OffsetDateTime fechaCreacion) {
         this.fechaCreacion = fechaCreacion;
+    }
+
+    public String getDireccion() {
+        return direccion;
+    }
+
+    public void setDireccion(String direccion) {
+        this.direccion = direccion;
     }
 
     public OffsetDateTime getFechaActualizacion() {
