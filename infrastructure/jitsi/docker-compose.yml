@@ -5,7 +5,7 @@ services:
     image: jitsi/web:stable
     restart: ${RESTART_POLICY:-unless-stopped}
     ports:
-      - "${HTTP_PORT:-8080}:80"
+      - "${HTTP_PORT:-8088}:80"
       - "${HTTPS_PORT:-8443}:443"
     volumes:
       - ${CONFIG:-./jitsi-config}/web:/config:Z
@@ -13,7 +13,7 @@ services:
       - ${CONFIG:-./jitsi-config}/transcripts:/usr/share/jitsi-meet/transcripts:Z
     environment:
       - ENABLE_AUTH=${ENABLE_AUTH:-1}
-      - ENABLE_GUESTS=${ENABLE_GUESTS:-0}
+      - ENABLE_GUESTS=${ENABLE_GUESTS:-1}
       - AUTH_TYPE=${AUTH_TYPE:-jwt}
       - JWT_APP_ID=${JWT_APP_ID:-coronyx-telemed}
       - PUBLIC_URL=${PUBLIC_URL:-https://localhost:8443}
@@ -38,11 +38,16 @@ services:
     environment:
       - AUTH_TYPE=${AUTH_TYPE:-jwt}
       - ENABLE_AUTH=${ENABLE_AUTH:-1}
-      - ENABLE_GUESTS=${ENABLE_GUESTS:-0}
+      - ENABLE_GUESTS=${ENABLE_GUESTS:-1}
       - JWT_APP_ID=${JWT_APP_ID:-coronyx-telemed}
       - JWT_APP_SECRET=${JWT_APP_SECRET:-coronyx-dental-system-secret-key-2026-super-secure-token-jwt-utp-platform}
       - JWT_ACCEPTED_ISSUERS=${JWT_ACCEPTED_ISSUERS:-coronyx-telemed}
       - JWT_ACCEPTED_AUDIENCES=${JWT_ACCEPTED_AUDIENCES:-jitsi}
+      - JICOFO_AUTH_USER=${JICOFO_AUTH_USER:-focus}
+      - JICOFO_AUTH_PASSWORD=${JICOFO_AUTH_PASSWORD:-jicofo_auth_secret_coronyx_2026}
+      - JICOFO_COMPONENT_SECRET=${JICOFO_COMPONENT_SECRET:-jicofo_component_secret_coronyx_2026}
+      - JVB_AUTH_USER=${JVB_AUTH_USER:-jvb}
+      - JVB_AUTH_PASSWORD=${JVB_AUTH_PASSWORD:-jvb_auth_secret_coronyx_2026}
       - XMPP_DOMAIN=meet.jitsi
       - XMPP_AUTH_DOMAIN=auth.meet.jitsi
       - XMPP_MUC_DOMAIN=muc.meet.jitsi
@@ -62,6 +67,9 @@ services:
     environment:
       - AUTH_TYPE=${AUTH_TYPE:-jwt}
       - ENABLE_AUTH=${ENABLE_AUTH:-1}
+      - JICOFO_AUTH_USER=${JICOFO_AUTH_USER:-focus}
+      - JICOFO_AUTH_PASSWORD=${JICOFO_AUTH_PASSWORD:-jicofo_auth_secret_coronyx_2026}
+      - JICOFO_COMPONENT_SECRET=${JICOFO_COMPONENT_SECRET:-jicofo_component_secret_coronyx_2026}
       - XMPP_DOMAIN=meet.jitsi
       - XMPP_AUTH_DOMAIN=auth.meet.jitsi
       - XMPP_INTERNAL_MUC_DOMAIN=internal-muc.meet.jitsi
@@ -81,6 +89,8 @@ services:
       - ${CONFIG:-./jitsi-config}/jvb:/config:Z
     environment:
       - DOCKER_HOST_ADDRESS=127.0.0.1
+      - JVB_AUTH_USER=${JVB_AUTH_USER:-jvb}
+      - JVB_AUTH_PASSWORD=${JVB_AUTH_PASSWORD:-jvb_auth_secret_coronyx_2026}
       - XMPP_AUTH_DOMAIN=auth.meet.jitsi
       - XMPP_INTERNAL_MUC_DOMAIN=internal-muc.meet.jitsi
       - XMPP_SERVER=prosody

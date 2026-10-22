@@ -8,11 +8,14 @@ public final class TeleconsultationDtos {
     public record TeleconsultationJoinResponse(
             String citaId,
             String salaId,
+            String token,
             String jwtToken,
             String jitsiServerUrl,
             String rol,
             boolean esModerador,
             String nombreUsuario,
+            String nombreParticipante,
+            String estado,
             String estadoSesion
     ) {}
 

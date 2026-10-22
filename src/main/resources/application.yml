@@ -37,3 +37,9 @@ server:
 jwt:
   secret: ${JWT_SECRET:cambiar-esta-clave-secreta-en-produccion-minimo-256-bits-super-segura}
   expiration-ms: ${JWT_EXPIRATION_MS:86400000}
+
+coronyx:
+  teleconsulta:
+    jwt-secret: ${JWT_APP_SECRET:coronyx-dental-system-secret-key-2026-super-secure-token-jwt-utp-platform}
+    jitsi-url: ${JITSI_URL:https://localhost:8443}
+    app-id: ${JWT_APP_ID:coronyx-telemed}

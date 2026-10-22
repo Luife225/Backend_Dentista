@@ -26,7 +26,7 @@ public class TeleconsultationService {
     private final TeleconsultationSessionRepository sessionRepository;
     private final AppointmentRepository appointmentRepository;
 
-    @Value("${coronyx.teleconsulta.jwt-secret:${jwt.secret:coronyx-dental-system-secret-key-2026-super-secure-token-jwt-utp-platform}}")
+    @Value("${coronyx.teleconsulta.jwt-secret:coronyx-dental-system-secret-key-2026-super-secure-token-jwt-utp-platform}")
     private String jwtSecret = "coronyx-dental-system-secret-key-2026-super-secure-token-jwt-utp-platform";
 
     @Value("${coronyx.teleconsulta.jitsi-url:https://localhost:8443}")
@@ -114,10 +114,13 @@ public class TeleconsultationService {
                 citaId.toString(),
                 session.salaId,
                 jwt,
+                jwt,
                 jitsiServerUrl,
                 roleLabel,
                 esModerador,
                 displayName,
+                displayName,
+                session.estado,
                 session.estado
         );
     }
