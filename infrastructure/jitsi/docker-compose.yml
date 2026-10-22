@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   web:
-    image: jitsi/web:stable-9457
+    image: jitsi/web:stable
     restart: ${RESTART_POLICY:-unless-stopped}
     ports:
       - "${HTTP_PORT:-8080}:80"
@@ -26,7 +26,7 @@ services:
       meet.jitsi:
 
   prosody:
-    image: jitsi/prosody:stable-9457
+    image: jitsi/prosody:stable
     restart: ${RESTART_POLICY:-unless-stopped}
     expose:
       - '5222'
@@ -55,7 +55,7 @@ services:
           - meet.jitsi
 
   jicofo:
-    image: jitsi/jicofo:stable-9457
+    image: jitsi/jicofo:stable
     restart: ${RESTART_POLICY:-unless-stopped}
     volumes:
       - ${CONFIG:-./jitsi-config}/jicofo:/config:Z
@@ -73,7 +73,7 @@ services:
       meet.jitsi:
 
   jvb:
-    image: jitsi/jvb:stable-9457
+    image: jitsi/jvb:stable
     restart: ${RESTART_POLICY:-unless-stopped}
     ports:
       - "10000:10000/udp"
