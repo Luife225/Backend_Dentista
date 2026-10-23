@@ -18,6 +18,9 @@ public class AttachmentResponseDto {
     private String subidoPorNombre;
     private String citaId;
     private String tipoArchivo;
+    private String ambito;
+    public String getAmbito() { return ambito; }
+    public void setAmbito(String ambito) { this.ambito = ambito; }
     private String claveAlmacenamiento;
     private String nombreOriginal;
     private String tipoMime;
@@ -43,6 +46,7 @@ public class AttachmentResponseDto {
         dto.setSubidoPorNombre(entity.getSubidoPorUsuario() != null ? entity.getSubidoPorUsuario().getNombreCompleto() : null);
         dto.setCitaId(entity.getCita() != null ? String.valueOf(entity.getCita().getId()) : null);
         dto.setTipoArchivo(entity.getTipoArchivo());
+        dto.setAmbito(entity.getAmbito());
         dto.setClaveAlmacenamiento(entity.getClaveAlmacenamiento());
         dto.setNombreOriginal(entity.getNombreOriginal());
         dto.setTipoMime(entity.getTipoMime());

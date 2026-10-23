@@ -40,8 +40,13 @@ class Block1SessionIntegrationTest {
     static class IsolationGuard implements ApplicationContextInitializer<ConfigurableApplicationContext> {
         @Override public void initialize(ConfigurableApplicationContext context) {
             var environment = context.getEnvironment();
-            if (!"jdbc:postgresql://127.0.0.1:55431/coronyx_block1".equals(environment.getProperty("spring.datasource.url"))
-                    || !"coronyx_test".equals(environment.getProperty("spring.datasource.username"))) {
+            String url=environment.getProperty("spring.datasource.url");
+            String username=environment.getProperty("spring.datasource.username");
+            String temporary=System.getenv("CORONYX_TEST_DB_URL");
+            boolean original="jdbc:postgresql://127.0.0.1:55431/coronyx_block1".equals(url) && "coronyx_test".equals(username);
+            boolean closure=temporary!=null && temporary.matches("jdbc:postgresql://127[.]0[.]0[.]1:[0-9]+/coronyx_closure")
+                    && temporary.equals(url) && "postgres".equals(username);
+            if (!original && !closure) {
                 throw new IllegalStateException("La campaña solo admite el PostgreSQL aislado del bloque 1");
             }
         }
@@ -344,7 +349,7 @@ class Block1SessionIntegrationTest {
     }
 
     @Test void migrationsPreserveSeedsAndUseBigint() {
-        assertEquals(10, jdbc.queryForObject("select count(*) from flyway_schema_history where success", Integer.class));
+        assertEquals(15, jdbc.queryForObject("select count(*) from flyway_schema_history where success", Integer.class));
         assertEquals("bigint", jdbc.queryForObject("select data_type from information_schema.columns where table_name='usuario' and column_name='session_version'", String.class));
         assertTrue(users.findByCorreoIgnoreCase("admin@coronyx.pe").isPresent());
         assertTrue(users.findByCorreoIgnoreCase("superadmin@coronyx.pe").isPresent());

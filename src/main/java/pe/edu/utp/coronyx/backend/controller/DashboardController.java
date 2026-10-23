@@ -11,9 +11,6 @@ import pe.edu.utp.coronyx.backend.service.DashboardService;
 
 @RestController
 @RequestMapping({"/api/v1/dashboard", "/api/v1/panel"})
-@CrossOrigin(origins = "*", allowedHeaders = "*", methods = {
-        RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.PATCH, RequestMethod.DELETE, RequestMethod.OPTIONS
-})
 public class DashboardController {
 
     private final DashboardService dashboardService;

@@ -14,9 +14,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping({"/api/v1/notifications", "/api/v1/notificaciones"})
-@CrossOrigin(origins = "*", allowedHeaders = "*", methods = {
-        RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.PATCH, RequestMethod.DELETE, RequestMethod.OPTIONS
-})
 public class NotificationController {
 
     private final NotificationService notificationService;

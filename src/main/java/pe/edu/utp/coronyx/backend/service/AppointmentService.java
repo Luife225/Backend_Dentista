@@ -120,7 +120,7 @@ public class AppointmentService {
         if (!odontologo.getClinica().getId().equals(clinica.getId())) {
             throw new NoSuchElementException("El odontólogo no pertenece a la clínica activa");
         }
-        if (odontologo.getRol() == null || !"ODONTOLOGO".equalsIgnoreCase(odontologo.getRol().getCodigo())) {
+        if (odontologo.getRol() == null || !Boolean.TRUE.equals(odontologo.getRol().getActivo()) || !"ODONTOLOGO".equalsIgnoreCase(odontologo.getRol().getCodigo())) {
             throw new IllegalArgumentException("El usuario seleccionado no cuenta con el rol de ODONTOLOGO");
         }
         if (!"ACTIVO".equalsIgnoreCase(odontologo.getEstado()) ||
@@ -128,7 +128,7 @@ public class AppointmentService {
             throw new IllegalStateException("El odontólogo seleccionado no se encuentra en estado ACTIVO.");
         }
 
-        String consultorio = (dto.getConsultorio() != null && !dto.getConsultorio().isBlank())
+        String consultorio = "VIRTUAL".equals(dto.getModalidad()) ? null : (dto.getConsultorio() != null && !dto.getConsultorio().isBlank())
                 ? dto.getConsultorio().trim() : "Sillón 1";
         String doctorNombre = "Dr. " + odontologo.getUsuario().getNombres() + " " + odontologo.getUsuario().getApellidos();
 
@@ -158,7 +158,8 @@ public class AppointmentService {
         appointment.setEstado("PROGRAMADA");
         appointment.setMotivo(dto.getMotivo());
         appointment.setConsultorio(consultorio);
-        appointment.setEnlaceTeleconsulta(dto.getEnlaceTeleconsulta());
+        appointment.setEnlaceTeleconsulta("VIRTUAL".equals(appointment.getModalidad())
+                && !"PACIENTE".equals(principal.getRol()) ? TeleconsultationLinks.validate(dto.getEnlaceTeleconsulta()) : null);
 
         Appointment saved = appointmentRepository.save(appointment);
 
@@ -167,7 +168,7 @@ public class AppointmentService {
                     clinica,
                     paciente.getUsuario(),
                     "CITA_CREADA",
-                    "Cita confirmada",
+                    "Cita programada",
                     "Su cita ha sido programada para el " + saved.getInicioEn() + " con el " + doctorNombre + "."
             );
         }
@@ -262,6 +263,10 @@ public class AppointmentService {
         OffsetDateTime start = (desde != null) ? desde : OffsetDateTime.now(LIMA_ZONE).minusDays(1);
         OffsetDateTime end = (hasta != null) ? hasta : OffsetDateTime.now(LIMA_ZONE).plusDays(30);
 
+        if ("ODONTOLOGO".equals(principal.getRol())) {
+            return appointmentRepository.findByOdontologoIdAndClinicaIdAndInicioEnBetweenOrderByInicioEnAsc(principal.getUsuarioClinicaId(),userClinicId,start,end)
+                    .stream().map(this::toDto).collect(Collectors.toList());
+        }
         return appointmentRepository.findByClinicaIdAndInicioEnBetweenOrderByInicioEnAsc(userClinicId, start, end)
                 .stream()
                 .map(this::toDto)
@@ -348,7 +353,7 @@ public class AppointmentService {
     public AppointmentResponseDto updateEstado(Long id, AppointmentEstadoDto dto, UserPrincipal principal) {
         validateSecurityPrincipal(principal);
 
-        Appointment appointment = appointmentRepository.findById(id)
+        Appointment appointment = appointmentRepository.findLockedByIdAndClinicaId(id, principal.getClinicaId())
                 .orElseThrow(() -> new NoSuchElementException("Cita no encontrada con ID: " + id));
 
         if (!appointment.getClinica().getId().equals(principal.getClinicaId())) {
@@ -367,27 +372,11 @@ public class AppointmentService {
             }
         }
 
-        // Si se está reactivando una cita cancelada a estado activo, verificar concurrencia
-        if ("CANCELADA".equalsIgnoreCase(appointment.getEstado()) && !"CANCELADA".equalsIgnoreCase(nuevoEstado)) {
-            acquireConcurrencyLocks(
-                    appointment.getOdontologo().getId(),
-                    appointment.getClinica().getId(),
-                    appointment.getConsultorio(),
-                    appointment.getPaciente().getId()
-            );
-
-            String doctorNombre = "Dr. " + appointment.getOdontologo().getUsuario().getNombres();
-            validateAppointmentSchedule(
-                    appointment.getInicioEn(),
-                    appointment.getFinEn(),
-                    appointment.getOdontologo().getId(),
-                    appointment.getConsultorio(),
-                    appointment.getClinica().getId(),
-                    appointment.getPaciente().getId(),
-                    appointment.getId(),
-                    doctorNombre
-            );
+        if ("EN_ATENCION".equals(nuevoEstado) || "FINALIZADA".equals(nuevoEstado)) {
+            throw new IllegalStateException("Use Iniciar atención o firme la historia clínica para cambiar el estado clínico");
         }
+        AppointmentTransitions.requireTransition(appointment.getEstado(), nuevoEstado);
+        if (appointment.getEstado().equals(nuevoEstado)) return toDto(appointment);
 
         appointment.setEstado(nuevoEstado);
 
@@ -439,7 +428,7 @@ public class AppointmentService {
             throw new AccessDeniedException("Acceso denegado: el control de asistencia física está reservado al personal clínico y de recepción");
         }
 
-        Appointment appointment = appointmentRepository.findById(id)
+        Appointment appointment = appointmentRepository.findLockedByIdAndClinicaId(id, principal.getClinicaId())
                 .orElseThrow(() -> new NoSuchElementException("Cita no encontrada con ID: " + id));
 
         if (!appointment.getClinica().getId().equals(principal.getClinicaId())) {
@@ -451,11 +440,20 @@ public class AppointmentService {
             throw new IllegalArgumentException("El estado de asistencia debe ser ASISTIO o NO_SHOW");
         }
 
+        if ("CANCELADA".equals(appointment.getEstado())) {
+            throw new IllegalStateException("No se puede registrar asistencia de una cita cancelada");
+        }
+        if ("NO_SHOW".equals(asistencia)) {
+            AppointmentTransitions.requireTransition(appointment.getEstado(), "NO_ASISTIO");
+            if (appointment.getInicioEn().isAfter(OffsetDateTime.now())) {
+                throw new IllegalStateException("No se puede marcar inasistencia antes del inicio de la cita");
+            }
+        } else if ("NO_ASISTIO".equals(appointment.getEstado())) {
+            throw new IllegalStateException("La cita ya está cerrada como inasistencia");
+        }
         appointment.setEstadoAsistencia(asistencia);
 
-        if ("ASISTIO".equals(asistencia)) {
-            appointment.setEstado("FINALIZADA");
-        } else if ("NO_SHOW".equals(asistencia)) {
+        if ("NO_SHOW".equals(asistencia)) {
             appointment.setEstado("NO_ASISTIO");
         }
 
@@ -476,12 +474,14 @@ public class AppointmentService {
             throw new AccessDeniedException("Acceso denegado: los pacientes deben solicitar reprogramación mediante el flujo de solicitudes");
         }
 
-        Appointment appointment = appointmentRepository.findById(id)
+        Appointment appointment = appointmentRepository.findLockedByIdAndClinicaId(id, principal.getClinicaId())
                 .orElseThrow(() -> new NoSuchElementException("Cita no encontrada con ID: " + id));
 
         if (!appointment.getClinica().getId().equals(principal.getClinicaId())) {
             throw new NoSuchElementException("Cita no encontrada con ID: " + id);
         }
+
+        AppointmentTransitions.requireReschedulable(appointment.getEstado());
 
         String doctorNombre = (appointment.getOdontologo() != null && appointment.getOdontologo().getUsuario() != null)
                 ? "Dr. " + appointment.getOdontologo().getUsuario().getNombres() + " " + appointment.getOdontologo().getUsuario().getApellidos()
@@ -550,7 +550,7 @@ public class AppointmentService {
                                                                       UserPrincipal principal) {
         validateSecurityPrincipal(principal);
 
-        Appointment appointment = appointmentRepository.findById(citaId)
+        Appointment appointment = appointmentRepository.findLockedByIdAndClinicaId(citaId,principal.getClinicaId())
                 .orElseThrow(() -> new NoSuchElementException("Cita no encontrada con ID: " + citaId));
 
         if (!appointment.getClinica().getId().equals(principal.getClinicaId())) {
@@ -563,9 +563,7 @@ public class AppointmentService {
             }
         }
 
-        if ("CANCELADA".equalsIgnoreCase(appointment.getEstado()) || "FINALIZADA".equalsIgnoreCase(appointment.getEstado())) {
-            throw new IllegalStateException("No se puede solicitar reprogramación para una cita en estado " + appointment.getEstado());
-        }
+        AppointmentTransitions.requireReschedulable(appointment.getEstado());
 
         // Validar propuesta en horario Lima
         validateProposedHoursLima(dto.getNuevaFechaHoraInicio(), dto.getNuevaFechaHoraFin());
@@ -644,10 +642,11 @@ public class AppointmentService {
             throw new AccessDeniedException("Acceso denegado: solo el personal autorizado de la clínica puede resolver solicitudes");
         }
 
-        SolicitudReprogramacion solicitud = solicitudReprogramacionRepository.findById(solicitudId)
+        SolicitudReprogramacion solicitud = solicitudReprogramacionRepository.findLockedById(solicitudId)
                 .orElseThrow(() -> new NoSuchElementException("Solicitud de reprogramación no encontrada con ID: " + solicitudId));
 
-        Appointment cita = solicitud.getCita();
+        Appointment cita = appointmentRepository.findLockedByIdAndClinicaId(solicitud.getCita().getId(),principal.getClinicaId())
+                .orElseThrow(() -> new NoSuchElementException("Cita no encontrada"));
         if (!cita.getClinica().getId().equals(principal.getClinicaId())) {
             throw new NoSuchElementException("Solicitud no encontrada en esta clínica");
         }
@@ -681,6 +680,7 @@ public class AppointmentService {
             );
 
             // Modificar cita
+            AppointmentTransitions.requireReschedulable(cita.getEstado());
             cita.setInicioEn(solicitud.getNuevaFechaHoraInicio());
             cita.setFinEn(solicitud.getNuevaFechaHoraFin());
             cita.setEstado("REPROGRAMADA");
@@ -734,7 +734,7 @@ public class AppointmentService {
     public SolicitudReprogramacionResponseDto cancelarSolicitudReprogramacion(Long solicitudId, UserPrincipal principal) {
         validateSecurityPrincipal(principal);
 
-        SolicitudReprogramacion solicitud = solicitudReprogramacionRepository.findById(solicitudId)
+        SolicitudReprogramacion solicitud = solicitudReprogramacionRepository.findLockedById(solicitudId)
                 .orElseThrow(() -> new NoSuchElementException("Solicitud de reprogramación no encontrada con ID: " + solicitudId));
 
         if ("PACIENTE".equalsIgnoreCase(principal.getRol())) {
@@ -867,6 +867,24 @@ public class AppointmentService {
         }
     }
 
+    @Transactional
+    public AppointmentResponseDto updateTeleconsultationLink(Long id, String link, UserPrincipal principal) {
+        validateSecurityPrincipal(principal);
+        if ("PACIENTE".equals(principal.getRol())) throw new AccessDeniedException("Solo el personal puede asignar la sala virtual");
+        Appointment appointment = appointmentRepository.findLockedByIdAndClinicaId(id,principal.getClinicaId())
+                .orElseThrow(() -> new NoSuchElementException("Cita no encontrada"));
+        if ("ODONTOLOGO".equals(principal.getRol()) && !appointment.getOdontologo().getId().equals(principal.getUsuarioClinicaId()))
+            throw new AccessDeniedException("La cita pertenece a otro odontólogo");
+        if (!"VIRTUAL".equals(appointment.getModalidad())) throw new IllegalStateException("La cita es presencial");
+        if (java.util.Set.of("CANCELADA","FINALIZADA","NO_ASISTIO").contains(appointment.getEstado()))
+            throw new IllegalStateException("La cita ya está cerrada");
+        appointment.setEnlaceTeleconsulta(TeleconsultationLinks.validate(link));
+        appointmentRepository.save(appointment);
+        if (appointment.getPaciente().getUsuario()!=null) notificationService.createNotification(appointment.getClinica(),
+                appointment.getPaciente().getUsuario(),"SALA_VIRTUAL","Enlace de teleconsulta disponible","La clínica actualizó el enlace para su cita virtual.");
+        return toDto(appointment);
+    }
+
     private void validateSecurityPrincipal(UserPrincipal principal) {
         if (principal == null) {
             throw new AccessDeniedException("No se encontró una sesión activa");
@@ -972,7 +990,7 @@ public class AppointmentService {
         validateSecurityPrincipal(principal);
         Long clinicaId = principal.getClinicaId();
         return clinicUserRepository.findByClinicaId(clinicaId).stream()
-                .filter(m -> m.getRol() != null && "ODONTOLOGO".equalsIgnoreCase(m.getRol().getCodigo()))
+                .filter(m -> m.getRol() != null && Boolean.TRUE.equals(m.getRol().getActivo()) && "ODONTOLOGO".equalsIgnoreCase(m.getRol().getCodigo()))
                 .filter(m -> "ACTIVO".equalsIgnoreCase(m.getEstado()) &&
                         (m.getUsuario() == null || "ACTIVO".equalsIgnoreCase(m.getUsuario().getEstado())))
                 .map(m -> {

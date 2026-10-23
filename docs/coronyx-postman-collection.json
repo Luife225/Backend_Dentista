@@ -1,0 +1,210 @@
+{
+  "info": {
+    "name": "CORONYX Backend API - Sprint 04",
+    "_postman_id": "coronyx-sprint-04-collection",
+    "description": "Colección completa de endpoints para pruebas en Postman del Sprint 04 (Autenticación JWT, Usuarios y CRUD completo de Pacientes).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8081/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "jwt_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "patient_id",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "0. Verificación de Estado (Actuator Health)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8081/actuator/health",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8081",
+          "path": ["actuator", "health"]
+        }
+      }
+    },
+    {
+      "name": "1. Autenticación (Login con JWT)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code === 200) {",
+              "    var jsonData = pm.response.json();",
+              "    pm.collectionVariables.set('jwt_token', jsonData.token);",
+              "    console.log('JWT Token guardado:', jsonData.token);",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"correo\": \"odontologo@coronyx.pe\",\n  \"clave\": \"123456\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/auth/login",
+          "host": ["{{base_url}}"],
+          "path": ["auth", "login"]
+        }
+      }
+    },
+    {
+      "name": "2. Directorio de Usuarios",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwt_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/auth/users",
+          "host": ["{{base_url}}"],
+          "path": ["auth", "users"]
+        }
+      }
+    },
+    {
+      "name": "3. Crear Paciente (POST)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code === 201) {",
+              "    var jsonData = pm.response.json();",
+              "    pm.collectionVariables.set('patient_id', jsonData.id);",
+              "    console.log('Patient ID creado:', jsonData.id);",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwt_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombres\": \"Mariana\",\n  \"apellidos\": \"Vargas Mendoza\",\n  \"tipoDocumento\": \"DNI\",\n  \"numeroDocumento\": \"74859612\",\n  \"fechaNacimiento\": \"1998-07-15\",\n  \"telefono\": \"+51 987123456\",\n  \"correo\": \"mariana.vargas@gmail.com\",\n  \"alergias\": \"Penicilina y Latex\",\n  \"antecedentesMedicos\": \"Ortodoncia previa en 2021\",\n  \"estado\": \"ACTIVO\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/patients",
+          "host": ["{{base_url}}"],
+          "path": ["patients"]
+        }
+      }
+    },
+    {
+      "name": "4. Listar Todos los Pacientes (GET)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwt_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/patients",
+          "host": ["{{base_url}}"],
+          "path": ["patients"]
+        }
+      }
+    },
+    {
+      "name": "5. Obtener Paciente por ID (GET)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwt_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/patients/{{patient_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["patients", "{{patient_id}}"]
+        }
+      }
+    },
+    {
+      "name": "6. Actualizar Paciente (PUT)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwt_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombres\": \"Mariana Sofía\",\n  \"apellidos\": \"Vargas Mendoza\",\n  \"tipoDocumento\": \"DNI\",\n  \"numeroDocumento\": \"74859612\",\n  \"fechaNacimiento\": \"1998-07-15\",\n  \"telefono\": \"+51 999111222\",\n  \"correo\": \"mariana.vargas.actualizada@gmail.com\",\n  \"alergias\": \"Penicilina, Latex y Polvo\",\n  \"antecedentesMedicos\": \"Ortodoncia previa 2021 y profilaxis dental\",\n  \"estado\": \"ACTIVO\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/patients/{{patient_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["patients", "{{patient_id}}"]
+        }
+      }
+    },
+    {
+      "name": "7. Archivar Paciente - Borrado Lógico (PATCH)",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwt_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/patients/{{patient_id}}/archive",
+          "host": ["{{base_url}}"],
+          "path": ["patients", "{{patient_id}}", "archive"]
+        }
+      }
+    }
+  ]
+}
