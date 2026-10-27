@@ -40,8 +40,8 @@ public class DashboardService {
         if (principal == null || principal.getClinicaId() == null) {
             throw new AccessDeniedException("No se encontró una sesión activa con clínica asignada");
         }
-        if (principal.isSuperAdmin() || "PACIENTE".equalsIgnoreCase(principal.getRol())) {
-            throw new AccessDeniedException("Acceso denegado: este panel es exclusivo para el equipo operativo de la clínica");
+        if ("PACIENTE".equalsIgnoreCase(principal.getRol())) {
+            throw new AccessDeniedException("Acceso denegado: este panel es exclusivo para el personal de la clínica");
         }
     }
 
