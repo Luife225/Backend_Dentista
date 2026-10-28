@@ -1,10 +1,10 @@
 # Preparación del MVP y continuidad entre computadoras
 
-28/10/2026, hora de Perú. Se ejecutó el siguiente paso autorizado: copia para un primer experimento y reserva interna antes de entrenar. El usuario eligió publicar el ML **dentro de la rama `codex/ml-mvp` del backend**, no como un repositorio nuevo en GitHub.
+28/10/2026, hora de Perú. Se ejecutó el siguiente paso autorizado: copia para un primer experimento y reserva interna antes de entrenar. El usuario eligió publicar el ML **dentro del backend**. La única rama nueva para este avance es `mvp-ml`.
 
 ## Organización elegida
 
-En GitHub, el código quedará bajo `Backend_Dentista/ML_Laboratorio/` en `codex/ml-mvp`. El backend normal y el frontend conservan sus carpetas y ramas originales. Se preparó una carpeta de trabajo separada en `../tmp/Backend_ML` para publicar la rama del backend sin cambiar la carpeta donde se venía trabajando.
+En GitHub, el código está bajo `Backend_Dentista/ML_Laboratorio/` en `mvp-ml`. El backend normal y el frontend conservan sus carpetas y ramas originales. Se preparó una carpeta de trabajo separada en `../tmp/Backend_ML` para publicar la rama del backend sin cambiar la carpeta donde se venía trabajando.
 
 El repositorio local independiente del laboratorio se conserva como respaldo del trabajo inicial. El punto de continuidad compartido será la rama del backend. Las notas del 27/10 describen la organización anterior, antes de esta decisión.
 

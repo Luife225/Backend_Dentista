@@ -1,42 +1,42 @@
 # Continuar desde la laptop
 
-El ML está dentro de **la rama `codex/ml-mvp` del backend**, en la carpeta `ML_Laboratorio`. No necesitas clonar un tercer repositorio. El frontend tiene una rama del mismo nombre reservada para su futura integración; todavía no incluye pantallas de ML nuevas.
+El ML está dentro de **la rama `mvp-ml` del backend**, en la carpeta `ML_Laboratorio`. Es la única rama nueva para este avance. Tu rama habitual continúa siendo la de la aplicación. El frontend tiene `mvp-ml` reservada para su futura integración; todavía no incluye pantallas de ML nuevas.
 
 ## 1. Descargar la rama
 
 Si ya tienes el backend clonado, abre una terminal en su carpeta raíz:
 
 ```powershell
-git fetch origin
-git switch --track origin/codex/ml-mvp
+git fetch origin --prune
+git switch --track origin/mvp-ml
 ```
 
 El segundo comando es para crear la rama local la primera vez. Si ya existe:
 
 ```powershell
-git switch codex/ml-mvp
-git pull --ff-only origin codex/ml-mvp
+git switch mvp-ml
+git pull --ff-only origin mvp-ml
 ```
 
 Si aún no tienes el backend:
 
 ```powershell
-git clone --branch codex/ml-mvp https://github.com/Luife225/Backend_Dentista.git
+git clone --branch mvp-ml https://github.com/Luife225/Backend_Dentista.git
 cd Backend_Dentista
 ```
 
-Para alternar entre el código de la aplicación de referencia y el avance con ML, desde la raíz del backend:
+Para alternar entre tu rama habitual y el avance con ML, desde la raíz del backend:
 
 ```powershell
-git switch codex/base-app
-git switch codex/ml-mvp
+git switch feature/sebastian
+git switch mvp-ml
 ```
 
-La rama base se crea localmente la primera vez con `git switch --track origin/codex/base-app`. Es una referencia del código existente antes de incorporar esta carpeta ML. Tus ramas `develop` y `feature/sebastian` conservan su propio historial. Las dos modificaciones documentales que había sin commit en la PC original no se incorporaron a la rama base ni a la de ML.
+Usa el nombre de tu rama habitual si en tu laptop es diferente de `feature/sebastian`. Tus ramas existentes conservan su historial. Las dos modificaciones documentales que había sin commit en la PC original se conservaron allí y no se incorporaron a la rama de ML.
 
-Antes de cambiar de rama, guarda tus propios cambios con un commit o el mecanismo que ya uses; no ejecutes un reset para forzar el cambio. Sal de `ML_Laboratorio` antes de volver a la rama base, porque esa carpeta solo existe en la rama de ML.
+Antes de cambiar de rama, guarda tus propios cambios con el mecanismo que ya uses. Sal de `ML_Laboratorio` antes de volver a tu rama habitual, porque esa carpeta solo existe en la rama de ML.
 
-En el frontend se pueden descargar ambas ramas con `git fetch origin` y crear/seleccionar las ramas con los mismos comandos. En esta entrega apuntan al mismo código del frontend: su integración con el detector continúa pendiente.
+En el frontend puedes obtener `mvp-ml` con los mismos comandos. Su integración con el detector continúa pendiente.
 
 ## 2. Comprobar el código sin descargar radiografías
 

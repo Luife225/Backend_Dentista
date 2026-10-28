@@ -63,7 +63,7 @@ No se deben modificar manualmente estructuras que ya esten representadas por una
 
 ## Laboratorio de ML en su rama de desarrollo
 
-La rama `codex/ml-mvp` incorpora [ML_Laboratorio](ML_Laboratorio/README.md), separado del funcionamiento de Spring Boot y PostgreSQL. La [guía para continuar en la laptop](ML_Laboratorio/LAPTOP.md) explica cómo recuperar la rama, ejecutar sus comprobaciones y preparar los datos. La referencia `codex/base-app` conserva el código anterior a esta incorporación. Todavía no se ha entrenado ni integrado un detector.
+La rama `mvp-ml` incorpora [ML_Laboratorio](ML_Laboratorio/README.md), separado del funcionamiento de Spring Boot y PostgreSQL. La [guía para continuar en la laptop](ML_Laboratorio/LAPTOP.md) explica cómo recuperar esta rama, ejecutar sus comprobaciones y preparar los datos. La aplicación mantiene sus ramas habituales. Todavía no se ha entrenado ni integrado un detector.
 
 ## Flujo Git del backend
 
