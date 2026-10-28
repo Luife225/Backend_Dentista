@@ -1,0 +1,716 @@
+{
+  "date": "2026-10-25",
+  "policy": "REGLAS_PREPARACION_ETIQUETAS_2026-10-25.md",
+  "policy_version": 1,
+  "source_revision": "7b27ccc8e342dcb774f69adc6ca5e6c09fefce93",
+  "source_training_sha256": "6e1f702cfd6c83bc63660d9a0fd79fe5b26d5a54b63d93b954a02cc254314483",
+  "scope": "Registro de decisiones propuestas; no cambia ni excluye anotaciones o imagenes",
+  "summary": {
+    "case_groups": 16,
+    "exact_duplicate_groups": 1,
+    "pending_review_groups": 15,
+    "different_target_category_groups": 11,
+    "repeated_same_category_groups_excluding_exact_duplicate": 4,
+    "applied_actions": 0
+  },
+  "cases": [
+    {
+      "case_id": "DUP-001",
+      "finding_type": "duplicate_exact_except_id",
+      "partition": "train",
+      "image": "train_377.png",
+      "image_id": 447,
+      "annotation_ids": [
+        2335,
+        2337
+      ],
+      "annotation_sha256": {
+        "2335": "e8894ea63f2e0e68165cd1b3cf21c38b8e53b49dd411923fe65fa7da6debc09d",
+        "2337": "26773c2d6d90b1836b4a42ee3dcf522510707b60cffd664d61082a9d3e490e45"
+      },
+      "status": "duplicado_confirmado_accion_documentada",
+      "future_action": {
+        "scope": "derived_copy_only",
+        "keep_id": 2335,
+        "omit_ids": [
+          2337
+        ],
+        "reason": "Todos los campos coinciden excepto id"
+      },
+      "applied": false,
+      "resolution_responsible": null,
+      "resolution_date": null
+    },
+    {
+      "case_id": "MULTI-001",
+      "finding_type": "caries_and_deep_same_recorded_tooth",
+      "partition": "train",
+      "image": "train_440.png",
+      "image_id": 37,
+      "annotation_ids": [
+        209,
+        211
+      ],
+      "annotation_sha256": {
+        "209": "56a74db3c186e4fa6b1172744a2a8fa6e9a8e29550af019c444f88b1b8bbbd66",
+        "211": "c3cb714ba4d1e3c77fd17e8d874e4fb49c78d3fc892411e7bc351ee99adb9272"
+      },
+      "recorded_tooth": {
+        "quadrant_category_id": 3,
+        "tooth_category_id": 6
+      },
+      "diagnosis_category_ids": [
+        1,
+        3
+      ],
+      "boxes": [
+        [
+          774.0,
+          715.0,
+          268.0,
+          259.0
+        ],
+        [
+          1805.0,
+          673.0,
+          257.0,
+          241.0
+        ]
+      ],
+      "status": "pendiente_revision",
+      "review_question": "Aclarar coexistencia de las dos categorias y correspondencia del diente",
+      "future_action": null,
+      "applied": false,
+      "resolution_responsible": null,
+      "resolution_date": null,
+      "resolution_evidence": null
+    },
+    {
+      "case_id": "MULTI-002",
+      "finding_type": "caries_and_deep_same_recorded_tooth",
+      "partition": "train",
+      "image": "train_250.png",
+      "image_id": 141,
+      "annotation_ids": [
+        736,
+        740
+      ],
+      "annotation_sha256": {
+        "736": "a76cfb0fcb063607f37f74984d3a7d5182d87f5ee6604afd983a8b7a42bd7e47",
+        "740": "fd3fbafe3ce84a1ae35fc7055e3f2136ad7b8a6420e9f4d69adb8be8d7e2d801"
+      },
+      "recorded_tooth": {
+        "quadrant_category_id": 3,
+        "tooth_category_id": 6
+      },
+      "diagnosis_category_ids": [
+        1,
+        3
+      ],
+      "boxes": [
+        [
+          766.0,
+          721.8888888888889,
+          272.0,
+          261.1111111111111
+        ],
+        [
+          677.0,
+          651.0,
+          246.0,
+          248.0
+        ]
+      ],
+      "status": "pendiente_revision",
+      "review_question": "Aclarar coexistencia de las dos categorias y correspondencia del diente",
+      "future_action": null,
+      "applied": false,
+      "resolution_responsible": null,
+      "resolution_date": null,
+      "resolution_evidence": null
+    },
+    {
+      "case_id": "MULTI-003",
+      "finding_type": "caries_and_deep_same_recorded_tooth",
+      "partition": "train",
+      "image": "train_451.png",
+      "image_id": 144,
+      "annotation_ids": [
+        755,
+        759
+      ],
+      "annotation_sha256": {
+        "755": "a621e887572841482ba1687b7ca2685dfec7800f17e00794600b8c69ab2b59e1",
+        "759": "d462c209ac4a38f28a1c7b99db2eb233811e497df3a7759e163d55fed156da46"
+      },
+      "recorded_tooth": {
+        "quadrant_category_id": 2,
+        "tooth_category_id": 5
+      },
+      "diagnosis_category_ids": [
+        1,
+        3
+      ],
+      "boxes": [
+        [
+          1651.1403508771928,
+          721.0350877192982,
+          252.63157894736833,
+          291.22807017543846
+        ],
+        [
+          1631.0,
+          726.0,
+          239.0,
+          278.0
+        ]
+      ],
+      "status": "pendiente_revision",
+      "review_question": "Aclarar coexistencia de las dos categorias y correspondencia del diente",
+      "future_action": null,
+      "applied": false,
+      "resolution_responsible": null,
+      "resolution_date": null,
+      "resolution_evidence": null
+    },
+    {
+      "case_id": "MULTI-004",
+      "finding_type": "caries_and_deep_same_recorded_tooth",
+      "partition": "train",
+      "image": "train_485.png",
+      "image_id": 155,
+      "annotation_ids": [
+        845,
+        846
+      ],
+      "annotation_sha256": {
+        "845": "6222d5d55d43a9549a3224206d1c285ce5313211c1f4640a28f193a9cd335251",
+        "846": "54d21f181a502b5f2847f8fbe6a57808b4bbc7a5145e7e6629766140b6a5156f"
+      },
+      "recorded_tooth": {
+        "quadrant_category_id": 1,
+        "tooth_category_id": 4
+      },
+      "diagnosis_category_ids": [
+        1,
+        3
+      ],
+      "boxes": [
+        [
+          1694.736842105263,
+          424.5614035087719,
+          114.03508771929842,
+          291.2280701754385
+        ],
+        [
+          1691.0,
+          440.0,
+          122.0,
+          284.0
+        ]
+      ],
+      "status": "pendiente_revision",
+      "review_question": "Aclarar coexistencia de las dos categorias y correspondencia del diente",
+      "future_action": null,
+      "applied": false,
+      "resolution_responsible": null,
+      "resolution_date": null,
+      "resolution_evidence": null
+    },
+    {
+      "case_id": "MULTI-005",
+      "finding_type": "caries_and_deep_same_recorded_tooth",
+      "partition": "train",
+      "image": "train_343.png",
+      "image_id": 245,
+      "annotation_ids": [
+        1299,
+        1304
+      ],
+      "annotation_sha256": {
+        "1299": "9ace5436c542b8bc48239d9a6ef9ca01a24b4fcae16ebe55b03a4bcc9d2dd227",
+        "1304": "8adaa882efedebc4a271d6a0043f7a2f2b53b046add596358f0c5997519a8d6c"
+      },
+      "recorded_tooth": {
+        "quadrant_category_id": 3,
+        "tooth_category_id": 5
+      },
+      "diagnosis_category_ids": [
+        1,
+        3
+      ],
+      "boxes": [
+        [
+          873.4567901234567,
+          771.6049382716049,
+          196.29629629629642,
+          277.7777777777778
+        ],
+        [
+          893.0,
+          758.0,
+          183.0,
+          260.0
+        ]
+      ],
+      "status": "pendiente_revision",
+      "review_question": "Aclarar coexistencia de las dos categorias y correspondencia del diente",
+      "future_action": null,
+      "applied": false,
+      "resolution_responsible": null,
+      "resolution_date": null,
+      "resolution_evidence": null
+    },
+    {
+      "case_id": "MULTI-006",
+      "finding_type": "caries_and_deep_same_recorded_tooth",
+      "partition": "train",
+      "image": "train_557.png",
+      "image_id": 359,
+      "annotation_ids": [
+        1892,
+        1896
+      ],
+      "annotation_sha256": {
+        "1892": "f044674b7340c157435147e8666ac2c740e87ccde01673dc3e803b819e9270bb",
+        "1896": "e2017c46e0e91608c06c54fe9f993400d164560500fd97a52f6dec53a6803cb3"
+      },
+      "recorded_tooth": {
+        "quadrant_category_id": 2,
+        "tooth_category_id": 5
+      },
+      "diagnosis_category_ids": [
+        1,
+        3
+      ],
+      "boxes": [
+        [
+          1746.0,
+          644.0,
+          190.0,
+          260.0
+        ],
+        [
+          1736.0,
+          637.0,
+          212.0,
+          279.0
+        ]
+      ],
+      "status": "pendiente_revision",
+      "review_question": "Aclarar coexistencia de las dos categorias y correspondencia del diente",
+      "future_action": null,
+      "applied": false,
+      "resolution_responsible": null,
+      "resolution_date": null,
+      "resolution_evidence": null
+    },
+    {
+      "case_id": "MULTI-007",
+      "finding_type": "caries_and_deep_same_recorded_tooth",
+      "partition": "train",
+      "image": "train_212.png",
+      "image_id": 516,
+      "annotation_ids": [
+        2667,
+        2671
+      ],
+      "annotation_sha256": {
+        "2667": "9b9f919c97d0ca5ce342924a172aaf71e822b71c0fd7b68358819ea1acae8ada",
+        "2671": "bbad85e69ae9537a596d1035b594ed5f9e52483a133199853917f39a5f138b76"
+      },
+      "recorded_tooth": {
+        "quadrant_category_id": 3,
+        "tooth_category_id": 5
+      },
+      "diagnosis_category_ids": [
+        1,
+        3
+      ],
+      "boxes": [
+        [
+          918.8571428571428,
+          717.142857142857,
+          225.14285714285722,
+          288.857142857143
+        ],
+        [
+          926.0,
+          697.0,
+          211.0,
+          279.0
+        ]
+      ],
+      "status": "pendiente_revision",
+      "review_question": "Aclarar coexistencia de las dos categorias y correspondencia del diente",
+      "future_action": null,
+      "applied": false,
+      "resolution_responsible": null,
+      "resolution_date": null,
+      "resolution_evidence": null
+    },
+    {
+      "case_id": "MULTI-008",
+      "finding_type": "caries_and_deep_same_recorded_tooth",
+      "partition": "train",
+      "image": "train_572.png",
+      "image_id": 521,
+      "annotation_ids": [
+        2694,
+        2695,
+        2698
+      ],
+      "annotation_sha256": {
+        "2694": "29c858700a32ff09766e5ccfbb7294961b9e2b9837ad429a4ab39738b4a842b7",
+        "2695": "326cd86bab738238c4b518b30067e9333e9a44f33dc87033989414ba6a09ac3f",
+        "2698": "db15c6dce6d847b31764d4289ae83482614b992cda4233b1423ff8a8a88d290b"
+      },
+      "recorded_tooth": {
+        "quadrant_category_id": 3,
+        "tooth_category_id": 5
+      },
+      "diagnosis_category_ids": [
+        1,
+        2,
+        3
+      ],
+      "boxes": [
+        [
+          891.3703703703703,
+          696.9999999999999,
+          250.62962962962968,
+          296.0000000000001
+        ],
+        [
+          925.0,
+          696.0,
+          224.0,
+          280.0
+        ],
+        [
+          922.0,
+          687.0,
+          232.0,
+          290.0
+        ]
+      ],
+      "status": "pendiente_revision",
+      "review_question": "Aclarar coexistencia de las dos categorias y correspondencia del diente",
+      "future_action": null,
+      "applied": false,
+      "resolution_responsible": null,
+      "resolution_date": null,
+      "resolution_evidence": null
+    },
+    {
+      "case_id": "MULTI-009",
+      "finding_type": "caries_and_deep_same_recorded_tooth",
+      "partition": "train",
+      "image": "train_481.png",
+      "image_id": 536,
+      "annotation_ids": [
+        2780,
+        2782
+      ],
+      "annotation_sha256": {
+        "2780": "f173306e8e104b7995c9bbe124042e72a1ece8e84fa181f513ab922d712e8f84",
+        "2782": "6f5c7a52600f04c738552724119333a4e1a27d30c3e16ef583bacf2e05d3ebf3"
+      },
+      "recorded_tooth": {
+        "quadrant_category_id": 3,
+        "tooth_category_id": 3
+      },
+      "diagnosis_category_ids": [
+        1,
+        3
+      ],
+      "boxes": [
+        [
+          683.6363636363636,
+          761.8181818181818,
+          165.45454545454538,
+          319.090909090909
+        ],
+        [
+          683.6363636363636,
+          761.8181818181818,
+          165.45454545454538,
+          319.090909090909
+        ]
+      ],
+      "status": "pendiente_revision",
+      "review_question": "Aclarar coexistencia de las dos categorias y correspondencia del diente",
+      "future_action": null,
+      "applied": false,
+      "resolution_responsible": null,
+      "resolution_date": null,
+      "resolution_evidence": null
+    },
+    {
+      "case_id": "MULTI-010",
+      "finding_type": "caries_and_deep_same_recorded_tooth",
+      "partition": "train",
+      "image": "train_397.png",
+      "image_id": 610,
+      "annotation_ids": [
+        3072,
+        3075
+      ],
+      "annotation_sha256": {
+        "3072": "9c0f7002b881d35866d232ad674985e43cdf05f8f762f7db622e3ff52e89acee",
+        "3075": "18145d7726e3bc4eef06e42d7d446cd4afe39f26ae16a3eeeb2b30ab721dfaec"
+      },
+      "recorded_tooth": {
+        "quadrant_category_id": 2,
+        "tooth_category_id": 5
+      },
+      "diagnosis_category_ids": [
+        1,
+        3
+      ],
+      "boxes": [
+        [
+          1767.0,
+          705.0,
+          234.0,
+          278.17647058823513
+        ],
+        [
+          1782.0,
+          714.0,
+          221.0,
+          259.0
+        ]
+      ],
+      "status": "pendiente_revision",
+      "review_question": "Aclarar coexistencia de las dos categorias y correspondencia del diente",
+      "future_action": null,
+      "applied": false,
+      "resolution_responsible": null,
+      "resolution_date": null,
+      "resolution_evidence": null
+    },
+    {
+      "case_id": "MULTI-011",
+      "finding_type": "caries_and_deep_same_recorded_tooth",
+      "partition": "train",
+      "image": "train_350.png",
+      "image_id": 653,
+      "annotation_ids": [
+        3268,
+        3269
+      ],
+      "annotation_sha256": {
+        "3268": "d3ab80eeaa5c8fb9f2839c74ea4d509aa5444df71277e692af96d396a85bd44c",
+        "3269": "5cbff732cad657f43eb5604e84d3d2662058dbad925ade252df512f59f0bcc66"
+      },
+      "recorded_tooth": {
+        "quadrant_category_id": 3,
+        "tooth_category_id": 6
+      },
+      "diagnosis_category_ids": [
+        1,
+        3
+      ],
+      "boxes": [
+        [
+          813.5454545454545,
+          650.3636363636363,
+          225.4545454545455,
+          347.27272727272725
+        ],
+        [
+          791.0,
+          655.0,
+          264.0,
+          314.0
+        ]
+      ],
+      "status": "pendiente_revision",
+      "review_question": "Aclarar coexistencia de las dos categorias y correspondencia del diente",
+      "future_action": null,
+      "applied": false,
+      "resolution_responsible": null,
+      "resolution_date": null,
+      "resolution_evidence": null
+    },
+    {
+      "case_id": "REPET-001",
+      "finding_type": "same_class_same_recorded_tooth_different_boxes",
+      "partition": "train",
+      "image": "train_467.png",
+      "image_id": 182,
+      "annotation_ids": [
+        962,
+        963
+      ],
+      "annotation_sha256": {
+        "962": "58498852628ee858ca5b99c67881a94ff8bfc455a851dd6209a1f6c0bfd2ebab",
+        "963": "3b498c45740a38471e36f7ff8d5b9000cd8200ce542c7bf4e5b7930c72f46e3a"
+      },
+      "recorded_tooth": {
+        "quadrant_category_id": 3,
+        "tooth_category_id": 3
+      },
+      "diagnosis_category_ids": [
+        1
+      ],
+      "boxes": [
+        [
+          804.0,
+          844.0,
+          119.0,
+          343.0
+        ],
+        [
+          1139.0,
+          852.0,
+          86.0,
+          282.0
+        ]
+      ],
+      "status": "pendiente_revision",
+      "review_question": "Aclarar cuadros diferentes con la misma categoria e identidad dental registrada",
+      "future_action": null,
+      "applied": false,
+      "resolution_responsible": null,
+      "resolution_date": null,
+      "resolution_evidence": null
+    },
+    {
+      "case_id": "REPET-002",
+      "finding_type": "same_class_same_recorded_tooth_different_boxes",
+      "partition": "train",
+      "image": "train_85.png",
+      "image_id": 254,
+      "annotation_ids": [
+        1356,
+        1357
+      ],
+      "annotation_sha256": {
+        "1356": "c002ab8398375aa9d0eb49ebd612025dae89dd23a430b21144a05b0b4be92a21",
+        "1357": "f9d65508b1436bf214a365e31f69e23fa19a623f9ed39fab422cc5ac21c0f738"
+      },
+      "recorded_tooth": {
+        "quadrant_category_id": 3,
+        "tooth_category_id": 6
+      },
+      "diagnosis_category_ids": [
+        3
+      ],
+      "boxes": [
+        [
+          699.0,
+          790.0,
+          226.0,
+          226.0
+        ],
+        [
+          708.0,
+          785.0,
+          207.0,
+          216.0
+        ]
+      ],
+      "status": "pendiente_revision",
+      "review_question": "Aclarar cuadros diferentes con la misma categoria e identidad dental registrada",
+      "future_action": null,
+      "applied": false,
+      "resolution_responsible": null,
+      "resolution_date": null,
+      "resolution_evidence": null
+    },
+    {
+      "case_id": "REPET-003",
+      "finding_type": "same_class_same_recorded_tooth_different_boxes",
+      "partition": "train",
+      "image": "train_523.png",
+      "image_id": 531,
+      "annotation_ids": [
+        2751,
+        2756
+      ],
+      "annotation_sha256": {
+        "2751": "348ca455e5a35488a6caca6f1b555ba83432e543756a5decd6d88357e255c1b7",
+        "2756": "ef0aed7ccff04f79269edf8ea4fd082af86404f7700a021f27343f229972ec32"
+      },
+      "recorded_tooth": {
+        "quadrant_category_id": 2,
+        "tooth_category_id": 7
+      },
+      "diagnosis_category_ids": [
+        1
+      ],
+      "boxes": [
+        [
+          2109.0,
+          468.0,
+          261.0,
+          283.0
+        ],
+        [
+          2111.0,
+          483.0,
+          253.0,
+          259.0
+        ]
+      ],
+      "status": "pendiente_revision",
+      "review_question": "Aclarar cuadros diferentes con la misma categoria e identidad dental registrada",
+      "future_action": null,
+      "applied": false,
+      "resolution_responsible": null,
+      "resolution_date": null,
+      "resolution_evidence": null
+    },
+    {
+      "case_id": "REPET-004",
+      "finding_type": "same_class_same_recorded_tooth_different_boxes",
+      "partition": "train",
+      "image": "train_644.png",
+      "image_id": 552,
+      "annotation_ids": [
+        2840,
+        2841
+      ],
+      "annotation_sha256": {
+        "2840": "ba25d5a2916917cedcea0853d1f21a834f4a2353bd98f832e4493471cf1fc7b0",
+        "2841": "e58a66a25ba366644b029db6b033b30f151274191c4c835343e148e897513f8a"
+      },
+      "recorded_tooth": {
+        "quadrant_category_id": 0,
+        "tooth_category_id": 6
+      },
+      "diagnosis_category_ids": [
+        3
+      ],
+      "boxes": [
+        [
+          732.0,
+          357.0,
+          224.0,
+          284.0
+        ],
+        [
+          892.0,
+          406.0,
+          155.0,
+          239.0
+        ]
+      ],
+      "status": "pendiente_revision",
+      "review_question": "Aclarar cuadros diferentes con la misma categoria e identidad dental registrada",
+      "future_action": null,
+      "applied": false,
+      "resolution_responsible": null,
+      "resolution_date": null,
+      "resolution_evidence": null
+    }
+  ],
+  "separate_unresolved_controls": {
+    "training_images_without_annotations": 27,
+    "validation_images_without_annotations": 4,
+    "healthy_status_inferred": false,
+    "image_or_patient_duplicate_review_complete": false
+  }
+}
