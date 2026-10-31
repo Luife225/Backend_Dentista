@@ -34,22 +34,32 @@ public class HelpdeskController {
     }
 
     private void initFallbackCatalog() {
+        // ── 1. PACIENTE (6 ítems)
         catalog.add(new HelpdeskCatalogDto("INC-PAC-001", "PACIENTE", "Reprogramación urgente de cita odontológica (falta < 2 horas)", "El paciente solicita cambio de horario de emergencia y no puede esperar.", "Asistencia", 3, 2, "ALTO", "RECEPCIONISTA", 20, "/app/agenda", "📅 Ir a Cita en Agenda"));
         catalog.add(new HelpdeskCatalogDto("INC-PAC-002", "PACIENTE", "Corrección de DNI o Nombre por error de digitación en admisión", "El paciente detecta que sus datos de identidad fueron mal ingresados.", "Asistencia", 2, 2, "MEDIO", "ADMIN_CLINICA", 60, "/app/pacientes", "👤 Ir a Ficha de Paciente"));
         catalog.add(new HelpdeskCatalogDto("INC-PAC-003", "PACIENTE", "Radiografía o receta médica no visible en portal del paciente", "El paciente tuvo consulta pero los archivos adjuntos permanecen ocultos.", "Incidencia", 2, 2, "MEDIO", "ODONTOLOGO", 30, "/app/pacientes", "📁 Ir a Archivos de Paciente"));
         catalog.add(new HelpdeskCatalogDto("INC-PAC-004", "PACIENTE", "Falla de conexión, video o audio en sala de Teleodontología", "No se establece enlace WebRTC o token Jitsi en sesión en vivo.", "Incidencia", 3, 3, "CRITICO", "SOPORTE_TECNICO", 10, "/app/teleodontologia", "📹 Ir a Sala Virtual"));
         catalog.add(new HelpdeskCatalogDto("INC-PAC-005", "PACIENTE", "Consulta sobre horarios de atención de fin de semana o precios", "Consulta informativa previa sobre turnos y aranceles de sede.", "Información", 2, 1, "BAJO", "RECEPCIONISTA", 120, "/app/agenda", "ℹ️ Ver Horarios de Sede"));
+        catalog.add(new HelpdeskCatalogDto("INC-PAC-006", "PACIENTE", "Consulta médica sobre dosificación de antibiótico post-tratamiento", "Paciente refiere duda clínica urgente sobre posología tras procedimiento.", "Información", 2, 3, "ALTO", "ODONTOLOGO", 30, "/app/pacientes", "🦷 Ver Ficha Clínica"));
 
+        // ── 2. ODONTOLOGO (4 ítems)
         catalog.add(new HelpdeskCatalogDto("INC-ODO-001", "ODONTOLOGO", "Reasignación urgente de Sillón dental por retraso en cirugía previa", "Procedimiento quirúrgico se extiende y siguiente paciente está en sala.", "Incidencia", 2, 3, "ALTO", "RECEPCIONISTA", 15, "/app/agenda", "📅 Reubicar Sillón en Agenda"));
         catalog.add(new HelpdeskCatalogDto("INC-ODO-002", "ODONTOLOGO", "Error 413 al cargar archivo binario pesado de radiografía (> 25MB)", "La imagen panorámica supera el umbral estándar del servidor.", "Incidencia", 2, 2, "MEDIO", "SOPORTE_TECNICO", 30, "/app/pacientes", "📁 Subida Manual"));
         catalog.add(new HelpdeskCatalogDto("INC-ODO-003", "ODONTOLOGO", "Solicitud de adenda médica en historia clínica cerrada por auditoría", "Necesidad de incorporar observación diagnóstica complementaria.", "Asistencia", 1, 2, "BAJO", "ADMIN_CLINICA", 120, "/app/pacientes", "🦷 Ver Historia Clínica"));
+        catalog.add(new HelpdeskCatalogDto("INC-ODO-004", "ODONTOLOGO", "Capacitación técnica en llenado de historia clínica y odontograma digital", "Inducción para nuevos especialistas en el software odontológico.", "Información", 2, 1, "BAJO", "SOPORTE_TECNICO", 120, "/app/pacientes", "🦷 Ver Odontograma"));
 
+        // ── 3. RECEPCIONISTA (2 ítems)
         catalog.add(new HelpdeskCatalogDto("INC-REC-001", "RECEPCIONISTA", "Liberación de turno y sillón por inasistencia física (Paciente No-Show)", "Paciente no se presentó en tolerancia de 15 minutos; liberar sillón.", "Incidencia", 3, 2, "ALTO", "RECEPCIONISTA", 15, "/app/agenda", "📅 Gestionar No-Show"));
         catalog.add(new HelpdeskCatalogDto("INC-REC-002", "RECEPCIONISTA", "Solicitud de turno de paciente fuera del horario laboral de la sede", "Paciente insiste en turno nocturno o feriado; requiere autorización.", "Información", 2, 1, "BAJO", "ADMIN_CLINICA", 120, "/app/agenda", "⚙️ Ver Franja Laboral"));
 
+        // ── 4. ADMIN_CLINICA (2 ítems)
         catalog.add(new HelpdeskCatalogDto("INC-ADM-001", "ADMIN_CLINICA", "Bloqueo urgente de credenciales por desvinculación laboral de personal", "Cese de contrato con acceso activo a historias clínicas.", "Incidencia", 1, 3, "ALTO", "ADMIN_CLINICA", 15, "/app/consultorio", "👥 Desactivar Credenciales"));
-        catalog.add(new HelpdeskCatalogDto("INC-ADM-002", "ADMIN_CLINICA", "Caída de base de datos o error 500 en servicios de Railway Cloud", "Indisponibilidad del backend o lentitud en consultas de facturación.", "Incidencia", 1, 3, "CRITICO", "SOPORTE_TECNICO", 10, "/app/super-admin", "🖥️ Monitoreo de Servidor"));
+        catalog.add(new HelpdeskCatalogDto("INC-ADM-003", "ADMIN_CLINICA", "Solicitud de creación de credenciales de acceso para nueva odontóloga especialista", "Alta de cuenta y perfil RBAC para personal odontológico nuevo.", "Acceso", 2, 2, "MEDIO", "ADMIN_CLINICA", 60, "/app/consultorio", "👥 Crear Usuario"));
 
+        // ── 5. SOPORTE_TECNICO / SUPER_ADMIN (1 ítem)
+        catalog.add(new HelpdeskCatalogDto("INC-TI-001", "SUPER_ADMIN", "Caída de base de datos o error 500 en microservicios de Railway Cloud", "Indisponibilidad del backend o lentitud crítica en consultas de facturación.", "Incidencia", 1, 3, "CRITICO", "SOPORTE_TECNICO", 10, "/app/super-admin", "🖥️ Monitoreo Railway"));
+
+        // ── 6. CASO GENERAL / OTROS (1 ítem transversal)
         catalog.add(new HelpdeskCatalogDto("INC-GEN-099", "TODOS", "Otros requerimientos o fallas no contempladas en el catálogo (Con Captura)", "Caja de texto libre para detallar el problema y adjuntar captura de evidencia.", "Asistencia", 2, 2, "MEDIO", "ADMIN_CLINICA", 60, null, "📋 Triaje Administrativo"));
     }
 
@@ -134,10 +144,35 @@ public class HelpdeskController {
                            solicitante_rol,
                            COALESCE(responsable_nombre, responsable_rol) as responsable,
                            responsable_rol,
-                           probabilidad, impacto, prioridad, estado, tiempo_transcurrido,
+                           probabilidad, impacto, prioridad, estado,
+                           CASE
+                               WHEN estado = 'ATENDIDO' AND fecha_resolucion IS NOT NULL THEN
+                                   CASE
+                                       WHEN EXTRACT(EPOCH FROM (fecha_resolucion - fecha_registro)) / 60 < 1 THEN '1 min'
+                                       WHEN EXTRACT(EPOCH FROM (fecha_resolucion - fecha_registro)) / 60 < 60 THEN
+                                           CONCAT(FLOOR(EXTRACT(EPOCH FROM (fecha_resolucion - fecha_registro)) / 60)::INT, ' min')
+                                       ELSE
+                                           CONCAT(
+                                               FLOOR(EXTRACT(EPOCH FROM (fecha_resolucion - fecha_registro)) / 3600)::INT, ' h ',
+                                               LPAD(FLOOR((EXTRACT(EPOCH FROM (fecha_resolucion - fecha_registro)) % 3600) / 60)::INT::TEXT, 2, '0'), ' min'
+                                           )
+                                   END
+                               ELSE
+                                   CASE
+                                       WHEN EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - fecha_registro)) / 60 < 1 THEN '1 min'
+                                       WHEN EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - fecha_registro)) / 60 < 60 THEN
+                                           CONCAT(FLOOR(EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - fecha_registro)) / 60)::INT, ' min')
+                                       ELSE
+                                           CONCAT(
+                                               FLOOR(EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - fecha_registro)) / 3600)::INT, ' h ',
+                                               LPAD(FLOOR((EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - fecha_registro)) % 3600) / 60)::INT::TEXT, 2, '0'), ' min'
+                                           )
+                                   END
+                           END as tiempo_transcurrido,
                            tipo_itil, sla_minutos, evidencia,
                            to_char(fecha_registro, 'YYYY-MM-DD HH24:MI') as fecha_reg,
                            to_char(fecha_resolucion, 'YYYY-MM-DD HH24:MI') as fecha_res,
+                           solicitante_id, responsable_id,
                            descripcion_detallada, archivo_adjunto_url,
                            cita_id, paciente_id, ruta_accion, accion_label
                     FROM mesa_ayuda_ticket
@@ -156,8 +191,10 @@ public class HelpdeskController {
                         rs.getString("solicitud"),
                         rs.getString("solicitante"),
                         rs.getString("solicitante_rol"),
+                        rs.getObject("solicitante_id") != null ? rs.getLong("solicitante_id") : null,
                         rs.getString("responsable"),
                         rs.getString("responsable_rol"),
+                        rs.getObject("responsable_id") != null ? rs.getLong("responsable_id") : null,
                         rs.getInt("probabilidad"),
                         rs.getInt("impacto"),
                         rs.getString("prioridad"),
@@ -244,14 +281,26 @@ public class HelpdeskController {
 
         String nowStr = LocalDateTime.now().format(FORMATTER);
 
+        Long safeSolicitanteId = dto.solicitanteId();
+        if (safeSolicitanteId == null && dto.solicitante() != null && jdbcTemplate != null) {
+            try {
+                safeSolicitanteId = jdbcTemplate.queryForObject(
+                        "SELECT id FROM usuario WHERE LOWER(email) = LOWER(?) OR LOWER(CONCAT(nombres, ' ', apellidos)) = LOWER(?) LIMIT 1",
+                        Long.class, dto.solicitante().trim(), dto.solicitante().trim()
+                );
+            } catch (Exception ignored) {}
+        }
+
         HelpdeskTicketDto created = new HelpdeskTicketDto(
                 newId,
                 dto.catalogoId(),
                 dto.solicitud(),
                 dto.solicitante() != null ? dto.solicitante() : "Paciente",
                 dto.solicitanteRol() != null ? dto.solicitanteRol() : "PACIENTE",
+                safeSolicitanteId,
                 respNombre != null ? respNombre : "Admin Clínica",
                 respRol != null ? respRol : "ADMIN_CLINICA",
+                dto.responsableId(),
                 prob,
                 imp,
                 prioridad,
@@ -311,14 +360,14 @@ public class HelpdeskController {
 
                 String sql = """
                     INSERT INTO mesa_ayuda_ticket (
-                        id, clinica_id, catalogo_id, solicitud, solicitante_nombre, solicitante_rol,
-                        responsable_nombre, responsable_rol, probabilidad, impacto, prioridad,
+                        id, clinica_id, catalogo_id, solicitud, solicitante_nombre, solicitante_rol, solicitante_id,
+                        responsable_nombre, responsable_rol, responsable_id, probabilidad, impacto, prioridad,
                         estado, tiempo_transcurrido, tipo_itil, sla_minutos, evidencia,
                         fecha_registro, descripcion_detallada, archivo_adjunto_url,
                         cita_id, paciente_id, ruta_accion, accion_label
                     ) VALUES (
+                        ?, ?, ?, ?, ?, ?, ?,
                         ?, ?, ?, ?, ?, ?,
-                        ?, ?, ?, ?, ?,
                         'PENDIENTE', '1 min', ?, ?, NULL,
                         CURRENT_TIMESTAMP, ?, ?,
                         ?, ?, ?, ?
@@ -331,8 +380,10 @@ public class HelpdeskController {
                         created.solicitud(),
                         created.solicitante(),
                         created.solicitanteRol(),
+                        safeSolicitanteId,
                         created.responsable(),
                         created.responsableRol(),
+                        created.responsableId(),
                         prob,
                         imp,
                         prioridad,
@@ -448,11 +499,37 @@ public class HelpdeskController {
         targetStatus = targetStatus.trim().toUpperCase();
 
         String usuario = payload.getOrDefault("usuarioNombre", "Resolutor");
-        String rol = payload.getOrDefault("usuarioRol", "ADMIN_CLINICA");
+        String rawRol = payload.getOrDefault("usuarioRol", "ADMIN_CLINICA");
+        String rol = "ADMIN_CLINICA";
+        if (rawRol != null && !rawRol.isBlank()) {
+            rol = switch (rawRol.trim().toUpperCase()) {
+                case "RECEPCIONISTA", "RECEPCIÓN" -> "RECEPCIONISTA";
+                case "ODONTOLOGO", "ODONTÓLOGO" -> "ODONTOLOGO";
+                case "SOPORTE_TECNICO", "SOPORTE TÉCNICO", "SUPER_ADMIN" -> "SOPORTE_TECNICO";
+                case "PACIENTE" -> "PACIENTE";
+                default -> rawRol.trim().toUpperCase();
+            };
+        }
         String evidencia = payload.get("evidencia");
         String nowStr = LocalDateTime.now().format(FORMATTER);
 
         String oldStatus = "PENDIENTE";
+
+        // Determinar responsable_id de la persona activa que atiende o resuelve
+        Long safeResponsableId = null;
+        if (payload.containsKey("usuarioId") && payload.get("usuarioId") != null && !payload.get("usuarioId").isBlank()) {
+            try {
+                safeResponsableId = Long.parseLong(payload.get("usuarioId").trim());
+            } catch (Exception ignored) {}
+        }
+        if (safeResponsableId == null && jdbcTemplate != null && usuario != null) {
+            try {
+                safeResponsableId = jdbcTemplate.queryForObject(
+                        "SELECT id FROM usuario WHERE LOWER(email) = LOWER(?) OR LOWER(CONCAT(nombres, ' ', apellidos)) = LOWER(?) LIMIT 1",
+                        Long.class, usuario.trim(), usuario.trim()
+                );
+            } catch (Exception ignored) {}
+        }
 
         // 1. Actualizar en memoria
         HelpdeskTicketDto updated = null;
@@ -466,8 +543,10 @@ public class HelpdeskController {
                         cur.solicitud(),
                         cur.solicitante(),
                         cur.solicitanteRol(),
-                        cur.responsable(),
-                        cur.responsableRol(),
+                        cur.solicitanteId(),
+                        usuario != null && !usuario.isBlank() ? usuario : cur.responsable(),
+                        rol != null && !rol.isBlank() ? rol : cur.responsableRol(),
+                        safeResponsableId != null ? safeResponsableId : cur.responsableId(),
                         cur.probabilidad(),
                         cur.impacto(),
                         cur.prioridad(),
@@ -504,18 +583,38 @@ public class HelpdeskController {
                     UPDATE mesa_ayuda_ticket
                     SET estado = ?,
                         evidencia = COALESCE(?, evidencia),
-                        fecha_resolucion = CASE WHEN ? = 'ATENDIDO' THEN CURRENT_TIMESTAMP ELSE fecha_resolucion END
+                        responsable_id = COALESCE(?, responsable_id),
+                        responsable_nombre = CASE WHEN ? IS NOT NULL AND ? != '' THEN ? ELSE responsable_nombre END,
+                        responsable_rol = CASE WHEN ? IS NOT NULL AND ? != '' THEN ? ELSE responsable_rol END,
+                        fecha_resolucion = CASE WHEN ? = 'ATENDIDO' THEN CURRENT_TIMESTAMP ELSE fecha_resolucion END,
+                        tiempo_transcurrido = CASE
+                            WHEN ? = 'ATENDIDO' THEN
+                                CASE
+                                    WHEN EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - fecha_registro)) / 60 < 1 THEN '1 min'
+                                    WHEN EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - fecha_registro)) / 60 < 60 THEN
+                                        CONCAT(FLOOR(EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - fecha_registro)) / 60)::INT, ' min')
+                                    ELSE
+                                        CONCAT(
+                                            FLOOR(EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - fecha_registro)) / 3600)::INT, ' h ',
+                                            LPAD(FLOOR((EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - fecha_registro)) % 3600) / 60)::INT::TEXT, 2, '0'), ' min'
+                                        )
+                                END
+                            ELSE tiempo_transcurrido
+                        END
                     WHERE UPPER(id) = UPPER(?)
-                """, targetStatus, evidencia, targetStatus, id);
+                """, targetStatus, evidencia, safeResponsableId, usuario, usuario, usuario, rol, rol, rol, targetStatus, targetStatus, id);
 
                 jdbcTemplate.update("""
                     INSERT INTO mesa_ayuda_bitacora (
                         ticket_id, fecha_hora, estado_anterior, estado_nuevo,
                         usuario_nombre, usuario_rol, accion, comentario_evidencia, tiempo_transcurrido_minutos
-                    ) VALUES (?, CURRENT_TIMESTAMP, ?, ?, ?, ?, ?, ?, 15)
-                """, id, oldStatus, targetStatus, usuario, rol, accion, evidencia != null ? evidencia : "Transición formal a " + targetStatus);
+                    ) VALUES (
+                        ?, CURRENT_TIMESTAMP, ?, ?, ?, ?, ?, ?,
+                        COALESCE((SELECT FLOOR(EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - fecha_registro)) / 60)::INT FROM mesa_ayuda_ticket WHERE UPPER(id) = UPPER(?)), 1)
+                    )
+                """, id, oldStatus, targetStatus, usuario, rol, accion, evidencia != null ? evidencia : "Transición formal a " + targetStatus, id);
 
-                System.out.println("[HelpdeskController] ✅ Ticket " + id + " actualizado a " + targetStatus + " en PostgreSQL mesa_ayuda_ticket.");
+                System.out.println("[HelpdeskController] ✅ Ticket " + id + " actualizado a " + targetStatus + " con responsable_id=" + safeResponsableId + " (" + usuario + ").");
             } catch (Exception e) {
                 System.err.println("[HelpdeskController] Error actualizando PostgreSQL: " + e.getMessage());
             }
@@ -540,7 +639,7 @@ public class HelpdeskController {
 
         // Si no estaba en memoria pero se actualizó en PostgreSQL, devolver DTO sintetizado
         return ResponseEntity.ok(new HelpdeskTicketDto(
-                id, null, "Ticket " + id, usuario, rol, usuario, rol,
+                id, null, "Ticket " + id, usuario, rol, null, usuario, rol, safeResponsableId,
                 2, 2, "MEDIO", targetStatus, "15 min", "Incidencia", 60,
                 evidencia, nowStr, nowStr, null, null, null, null, null, null
         ));
@@ -560,6 +659,9 @@ public class HelpdeskController {
             patchPayload.put("evidencia", payload.get("evidencia"));
         } else {
             patchPayload.put("evidencia", "Atendido y resuelto formalmente por mano humana.");
+        }
+        if (payload != null && payload.containsKey("usuarioId")) {
+            patchPayload.put("usuarioId", payload.get("usuarioId"));
         }
         if (payload != null && payload.containsKey("usuarioNombre")) {
             patchPayload.put("usuarioNombre", payload.get("usuarioNombre"));

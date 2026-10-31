@@ -11,8 +11,12 @@ public record HelpdeskTicketDto(
         String solicitud,
         String solicitante,
         String solicitanteRol,
+        @JsonAlias({"solicitante_id", "solicitanteId"})
+        Long solicitanteId,
         String responsable,
         String responsableRol,
+        @JsonAlias({"responsable_id", "responsableId"})
+        Long responsableId,
         Integer probabilidad,
         Integer impacto,
         String prioridad,
