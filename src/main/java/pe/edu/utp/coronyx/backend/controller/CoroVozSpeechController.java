@@ -8,7 +8,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import pe.edu.utp.coronyx.backend.security.UserPrincipal;
-import pe.edu.utp.coronyx.backend.service.corovoz.LocalSpeechService;
+import pe.edu.utp.coronyx.backend.service.corovoz.PythonCoroVozClient;
 
 import java.io.IOException;
 import java.util.Set;
@@ -17,23 +17,25 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/v1/corovoz")
 public class CoroVozSpeechController {
-    private final LocalSpeechService speech;
-    public CoroVozSpeechController(LocalSpeechService speech) { this.speech = speech; }
+    private static final int MAX_AUDIO_BYTES = 960_044;
+    private final PythonCoroVozClient speech;
+    public CoroVozSpeechController(PythonCoroVozClient speech) { this.speech = speech; }
     public record Status(int version, boolean speechReady) {}
     public record Transcript(String text) {}
 
     @GetMapping("/status")
     public Status status(@AuthenticationPrincipal UserPrincipal principal) {
         authorize(principal);
-        return new Status(4, speech.installed());
+        var status = speech.get("/status");
+        return new Status(status.path("version").asInt(), status.path("speechReady").asBoolean());
     }
 
     @PostMapping(value = "/transcribir", consumes = "audio/wav")
     public Transcript transcribe(HttpServletRequest request, @AuthenticationPrincipal UserPrincipal principal) throws IOException {
         authorize(principal);
-        byte[] bytes = request.getInputStream().readNBytes(LocalSpeechService.MAX_AUDIO_BYTES + 1);
-        if (bytes.length > LocalSpeechService.MAX_AUDIO_BYTES) throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE, "El audio supera 30 segundos");
-        return new Transcript(speech.transcribe(bytes));
+        byte[] bytes = request.getInputStream().readNBytes(MAX_AUDIO_BYTES + 1);
+        if (bytes.length > MAX_AUDIO_BYTES) throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE, "El audio supera 30 segundos");
+        return new Transcript(speech.audio(bytes).path("text").asText());
     }
 
     private void authorize(UserPrincipal principal) {

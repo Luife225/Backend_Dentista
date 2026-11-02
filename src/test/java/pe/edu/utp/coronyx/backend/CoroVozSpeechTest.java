@@ -12,7 +12,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.server.ResponseStatusException;
 import pe.edu.utp.coronyx.backend.controller.*;
 import pe.edu.utp.coronyx.backend.security.UserPrincipal;
-import pe.edu.utp.coronyx.backend.service.corovoz.LocalSpeechService;
+import pe.edu.utp.coronyx.backend.service.corovoz.PythonCoroVozClient;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -24,7 +24,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 class CoroVozSpeechTest {
-    private final LocalSpeechService speech = mock(LocalSpeechService.class);
+    private final PythonCoroVozClient speech = mock(PythonCoroVozClient.class);
+    private final com.fasterxml.jackson.databind.ObjectMapper json = new com.fasterxml.jackson.databind.ObjectMapper();
     private final MockMvc mvc = MockMvcBuilders.standaloneSetup(new CoroVozSpeechController(speech))
             .setControllerAdvice(new GlobalExceptionHandler())
             .setCustomArgumentResolvers(new AuthenticationPrincipalArgumentResolver()).build();
@@ -39,24 +40,24 @@ class CoroVozSpeechTest {
 
     @Test void detectsBackendVersionAndModelAvailability() throws Exception {
         login("RECEPCIONISTA");
-        when(speech.installed()).thenReturn(true);
+        when(speech.get("/status")).thenReturn(json.readTree("{\"version\":4,\"speechReady\":true}"));
         mvc.perform(get("/api/v1/corovoz/status")).andExpect(status().isOk())
                 .andExpect(jsonPath("$.version").value(4)).andExpect(jsonPath("$.speechReady").value(true));
     }
 
     @Test void acceptsWavAndReturnsActualServiceTranscript() throws Exception {
         login("ODONTOLOGO");
-        when(speech.transcribe(any(byte[].class))).thenReturn("corona en pieza catorce");
+        when(speech.audio(any(byte[].class))).thenReturn(json.readTree("{\"text\":\"corona en pieza catorce\"}"));
         mvc.perform(post("/api/v1/corovoz/transcribir").contentType("audio/wav").content(wav(16000, false)))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.text").value("corona en pieza catorce"));
     }
 
     @Test void rejectsOversizedAudioBeforeProcessingAndReportsErrorsClearly() throws Exception {
         login("ODONTOLOGO");
-        mvc.perform(post("/api/v1/corovoz/transcribir").contentType("audio/wav").content(new byte[LocalSpeechService.MAX_AUDIO_BYTES + 1]))
+        mvc.perform(post("/api/v1/corovoz/transcribir").contentType("audio/wav").content(new byte[960_045]))
                 .andExpect(status().isPayloadTooLarge());
-        verify(speech, never()).transcribe(any());
-        when(speech.transcribe(any(byte[].class))).thenThrow(new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "Modelo no instalado"));
+        verify(speech, never()).audio(any());
+        when(speech.audio(any(byte[].class))).thenThrow(new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "Modelo no instalado"));
         mvc.perform(post("/api/v1/corovoz/transcribir").contentType("audio/wav").content(wav(16000, false)))
                 .andExpect(status().isServiceUnavailable()).andExpect(jsonPath("$.message").value("Modelo no instalado"));
     }
@@ -67,13 +68,6 @@ class CoroVozSpeechTest {
         login("ODONTOLOGO");
         mvc.perform(post("/api/v1/corovoz/transcribir").contentType(MediaType.APPLICATION_JSON).content("{}"))
                 .andExpect(status().isUnsupportedMediaType());
-    }
-
-    @Test void validatesPcmRateSizeAndSilenceWithoutLoadingAnyModel() {
-        assertDoesNotThrow(() -> LocalSpeechService.validateAudio(wav(16000, false)));
-        assertThrows(ResponseStatusException.class, () -> LocalSpeechService.validateAudio(wav(44100, false)));
-        assertThrows(ResponseStatusException.class, () -> LocalSpeechService.validateAudio(wav(16000, true)));
-        assertThrows(ResponseStatusException.class, () -> LocalSpeechService.validateAudio(new byte[100]));
     }
 
     private byte[] wav(int sampleRate, boolean silence) {

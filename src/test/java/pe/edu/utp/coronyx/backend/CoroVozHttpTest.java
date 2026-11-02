@@ -12,6 +12,7 @@ import pe.edu.utp.coronyx.backend.controller.CoroVozController;
 import pe.edu.utp.coronyx.backend.controller.GlobalExceptionHandler;
 import pe.edu.utp.coronyx.backend.security.UserPrincipal;
 import pe.edu.utp.coronyx.backend.service.corovoz.CoroVozHelp;
+import pe.edu.utp.coronyx.backend.service.corovoz.CoroVozPatientQueries;
 import pe.edu.utp.coronyx.backend.service.corovoz.DentalCommandParser;
 
 import java.util.List;
@@ -21,6 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 /** Contrato HTTP real de Spring MVC sin conexión a la BD del proyecto. */
 class CoroVozHttpTest {
+    static { CoroVozPythonTestServer.ensureStarted(); }
     private final MockMvc mvc = MockMvcBuilders
             .standaloneSetup(new CoroVozController(new CoroVozHelp(), new DentalCommandParser(), mock(pe.edu.utp.coronyx.backend.service.corovoz.CoroVozPatientQueries.class)))
             .setControllerAdvice(new GlobalExceptionHandler())
@@ -42,6 +44,32 @@ class CoroVozHttpTest {
                         .content("{\"text\":\"cómo agendo una cita\"}"))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.understood").value(true))
                 .andExpect(jsonPath("$.route").value("/app/agenda"));
+    }
+
+    @Test void shortQuestionOffersChoicesAndAcceptsSelectedIntent() throws Exception {
+        login("ODONTOLOGO");
+        mvc.perform(post("/api/v1/corovoz/general").contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"text\":\"cita\"}"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.understood").value(false))
+                .andExpect(jsonPath("$.suggestions.length()").value(3))
+                .andExpect(jsonPath("$.suggestions[0].intent").value("CITA_NUEVA"));
+        mvc.perform(post("/api/v1/corovoz/general").contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"text\":\"cita\",\"selectedIntent\":\"CITA_NUEVA\"}"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.understood").value(true))
+                .andExpect(jsonPath("$.route").value("/app/agenda"));
+    }
+
+    @Test void authenticatedIdentityIsUsedForOptionalLunaQuota() {
+        var help = mock(CoroVozHelp.class);
+        var patients = mock(CoroVozPatientQueries.class);
+        var principal = mock(UserPrincipal.class);
+        when(principal.hasOperativeClinic()).thenReturn(true);
+        when(principal.getRol()).thenReturn("ODONTOLOGO");
+        when(principal.getUserId()).thenReturn(7L);
+        when(principal.getClinicaId()).thenReturn(2L);
+        new CoroVozController(help, new DentalCommandParser(), patients)
+                .general(new CoroVozController.Prompt("quiero ver una cita"), principal);
+        verify(help).answer("quiero ver una cita", "ODONTOLOGO", null, 7L, 2L);
     }
 
     @Test void dentalReturnsStructuredProposalWithoutWriting() throws Exception {

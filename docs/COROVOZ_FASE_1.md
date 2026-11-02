@@ -1,5 +1,8 @@
 # CoroVoz: conocimiento, pacientes y voz local
 
+> Documento histórico de la primera implementación en Java. La arquitectura vigente,
+> los comandos de instalación y las rutas del corpus están en `corovoz_python/README.md`.
+
 ## Cambios y finalidad
 
 - `IntentClassifier`: combina el ejemplo más cercano de cada intención (80%) y su centroide TF-IDF (20%). Normaliza acentos, plurales, variantes de verbos y sinónimos del dominio. Tolera una errata solo cuando existe una corrección inequívoca. Se entrena al iniciar, sin enviar datos a una API ni aprender automáticamente de pacientes.

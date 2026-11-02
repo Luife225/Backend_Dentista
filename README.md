@@ -2,6 +2,9 @@
 
 Backend del **Sistema Integral de Gestion Odontologica con Asistente de IA**.
 
+La IA por voz CoroVoz se ejecuta en Python y arranca automáticamente con el backend.
+Consulta [instalación y pruebas](corovoz_python/README.md) si el modelo aún no está instalado.
+
 ## Tecnologias
 
 - Java 21

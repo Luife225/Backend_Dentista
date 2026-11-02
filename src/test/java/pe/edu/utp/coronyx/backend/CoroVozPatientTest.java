@@ -14,6 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class CoroVozPatientTest {
+    static { CoroVozPythonTestServer.ensureStarted(); }
     private final PatientService patients = mock(PatientService.class);
     private final AppointmentRepository appointments = mock(AppointmentRepository.class);
     private final CoroVozPatientQueries service = new CoroVozPatientQueries(patients, appointments);
@@ -34,7 +35,8 @@ class CoroVozPatientTest {
     @Test void routesAdministrativeQuestionsAndLeavesInstructionsToKnowledgeModel() {
         for (String text : List.of("próxima cita de Ana Pérez", "¿cuándo será su próxima cita?", "teléfono del paciente Ana", "información del paciente Juan", "y su correo",
                 "¿Cuándo viene otra vez Juan?", "¿Para qué día está programado el paciente Juan Pérez?", "¿Qué día tiene consulta el señor que se llama Juan Pérez?", "Busca a Juan Pérez")) assertTrue(service.handles(text), text);
-        for (String text : List.of("qué es coronix", "qué es corovoz", "cómo veo usuarios inactivos", "cómo cambiar teléfono del paciente", "cómo registro un paciente", "cómo consulto historia clínica", "última versión del odontograma", "teléfono de la clínica")) assertFalse(service.handles(text), text);
+        for (String text : List.of("qué es coronix", "qué es corovoz", "cómo veo usuarios inactivos", "cómo cambiar teléfono del paciente", "cómo registro un paciente", "cómo consulto historia clínica", "teléfono de la clínica")) assertFalse(service.handles(text), text);
+        assertTrue(service.handles("última versión del odontograma"));
     }
 
     @Test void colloquialAppointmentQuestionsQueryTheBackendAndPreserveIdentity() {
@@ -46,6 +48,10 @@ class CoroVozPatientTest {
         for (String question : List.of("¿Cuándo viene otra vez Juan?", "¿Para qué día está programado el paciente Juan Pérez?",
                 "¿Qué día tiene consulta el señor que se llama Juan Pérez?")) {
             var answer = service.answer(question, null, session);
+            if (answer.intent().equals("PACIENTE_ELEGIR")) {
+                assertEquals("3", answer.patients().getFirst().id());
+                answer = service.answer(question, "3", session, true);
+            }
             assertEquals("3", answer.patientId(), question);
             assertTrue(answer.answer().contains("Próxima cita:"), question + ": " + answer.answer());
         }
@@ -80,7 +86,10 @@ class CoroVozPatientTest {
         when(patients.getPatientById(1L, session)).thenReturn(ana); when(patients.getPatientById(2L, session)).thenReturn(luis);
         when(patients.getAllPatients(session)).thenReturn(List.of(ana, luis));
         assertEquals("1", service.answer("y su teléfono", "1", session).patientId());
-        assertEquals("2", service.answer("teléfono del paciente Luis", "1", session).patientId());
+        var options = service.answer("teléfono del paciente Luis", "1", session);
+        assertNull(options.patientId());
+        assertEquals("2", options.patients().getFirst().id());
+        assertEquals("2", service.answer("teléfono del paciente Luis", "2", session, true).patientId());
         when(patients.getPatientById(99L, session)).thenThrow(new NoSuchElementException());
         assertEquals("PACIENTE_ELEGIR", service.answer("y su teléfono", "99", session).intent());
         verifyNoInteractions(appointments);

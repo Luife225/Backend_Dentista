@@ -1,5 +1,8 @@
 # CoroVoz: mejora de dictado y consultas (fase 2)
 
+> Documento histórico previo a la migración. La arquitectura vigente está en
+> `corovoz_python/README.md`.
+
 ## Diagnóstico
 
 - El reconocimiento de audio ya usa Whisper, pero la detección de fin de frase del navegador dependía de un umbral RMS fijo de 0,008. Una voz baja o ruido constante podía impedir iniciar o completar el contador de 3,5 segundos.

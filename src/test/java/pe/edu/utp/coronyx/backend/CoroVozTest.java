@@ -15,8 +15,37 @@ import static org.mockito.Mockito.*;
 
 /** Sin base de datos ni llamadas externas. Frases de evaluación distintas del corpus. */
 class CoroVozTest {
+    static { CoroVozPythonTestServer.ensureStarted(); }
     private final CoroVozHelp help = new CoroVozHelp();
     private final DentalCommandParser parser = new DentalCommandParser();
+
+    @Test void toothAloneReturnsAFormBeforeAClinicalProposalIsReady() {
+        var partial = parser.parse("pieza quince");
+        assertNull(partial.proposal());
+        assertEquals(15, partial.draft().piece());
+        assertNull(partial.draft().condition());
+        assertEquals("GENERAL", partial.draft().surface());
+        var draft = new java.util.HashMap<String, Object>();
+        draft.put("piece", 15); draft.put("condition", null); draft.put("surface", "GENERAL"); draft.put("note", "");
+        var noted = parser.revise("diente caído", "note", draft);
+        assertNull(noted.proposal());
+        assertEquals("diente caído", noted.draft().note());
+    }
+
+    @Test void fieldRevisionPreservesTheOtherProposalValues() {
+        var draft = java.util.Map.<String, Object>of("piece", 15, "condition", "CORONA", "surface", "MESIAL", "note", "diente caído");
+        var edited = parser.revise("restauración", "condition", draft);
+        assertTrue(edited.understood(), edited.message());
+        assertEquals(15, edited.proposal().piece());
+        assertEquals("MESIAL", edited.proposal().surface());
+        assertEquals("diente caído", edited.proposal().note());
+        assertEquals("RESTAURADO", edited.proposal().condition());
+        assertNull(parser.revise("pieza 16 caries", "condition", draft).proposal());
+        var controller = new CoroVozController(help, parser, mock(pe.edu.utp.coronyx.backend.service.corovoz.CoroVozPatientQueries.class));
+        var reception = mock(UserPrincipal.class);
+        when(reception.getRol()).thenReturn("RECEPCIONISTA"); when(reception.hasOperativeClinic()).thenReturn(true);
+        assertThrows(AccessDeniedException.class, () -> controller.revise(new CoroVozController.Revision("caries", "condition", draft), reception));
+    }
 
     @ParameterizedTest
     @CsvSource(delimiter = '|', value = {
@@ -67,6 +96,14 @@ class CoroVozTest {
         assertEquals("control en 2 semanas.", result.proposal().note());
     }
 
+    @Test void understandsNaturalToothNumberAndHealthyConditionThroughPython() {
+        var result = parser.parse("El diente número treinta y seis está sano");
+        assertTrue(result.understood(), result.message());
+        assertEquals(36, result.proposal().piece());
+        assertEquals("SANO", result.proposal().condition());
+        assertEquals("GENERAL", result.proposal().surface());
+    }
+
     @Test void acceptsBoundariesAndMixedNumbersObservedInRealTranscription() {
         var crown = parser.parse("Corona empieza a catorce.");
         assertTrue(crown.understood(), crown.message());
@@ -77,6 +114,18 @@ class CoroVozTest {
         assertEquals(36, caries.proposal().piece());
         assertEquals("OCLUSAL", caries.proposal().surface());
         assertEquals(36, parser.parse("caries en pieza 30 y seis cara oclusal").proposal().piece());
+    }
+
+    @Test void clarificationContractKeepsToothAndOffersConditionChoices() {
+        var unclear = parser.parse("diente 18 cara oclusal restaracion");
+        assertNull(unclear.proposal());
+        assertEquals(18, unclear.contextPiece());
+        assertEquals("pieza 18 cara oclusal", unclear.fragment());
+        assertTrue(unclear.suggestions().stream().anyMatch(s -> s.value().equals("restauracion")));
+        var proposal = parser.parse(unclear.fragment() + " restauración", unclear.contextPiece()).proposal();
+        assertEquals("RESTAURADO", proposal.condition());
+        assertEquals("OCLUSAL", proposal.surface());
+        assertEquals(18, parser.parse("restauración", 18).proposal().piece());
     }
 
     @ParameterizedTest

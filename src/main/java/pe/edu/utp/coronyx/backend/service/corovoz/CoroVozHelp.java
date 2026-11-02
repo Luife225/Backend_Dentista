@@ -1,59 +1,56 @@
 package pe.edu.utp.coronyx.backend.service.corovoz;
 
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
 
-/** Respuestas verificadas contra los módulos y permisos del sistema. */
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+
+/** Typed bridge for the Python knowledge model. */
 @Service
 public class CoroVozHelp {
     public record PatientChoice(String id, String name, String documentHint) {}
+    public record Suggestion(String intent, String label) {}
+    public record AppointmentDraft(String date, String time, String patientId, String reason, String modality) {}
     public record Answer(String intent, String answer, String route, String targetLabel, boolean understood,
-                         List<PatientChoice> patients, String patientId, String patientName) {
+                         List<PatientChoice> patients, String patientId, String patientName, List<Suggestion> suggestions, AppointmentDraft appointmentDraft) {
+        public Answer(String intent, String answer, String route, String label, boolean understood, List<PatientChoice> patients, String patientId, String patientName, List<Suggestion> suggestions) {
+            this(intent, answer, route, label, understood, patients, patientId, patientName, suggestions, null);
+        }
         public Answer(String intent, String answer, String route, String label, boolean understood) {
-            this(intent, answer, route, label, understood, List.of(), null, null);
+            this(intent, answer, route, label, understood, List.of(), null, null, List.of());
         }
         public Answer(String intent, String answer, String route, String label, boolean understood, List<PatientChoice> patients, String patientId) {
-            this(intent, answer, route, label, understood, patients, patientId, null);
+            this(intent, answer, route, label, understood, patients, patientId, null, List.of());
+        }
+        public Answer(String intent, String answer, String route, String label, boolean understood, List<PatientChoice> patients, String patientId, String patientName) {
+            this(intent, answer, route, label, understood, patients, patientId, patientName, List.of());
         }
     }
-    private record Article(String roles, String route, String label, String title, String answer) {}
-    private final IntentClassifier classifier;
-    private final Map<String, Article> articles = new LinkedHashMap<>();
-
-    public CoroVozHelp() {
-        try {
-            for (String line : lines("corovoz/knowledge.tsv")) {
-                String[] p = line.split("\\|", 6);
-                if (p.length != 6 || articles.put(p[0], new Article(p[1], p[2], p[3], p[4], p[5])) != null)
-                    throw new IllegalStateException("Artículo duplicado o incompleto: " + line);
-            }
-            List<IntentClassifier.Example> examples = lines("corovoz/training.tsv").stream()
-                    .map(l -> l.split("\\|", 2)).map(p -> new IntentClassifier.Example(p[0], p[1])).toList();
-            if (examples.stream().anyMatch(e -> !articles.containsKey(e.intent())) ||
-                    articles.keySet().stream().anyMatch(i -> examples.stream().noneMatch(e -> i.equals(e.intent()))))
-                throw new IllegalStateException("Los artículos y el corpus de CoroVoz no coinciden");
-            classifier = new IntentClassifier(examples);
-        } catch (IOException e) { throw new IllegalStateException("No se pudo cargar CoroVoz", e); }
-    }
-
-    private List<String> lines(String path) throws IOException {
-        try (var reader = new BufferedReader(new InputStreamReader(new ClassPathResource(path).getInputStream(), StandardCharsets.UTF_8))) {
-            return reader.lines().filter(l -> !l.isBlank() && !l.startsWith("#")).toList();
-        }
-    }
+    private final PythonCoroVozClient client;
+    public CoroVozHelp() { this(new PythonCoroVozClient()); }
+    @Autowired public CoroVozHelp(PythonCoroVozClient client) { this.client = client; }
 
     public Answer answer(String text, String role) {
-        if (!Set.of("ODONTOLOGO", "RECEPCIONISTA").contains(role))
-            throw new org.springframework.security.access.AccessDeniedException("Rol no autorizado para CoroVoz");
-        var prediction = classifier.predict(text);
-        Article article = articles.get(prediction.intent());
-        if (article == null || prediction.similarity() < 0.36 || prediction.margin() < 0.035 || prediction.coverage() < 0.45)
-            return new Answer("UNKNOWN", "¿Qué necesitas hacer en Coronyx? Puedes preguntarme por citas, pacientes, documentos, odontogramas, acceso o el micrófono. Si buscas una cita concreta, indícame el nombre o DNI del paciente.", "", "", false);
-        if (!article.roles().equals("*") && !List.of(article.roles().split(",")).contains(role))
-            return new Answer(prediction.intent(), "Esta función está reservada a " + article.roles() + ". " + article.answer(), "", "", true);
-        return new Answer(prediction.intent(), article.answer(), article.route(), article.label(), true);
+        return answer(text, role, null, null, null);
+    }
+
+    public Answer answer(String text, String role, String selectedIntent) {
+        return answer(text, role, selectedIntent, null, null);
+    }
+
+    public Answer answer(String text, String role, String selectedIntent, Long userId, Long clinicId) {
+        try {
+            var request = new HashMap<String, Object>(Map.of("text", text, "role", role));
+            if (selectedIntent != null) request.put("selectedIntent", selectedIntent);
+            if (userId != null) request.put("userId", userId);
+            if (clinicId != null) request.put("clinicId", clinicId);
+            var node = client.post("/general", request);
+            return new com.fasterxml.jackson.databind.ObjectMapper().treeToValue(node, Answer.class);
+        } catch (ResponseStatusException e) { throw e; }
+        catch (Exception e) { throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "Respuesta inválida de CoroVoz", e); }
     }
 }

@@ -4,13 +4,15 @@ import org.junit.jupiter.api.Test;
 import pe.edu.utp.coronyx.backend.service.corovoz.CoroVozHelp;
 import pe.edu.utp.coronyx.backend.service.corovoz.DentalCommandParser;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import static org.junit.jupiter.api.Assertions.*;
 
 class CoroVozKnowledgeTest {
+    static { CoroVozPythonTestServer.ensureStarted(); }
     @Test void evaluatesIndependentQuestionsAndUnknownTopics() throws Exception {
         var help = new CoroVozHelp();
-        try (var input = getClass().getResourceAsStream("/corovoz/evaluation.tsv")) {
-            assertNotNull(input);
+        try (var input = Files.newInputStream(Path.of("corovoz_python/data/evaluation.tsv"))) {
             var failures = new java.util.ArrayList<String>();
             for (String line : new String(input.readAllBytes(), StandardCharsets.UTF_8).split("\\R")) {
                 if (line.isBlank() || line.startsWith("#")) continue;
@@ -47,6 +49,9 @@ class CoroVozKnowledgeTest {
             assertEquals(q * 10 + i, full.proposal().piece());
         }
         assertTrue(parser.parse("caries cara oclusal").incomplete());
-        assertFalse(parser.parse("no hay caries en pieza catorce").incomplete());
+        var negated = parser.parse("no hay caries en pieza catorce");
+        assertNull(negated.proposal());
+        assertTrue(negated.incomplete());
+        assertEquals("pieza 14", negated.fragment()); // Retain the tooth, never the negated finding.
     }
 }

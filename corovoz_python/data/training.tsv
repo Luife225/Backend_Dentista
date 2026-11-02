@@ -248,6 +248,8 @@ DOCUMENTO_VISIBILIDAD|quién puede ver los adjuntos
 DOCUMENTO_VISIBILIDAD|cambiar visibilidad de documento
 DOCUMENTO_VISIBILIDAD|documento privado o publicado
 RADIOGRAFIAS|dónde subo radiografías
+RADIOGRAFIAS|cargar radiografía en la ficha dental
+RADIOGRAFIAS|cómo adjunto una placa dental al paciente
 RADIOGRAFIAS|ver radiografía del paciente
 RADIOGRAFIAS|adjuntar imagen radiográfica
 RADIOGRAFIAS|abrir pestaña radiografías

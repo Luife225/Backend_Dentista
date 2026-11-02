@@ -1,6 +1,8 @@
 HELP.md
 target/
 .corovoz/
+__pycache__/
+*.pyc
 .mvn/wrapper/maven-wrapper.jar
 .env
 .env.*
