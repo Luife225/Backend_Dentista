@@ -75,6 +75,21 @@ public class HelpdeskController {
         return "BAJO";
     }
 
+    private int parseTicketId(String rawId) {
+        if (rawId == null || rawId.isBlank()) return 0;
+        String digits = rawId.replaceAll("\\D", "");
+        if (digits.isEmpty()) return 0;
+        try {
+            return Integer.parseInt(digits);
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
+
+    private String formatTicketId(int id) {
+        return String.format("TKT-%03d", id);
+    }
+
     /**
      * Catálogo de incidencias: lee directamente de PostgreSQL (catalogo_incidencia)
      */
@@ -139,54 +154,58 @@ public class HelpdeskController {
         if (jdbcTemplate != null) {
             try {
                 String sql = """
-                    SELECT id, catalogo_id, solicitud,
-                           COALESCE(solicitante_nombre, solicitante_rol) as solicitante,
-                           solicitante_rol,
-                           COALESCE(responsable_nombre, responsable_rol) as responsable,
-                           responsable_rol,
-                           probabilidad, impacto, prioridad, estado,
+                    SELECT t.id, t.catalogo_id, t.solicitud,
+                           COALESCE(t.solicitante_nombre, t.solicitante_rol) as solicitante,
+                           t.solicitante_rol,
+                           COALESCE(t.responsable_nombre, t.responsable_rol) as responsable,
+                           t.responsable_rol,
+                           t.probabilidad, t.impacto, t.prioridad, t.estado,
                            CASE
-                               WHEN estado = 'ATENDIDO' AND fecha_resolucion IS NOT NULL THEN
+                               WHEN t.estado = 'ATENDIDO' AND t.fecha_resolucion IS NOT NULL THEN
                                    CASE
-                                       WHEN EXTRACT(EPOCH FROM (fecha_resolucion - fecha_registro)) / 60 < 1 THEN '1 min'
-                                       WHEN EXTRACT(EPOCH FROM (fecha_resolucion - fecha_registro)) / 60 < 60 THEN
-                                           CONCAT(FLOOR(EXTRACT(EPOCH FROM (fecha_resolucion - fecha_registro)) / 60)::INT, ' min')
+                                       WHEN EXTRACT(EPOCH FROM (t.fecha_resolucion - t.fecha_registro)) / 60 < 1 THEN '1 min'
+                                       WHEN EXTRACT(EPOCH FROM (t.fecha_resolucion - t.fecha_registro)) / 60 < 60 THEN
+                                           CONCAT(FLOOR(EXTRACT(EPOCH FROM (t.fecha_resolucion - t.fecha_registro)) / 60)::INT, ' min')
                                        ELSE
                                            CONCAT(
-                                               FLOOR(EXTRACT(EPOCH FROM (fecha_resolucion - fecha_registro)) / 3600)::INT, ' h ',
-                                               LPAD(FLOOR((EXTRACT(EPOCH FROM (fecha_resolucion - fecha_registro)) % 3600) / 60)::INT::TEXT, 2, '0'), ' min'
+                                               FLOOR(EXTRACT(EPOCH FROM (t.fecha_resolucion - t.fecha_registro)) / 3600)::INT, ' h ',
+                                               LPAD(FLOOR((EXTRACT(EPOCH FROM (t.fecha_resolucion - t.fecha_registro)) % 3600) / 60)::INT::TEXT, 2, '0'), ' min'
                                            )
                                    END
                                ELSE
                                    CASE
-                                       WHEN EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - fecha_registro)) / 60 < 1 THEN '1 min'
-                                       WHEN EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - fecha_registro)) / 60 < 60 THEN
-                                           CONCAT(FLOOR(EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - fecha_registro)) / 60)::INT, ' min')
+                                       WHEN EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - t.fecha_registro)) / 60 < 1 THEN '1 min'
+                                       WHEN EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - t.fecha_registro)) / 60 < 60 THEN
+                                           CONCAT(FLOOR(EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - t.fecha_registro)) / 60)::INT, ' min')
                                        ELSE
                                            CONCAT(
-                                               FLOOR(EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - fecha_registro)) / 3600)::INT, ' h ',
-                                               LPAD(FLOOR((EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - fecha_registro)) % 3600) / 60)::INT::TEXT, 2, '0'), ' min'
+                                               FLOOR(EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - t.fecha_registro)) / 3600)::INT, ' h ',
+                                               LPAD(FLOOR((EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - t.fecha_registro)) % 3600) / 60)::INT::TEXT, 2, '0'), ' min'
                                            )
                                    END
                            END as tiempo_transcurrido,
-                           tipo_itil, sla_minutos, evidencia,
-                           to_char(fecha_registro, 'YYYY-MM-DD HH24:MI') as fecha_reg,
-                           to_char(fecha_resolucion, 'YYYY-MM-DD HH24:MI') as fecha_res,
-                           solicitante_id, responsable_id,
-                           descripcion_detallada, archivo_adjunto_url,
-                           cita_id, paciente_id, ruta_accion, accion_label
-                    FROM mesa_ayuda_ticket
+                           COALESCE(c.tipo_itil, 'Incidencia') as tipo_itil,
+                           COALESCE(c.sla_minutos, 60) as sla_minutos,
+                           t.evidencia,
+                           to_char(t.fecha_registro, 'YYYY-MM-DD HH24:MI') as fecha_reg,
+                           to_char(t.fecha_resolucion, 'YYYY-MM-DD HH24:MI') as fecha_res,
+                           t.solicitante_id, t.responsable_id,
+                           t.descripcion_detallada, t.archivo_adjunto_url,
+                           t.cita_id, t.paciente_id,
+                           c.ruta_accion, c.accion_label
+                    FROM mesa_ayuda_ticket t
+                    LEFT JOIN catalogo_incidencia c ON t.catalogo_id = c.id
                     ORDER BY 
-                      CASE UPPER(prioridad)
+                      CASE UPPER(t.prioridad)
                         WHEN 'CRITICO' THEN 4
                         WHEN 'ALTO' THEN 3
                         WHEN 'MEDIO' THEN 2
                         ELSE 1
                       END DESC,
-                      fecha_registro DESC
+                      t.fecha_registro DESC
                 """;
                 List<HelpdeskTicketDto> dbTickets = jdbcTemplate.query(sql, (rs, rowNum) -> new HelpdeskTicketDto(
-                        rs.getString("id"),
+                        formatTicketId(rs.getInt("id")),
                         rs.getString("catalogo_id"),
                         rs.getString("solicitud"),
                         rs.getString("solicitante"),
@@ -319,7 +338,7 @@ public class HelpdeskController {
                 accionLabel
         );
 
-        // 1. Guardar formalmente en PostgreSQL
+        // 1. Guardar formalmente en PostgreSQL (usando INT autoincremental y tablas normalizadas 3FN)
         if (jdbcTemplate != null) {
             try {
                 // Validar llaves foráneas para evitar violación de restricciones referenciales
@@ -360,21 +379,20 @@ public class HelpdeskController {
 
                 String sql = """
                     INSERT INTO mesa_ayuda_ticket (
-                        id, clinica_id, catalogo_id, solicitud, solicitante_nombre, solicitante_rol, solicitante_id,
+                        clinica_id, catalogo_id, solicitud, solicitante_nombre, solicitante_rol, solicitante_id,
                         responsable_nombre, responsable_rol, responsable_id, probabilidad, impacto, prioridad,
-                        estado, tiempo_transcurrido, tipo_itil, sla_minutos, evidencia,
+                        estado, tiempo_transcurrido, evidencia,
                         fecha_registro, descripcion_detallada, archivo_adjunto_url,
-                        cita_id, paciente_id, ruta_accion, accion_label
+                        cita_id, paciente_id
                     ) VALUES (
-                        ?, ?, ?, ?, ?, ?, ?,
                         ?, ?, ?, ?, ?, ?,
-                        'PENDIENTE', '1 min', ?, ?, NULL,
+                        ?, ?, ?, ?, ?, ?,
+                        'PENDIENTE', '1 min', NULL,
                         CURRENT_TIMESTAMP, ?, ?,
-                        ?, ?, ?, ?
-                    )
+                        ?, ?
+                    ) RETURNING id
                 """;
-                jdbcTemplate.update(sql,
-                        newId,
+                Integer generatedId = jdbcTemplate.queryForObject(sql, Integer.class,
                         safeClinicaId,
                         safeCatalogoId,
                         created.solicitud(),
@@ -387,32 +405,59 @@ public class HelpdeskController {
                         prob,
                         imp,
                         prioridad,
-                        created.tipoItil(),
-                        sla,
                         created.descripcionDetallada(),
                         created.archivoAdjuntoUrl(),
                         safeCitaId,
-                        safePacienteId,
-                        rutaAccion,
-                        accionLabel
+                        safePacienteId
                 );
 
-                // Insertar en mesa_ayuda_bitacora
+                int numericTicketId = generatedId != null ? generatedId : parseTicketId(newId);
+                newId = formatTicketId(numericTicketId);
+                created = new HelpdeskTicketDto(
+                        newId,
+                        created.catalogoId(),
+                        created.solicitud(),
+                        created.solicitante(),
+                        created.solicitanteRol(),
+                        created.solicitanteId(),
+                        created.responsable(),
+                        created.responsableRol(),
+                        created.responsableId(),
+                        created.probabilidad(),
+                        created.impacto(),
+                        created.prioridad(),
+                        created.estado(),
+                        created.tiempoTranscurrido(),
+                        created.tipoItil(),
+                        created.slaMinutos(),
+                        created.evidencia(),
+                        created.fechaRegistro(),
+                        created.fechaResolucion(),
+                        created.descripcionDetallada(),
+                        created.archivoAdjuntoUrl(),
+                        created.citaId(),
+                        created.pacienteId(),
+                        created.rutaAccion(),
+                        created.accionLabel()
+                );
+
+                // Insertar en mesa_ayuda_bitacora usando la llave foránea INT (ticket_id)
                 jdbcTemplate.update("""
                     INSERT INTO mesa_ayuda_bitacora (
                         ticket_id, fecha_hora, estado_anterior, estado_nuevo,
                         usuario_nombre, usuario_rol, accion, comentario_evidencia, tiempo_transcurrido_minutos
                     ) VALUES (?, CURRENT_TIMESTAMP, NULL, 'PENDIENTE', ?, ?, 'CREACION', ?, 0)
-                """, newId, created.solicitante(), created.solicitanteRol(), created.solicitud());
+                """, numericTicketId, created.solicitante(), created.solicitanteRol(), created.solicitud());
 
-                System.out.println("[HelpdeskController] ✅ Ticket " + newId + " insertado formalmente en PostgreSQL mesa_ayuda_ticket.");
+                System.out.println("[HelpdeskController] ✅ Ticket INT #" + numericTicketId + " (" + newId + ") insertado formalmente en PostgreSQL mesa_ayuda_ticket.");
             } catch (Exception e) {
                 System.err.println("[HelpdeskController] Error al guardar en PostgreSQL mesa_ayuda_ticket: " + e.getMessage());
             }
         }
 
         // 2. Mantener en memoria
-        tickets.removeIf(t -> t.id().equalsIgnoreCase(created.id()));
+        final String finalNewId = created.id();
+        tickets.removeIf(t -> t.id().equalsIgnoreCase(finalNewId));
         tickets.add(0, created);
 
         bitacora.add(new HelpdeskBitacoraDto(
@@ -432,12 +477,13 @@ public class HelpdeskController {
 
     private boolean isIdTaken(String id) {
         if (id == null || id.isBlank()) return false;
-        if (jdbcTemplate != null) {
+        int numericId = parseTicketId(id);
+        if (jdbcTemplate != null && numericId > 0) {
             try {
                 Integer count = jdbcTemplate.queryForObject(
-                        "SELECT count(*) FROM mesa_ayuda_ticket WHERE UPPER(id) = UPPER(?)",
+                        "SELECT count(*) FROM mesa_ayuda_ticket WHERE id = ?",
                         Integer.class,
-                        id
+                        numericId
                 );
                 if (count != null && count > 0) return true;
             } catch (Exception ignored) {}
@@ -450,7 +496,7 @@ public class HelpdeskController {
         if (jdbcTemplate != null) {
             try {
                 Integer maxDb = jdbcTemplate.queryForObject(
-                        "SELECT COALESCE(MAX(CAST(SUBSTRING(id FROM 5) AS INTEGER)), 0) FROM mesa_ayuda_ticket WHERE id ~ '^TKT-[0-9]+$'",
+                        "SELECT COALESCE(MAX(id), 0) FROM mesa_ayuda_ticket",
                         Integer.class
                 );
                 if (maxDb != null && maxDb >= next) {
@@ -460,23 +506,17 @@ public class HelpdeskController {
         }
 
         int maxMem = tickets.stream()
-                .mapToInt(t -> {
-                    try {
-                        return Integer.parseInt(t.id().replaceAll("\\D", ""));
-                    } catch (Exception e) {
-                        return 0;
-                    }
-                })
+                .mapToInt(t -> parseTicketId(t.id()))
                 .max()
                 .orElse(0);
         if (maxMem >= next) {
             next = maxMem + 1;
         }
 
-        String candidate = String.format("TKT-%03d", next);
+        String candidate = formatTicketId(next);
         while (isIdTaken(candidate)) {
             next++;
-            candidate = String.format("TKT-%03d", next);
+            candidate = formatTicketId(next);
         }
         return candidate;
     }
@@ -532,10 +572,11 @@ public class HelpdeskController {
         }
 
         // 1. Actualizar en memoria
+        int numericId = parseTicketId(id);
         HelpdeskTicketDto updated = null;
         for (int i = 0; i < tickets.size(); i++) {
             HelpdeskTicketDto cur = tickets.get(i);
-            if (cur.id().equalsIgnoreCase(id)) {
+            if (cur.id().equalsIgnoreCase(id) || parseTicketId(cur.id()) == numericId) {
                 oldStatus = cur.estado();
                 updated = new HelpdeskTicketDto(
                         cur.id(),
@@ -576,8 +617,8 @@ public class HelpdeskController {
             default -> "CAMBIO_ESTADO";
         };
 
-        // 2. Persistir formalmente en PostgreSQL (mesa_ayuda_ticket y mesa_ayuda_bitacora)
-        if (jdbcTemplate != null) {
+        // 2. Persistir formalmente en PostgreSQL (mesa_ayuda_ticket y mesa_ayuda_bitacora usando INT)
+        if (jdbcTemplate != null && numericId > 0) {
             try {
                 jdbcTemplate.update("""
                     UPDATE mesa_ayuda_ticket
@@ -601,8 +642,8 @@ public class HelpdeskController {
                                 END
                             ELSE tiempo_transcurrido
                         END
-                    WHERE UPPER(id) = UPPER(?)
-                """, targetStatus, evidencia, safeResponsableId, usuario, usuario, usuario, rol, rol, rol, targetStatus, targetStatus, id);
+                    WHERE id = ?
+                """, targetStatus, evidencia, safeResponsableId, usuario, usuario, usuario, rol, rol, rol, targetStatus, targetStatus, numericId);
 
                 jdbcTemplate.update("""
                     INSERT INTO mesa_ayuda_bitacora (
@@ -610,11 +651,11 @@ public class HelpdeskController {
                         usuario_nombre, usuario_rol, accion, comentario_evidencia, tiempo_transcurrido_minutos
                     ) VALUES (
                         ?, CURRENT_TIMESTAMP, ?, ?, ?, ?, ?, ?,
-                        COALESCE((SELECT FLOOR(EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - fecha_registro)) / 60)::INT FROM mesa_ayuda_ticket WHERE UPPER(id) = UPPER(?)), 1)
+                        COALESCE((SELECT FLOOR(EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - fecha_registro)) / 60)::INT FROM mesa_ayuda_ticket WHERE id = ?), 1)
                     )
-                """, id, oldStatus, targetStatus, usuario, rol, accion, evidencia != null ? evidencia : "Transición formal a " + targetStatus, id);
+                """, numericId, oldStatus, targetStatus, usuario, rol, accion, evidencia != null ? evidencia : "Transición formal a " + targetStatus, numericId);
 
-                System.out.println("[HelpdeskController] ✅ Ticket " + id + " actualizado a " + targetStatus + " con responsable_id=" + safeResponsableId + " (" + usuario + ").");
+                System.out.println("[HelpdeskController] ✅ Ticket INT #" + numericId + " actualizado a " + targetStatus + " con responsable_id=" + safeResponsableId + " (" + usuario + ").");
             } catch (Exception e) {
                 System.err.println("[HelpdeskController] Error actualizando PostgreSQL: " + e.getMessage());
             }
@@ -678,19 +719,20 @@ public class HelpdeskController {
      */
     @GetMapping("/tickets/{id}/bitacora")
     public ResponseEntity<List<HelpdeskBitacoraDto>> getTicketBitacora(@PathVariable String id) {
-        if (jdbcTemplate != null) {
+        int numericId = parseTicketId(id);
+        if (jdbcTemplate != null && numericId > 0) {
             try {
                 String sql = """
                     SELECT id, ticket_id, to_char(fecha_hora, 'YYYY-MM-DD HH24:MI') as f_hora,
                            estado_anterior, estado_nuevo, usuario_nombre, usuario_rol,
                            accion, comentario_evidencia
                     FROM mesa_ayuda_bitacora
-                    WHERE UPPER(ticket_id) = UPPER(?)
+                    WHERE ticket_id = ?
                     ORDER BY id ASC
                 """;
                 List<HelpdeskBitacoraDto> dbHistory = jdbcTemplate.query(sql, (rs, rowNum) -> new HelpdeskBitacoraDto(
                         rs.getLong("id"),
-                        rs.getString("ticket_id"),
+                        formatTicketId(rs.getInt("ticket_id")),
                         rs.getString("f_hora"),
                         rs.getString("estado_anterior"),
                         rs.getString("estado_nuevo"),
@@ -698,7 +740,7 @@ public class HelpdeskController {
                         rs.getString("usuario_rol"),
                         rs.getString("accion"),
                         rs.getString("comentario_evidencia")
-                ), id);
+                ), numericId);
 
                 if (!dbHistory.isEmpty()) {
                     return ResponseEntity.ok(dbHistory);
@@ -709,7 +751,7 @@ public class HelpdeskController {
         }
 
         List<HelpdeskBitacoraDto> history = bitacora.stream()
-                .filter(b -> b.ticketId().equalsIgnoreCase(id))
+                .filter(b -> b.ticketId().equalsIgnoreCase(id) || parseTicketId(b.ticketId()) == numericId)
                 .sorted(Comparator.comparing(HelpdeskBitacoraDto::id))
                 .toList();
         return ResponseEntity.ok(history);
