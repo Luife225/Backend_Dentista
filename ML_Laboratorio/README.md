@@ -1,4 +1,21 @@
-# CORONYX — laboratorio ML independiente
+# CORONYX — Laboratorio ML (Entrenamiento y Auditoría Offline)
+
+> **Estado Actual (31/10/2026 - 02/11/2026 — MVP Completado y Organizado para Railway):**
+> - **¿Buscas el microservicio de producción en FastAPI para desplegar en Railway o levantar localmente?** Ve a la carpeta limpia **[`../ml-service/`](../ml-service/README.md)** en la raíz del repositorio `Backend_Dentista`. Esa carpeta contiene únicamente los 7 archivos necesarios para inferencia (`app.py`, `detector.py`, `model/best.pt`, `model/model_config.json`, `requirements.txt`, `Dockerfile`, `railway.json`).
+> - **¿Qué es entonces `ML_Laboratorio/`?** Es el laboratorio académico donde se descargó el dataset DENTEX (755 radiografías), se auditaron etiquetas, se entrenó el modelo `yolov8n` en la GPU RTX 5060 y se guardaron los reportes de métricas (`mAP50 = 0.3107` en prueba interna) para la sustentación del curso. **Railway NO necesita desplegar `ML_Laboratorio/`**.
+
+## Mapa rápido de carpetas en `ML_Laboratorio/`
+
+| Carpeta / Archivo | ¿Para qué sirve? | ¿Se sube a GitHub? |
+|---|---|---|
+| `auditoria/` | Reportes de entrenamiento, métricas de validación/prueba (`EVALUACION_VALIDACION_Y_TEST_2026-10-31.md`) y configuración congelada (`MODELO_CONGELADO_V1.json`). | Sí (evidencia académica) |
+| `config/` | Configuración reproducible del entrenamiento (`dentex_yolov8n_d2.yaml`) y particiones fijas (`particiones_d2_v1.json`). | Sí |
+| `herramientas/` | Scripts usados una sola vez para descargar DENTEX, entrenar el modelo (`entrenar_d2.py`), evaluar métricas (`evaluar_modelo.py`) y medir tiempos (`benchmark_inferencia.py`). | Sí |
+| `tests/` | 24 pruebas unitarias del laboratorio que verifican que no hubo fuga de datos entre train/val/test y que el contrato JSON es válido. | Sí |
+| `postman/` | Colección de Postman (`CORONYX_ML_Laboratorio.postman_collection.json`) para probar tanto el microservicio ML (`:8091`) como el flujo completo con Spring Boot (`:8081`). | Sí |
+| `data/` y `runs/` | Las 755 radiografías crudas (~3 GB) y los checkpoints intermedios de entrenamiento. | **No** (ignorados en `.gitignore`) |
+
+---
 
 > **Continuidad del 28/10/2026:** la versión compartida está en `ML_Laboratorio/` dentro de la rama `mvp-ml` del backend. Es la única rama nueva para el avance de ML; la aplicación mantiene sus ramas habituales. Se preparó una copia de 679 imágenes y se fijaron las particiones: 508 entrenamiento, 44 validación y 127 prueba interna. Se aplicaron exclusiones documentadas, preservando los originales. Todavía no se entrenó. Consultar [LAPTOP.md](LAPTOP.md) y [las decisiones del 28/10](CONTINUIDAD_MVP_2026-10-28.md). Las notas anteriores que siguen conservan el estado histórico de cada fecha.
 

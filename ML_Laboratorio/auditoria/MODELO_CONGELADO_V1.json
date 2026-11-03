@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "frozen_at_utc": "2026-10-29T00:28:32.291444+00:00",
+  "git_commit": "93a1281ba6fcdf85a8e9f9a25c589bd1c0c729ab",
+  "model_name": "coronyx-dentex-yolov8n",
+  "model_version": "1.0.0-mvp",
+  "weights_path": "../ml-service/model/best.pt",
+  "weights_sha256": "30acddf3f3a20182a6555bba8f64c4999ea3d8297d688d5296b20fc01d4ad652",
+  "classes": {
+    "0": "caries",
+    "1": "caries_profunda"
+  },
+  "preprocessing": {
+    "imgsz": 640,
+    "letterbox_aspect_ratio_preserved": true
+  },
+  "nms_parameters": {
+    "iou_threshold": 0.7,
+    "agnostic_nms": false,
+    "max_det": 300
+  },
+  "operating_confidence_threshold": 0.05,
+  "validation_summary": {
+    "mean_AP50_unweighted": 0.308963,
+    "mean_AP50_95_unweighted": 0.210846,
+    "macro_F1": 0.378348,
+    "macro_precision": 0.370259,
+    "macro_recall": 0.578589
+  },
+  "environment": {
+    "Pillow": "12.3.0",
+    "torch": "2.11.0+cu128",
+    "torchvision": "0.26.0+cu128",
+    "ultralytics": "8.4.191"
+  },
+  "policy_sha256": "6e447a3c79117e70ed81324e98e51768430452bbd54c914a063863a60c4a976d",
+  "partitions_sha256": "0b19a47c6df88f5eac5cb33dce53785d9c6c0a3fe5a46f351dc9939c8910ceca",
+  "training_config_sha256": "271901697468a88f53a7ca879ffc49d15a93724f9d205520680dd1559738e29a"
+}

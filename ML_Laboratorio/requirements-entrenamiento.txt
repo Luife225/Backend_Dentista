@@ -1,0 +1,8 @@
+# Entorno de entrenamiento e inferencia GPU comprobado en laptop (Fase C - 28/10/2026)
+# Requiere tarjeta NVIDIA con soporte CUDA 12.8 (incluye arquitectura Blackwell / RTX 5060 sm_120)
+--extra-index-url https://download.pytorch.org/whl/cu128
+Pillow==12.3.0
+torch==2.11.0+cu128
+torchvision==0.26.0+cu128
+ultralytics==8.4.191
+

@@ -1,0 +1,27 @@
+{
+  "checked_at_utc": "2026-10-28T22:57:11.090473+00:00",
+  "os_platform": "Windows-10-10.0.26200-SP0",
+  "python_version": "3.11.9",
+  "python_executable": "C:\\Users\\sebas\\Desktop\\CoronyxSASS\\BackendCoronyx\\Backend_Dentista\\ML_Laboratorio\\venv\\Scripts\\python.exe",
+  "isolated_virtualenv": true,
+  "free_disk_bytes": 285067337728,
+  "packages": {
+    "Pillow": "12.3.0",
+    "torch": "2.11.0+cu128",
+    "torchvision": "0.26.0+cu128",
+    "ultralytics": "8.4.191"
+  },
+  "cuda": {
+    "available": true,
+    "runtime_version": "12.8",
+    "device_count": 1,
+    "device_name": "NVIDIA GeForce RTX 5060 Laptop GPU",
+    "compute_capability": "12.0",
+    "total_vram_mib": 8151,
+    "tensor_matmul_verified": true
+  },
+  "ultralytics_import_verified": true,
+  "weights_downloaded": false,
+  "training_executed": false,
+  "ready_for_phase_d_when_authorized": true
+}

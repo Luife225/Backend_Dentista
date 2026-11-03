@@ -1,0 +1,1516 @@
+{
+  "phase": "E_validation_and_threshold_selection",
+  "evaluated_at_utc": "2026-10-29T00:28:32.229653+00:00",
+  "git_commit": "93a1281ba6fcdf85a8e9f9a25c589bd1c0c729ab",
+  "partition": "validation",
+  "images_evaluated": 44,
+  "weights_path": "C:\\Users\\sebas\\Desktop\\CoronyxSASS\\BackendCoronyx\\Backend_Dentista\\ML_Laboratorio\\runs\\detect\\d2_referencia_20261025\\weights\\best.pt",
+  "weights_sha256": "30acddf3f3a20182a6555bba8f64c4999ea3d8297d688d5296b20fc01d4ad652",
+  "selection_rule": "max_validation_macro_F1_at_IoU_0.50_tie_break_macro_recall_then_lower_threshold",
+  "selected_operating_threshold": 0.05,
+  "metrics_at_selected_threshold": {
+    "confidence_threshold": 0.05,
+    "iou_threshold": 0.5,
+    "macro_precision": 0.370259,
+    "macro_recall": 0.578589,
+    "macro_F1": 0.378348,
+    "per_class": {
+      "caries": {
+        "class_id": 0,
+        "evaluable": true,
+        "images_with_reference": 37,
+        "reference_annotations": 101,
+        "TP": 79,
+        "FP": 326,
+        "FN": 22,
+        "precision": 0.195062,
+        "recall": 0.782178,
+        "F1": 0.312253,
+        "top_false_positives": [
+          {
+            "image": "val_3.png",
+            "class_predicted": "caries",
+            "score": 0.6396,
+            "bbox_xyxy": [
+              1794.8,
+              816.64,
+              2023.56,
+              1129.53
+            ],
+            "confused_with_other_target_class": true
+          },
+          {
+            "image": "val_1.png",
+            "class_predicted": "caries",
+            "score": 0.6024,
+            "bbox_xyxy": [
+              568.92,
+              504.52,
+              749.33,
+              710.71
+            ],
+            "confused_with_other_target_class": false
+          },
+          {
+            "image": "val_22.png",
+            "class_predicted": "caries",
+            "score": 0.5947,
+            "bbox_xyxy": [
+              831.11,
+              670.09,
+              1077.61,
+              987.04
+            ],
+            "confused_with_other_target_class": false
+          },
+          {
+            "image": "val_28.png",
+            "class_predicted": "caries",
+            "score": 0.5923,
+            "bbox_xyxy": [
+              974.26,
+              961.26,
+              1193.16,
+              1229.48
+            ],
+            "confused_with_other_target_class": false
+          },
+          {
+            "image": "val_42.png",
+            "class_predicted": "caries",
+            "score": 0.576,
+            "bbox_xyxy": [
+              510.81,
+              476.7,
+              666.14,
+              678.97
+            ],
+            "confused_with_other_target_class": false
+          },
+          {
+            "image": "val_49.png",
+            "class_predicted": "caries",
+            "score": 0.5546,
+            "bbox_xyxy": [
+              1710.97,
+              778.48,
+              1935.57,
+              1077.81
+            ],
+            "confused_with_other_target_class": false
+          },
+          {
+            "image": "val_45.png",
+            "class_predicted": "caries",
+            "score": 0.5197,
+            "bbox_xyxy": [
+              1138.94,
+              548.14,
+              1248.89,
+              880.65
+            ],
+            "confused_with_other_target_class": true
+          },
+          {
+            "image": "val_16.png",
+            "class_predicted": "caries",
+            "score": 0.5124,
+            "bbox_xyxy": [
+              950.16,
+              388.44,
+              1096.52,
+              690.32
+            ],
+            "confused_with_other_target_class": false
+          },
+          {
+            "image": "val_42.png",
+            "class_predicted": "caries",
+            "score": 0.5027,
+            "bbox_xyxy": [
+              598.71,
+              501.28,
+              743.84,
+              721.63
+            ],
+            "confused_with_other_target_class": false
+          },
+          {
+            "image": "val_27.png",
+            "class_predicted": "caries",
+            "score": 0.4959,
+            "bbox_xyxy": [
+              1853.02,
+              913.94,
+              2131.1,
+              1248.97
+            ],
+            "confused_with_other_target_class": false
+          }
+        ],
+        "sample_false_negatives": [
+          {
+            "image": "val_12.png",
+            "class_Missed": "caries",
+            "annotation_id": 171,
+            "bbox_xyxy": [
+              727.0,
+              430.0,
+              925.0,
+              701.0
+            ]
+          },
+          {
+            "image": "val_22.png",
+            "class_Missed": "caries",
+            "annotation_id": 178,
+            "bbox_xyxy": [
+              866.19,
+              410.59,
+              1025.44,
+              643.93
+            ]
+          },
+          {
+            "image": "val_25.png",
+            "class_Missed": "caries",
+            "annotation_id": 52,
+            "bbox_xyxy": [
+              1667.0,
+              842.0,
+              1766.0,
+              1142.0
+            ]
+          },
+          {
+            "image": "val_27.png",
+            "class_Missed": "caries",
+            "annotation_id": 75,
+            "bbox_xyxy": [
+              1178.0,
+              921.0,
+              1330.0,
+              1253.0
+            ]
+          },
+          {
+            "image": "val_30.png",
+            "class_Missed": "caries",
+            "annotation_id": 21,
+            "bbox_xyxy": [
+              1310.0,
+              965.0,
+              1410.0,
+              1216.0
+            ]
+          },
+          {
+            "image": "val_33.png",
+            "class_Missed": "caries",
+            "annotation_id": 15,
+            "bbox_xyxy": [
+              1655.0,
+              749.0,
+              1768.0,
+              1000.0
+            ]
+          },
+          {
+            "image": "val_33.png",
+            "class_Missed": "caries",
+            "annotation_id": 16,
+            "bbox_xyxy": [
+              1757.74,
+              696.84,
+              1994.74,
+              972.84
+            ]
+          },
+          {
+            "image": "val_33.png",
+            "class_Missed": "caries",
+            "annotation_id": 17,
+            "bbox_xyxy": [
+              1774.0,
+              425.0,
+              1906.0,
+              703.0
+            ]
+          },
+          {
+            "image": "val_33.png",
+            "class_Missed": "caries",
+            "annotation_id": 18,
+            "bbox_xyxy": [
+              1239.24,
+              730.38,
+              1350.63,
+              1000.0
+            ]
+          },
+          {
+            "image": "val_35.png",
+            "class_Missed": "caries",
+            "annotation_id": 166,
+            "bbox_xyxy": [
+              2027.0,
+              598.0,
+              2228.0,
+              828.0
+            ]
+          }
+        ],
+        "cross_class_confusions": [
+          {
+            "image": "val_0.png",
+            "class_predicted": "caries",
+            "score": 0.3718,
+            "bbox_xyxy": [
+              766.36,
+              804.93,
+              1038.79,
+              1050.18
+            ],
+            "confused_with_other_target_class": true
+          },
+          {
+            "image": "val_0.png",
+            "class_predicted": "caries",
+            "score": 0.2614,
+            "bbox_xyxy": [
+              2020.1,
+              771.76,
+              2299.87,
+              1056.17
+            ],
+            "confused_with_other_target_class": true
+          },
+          {
+            "image": "val_10.png",
+            "class_predicted": "caries",
+            "score": 0.1804,
+            "bbox_xyxy": [
+              949.87,
+              467.61,
+              1070.45,
+              760.01
+            ],
+            "confused_with_other_target_class": true
+          },
+          {
+            "image": "val_10.png",
+            "class_predicted": "caries",
+            "score": 0.1382,
+            "bbox_xyxy": [
+              1622.14,
+              447.51,
+              1722.83,
+              759.22
+            ],
+            "confused_with_other_target_class": true
+          },
+          {
+            "image": "val_13.png",
+            "class_predicted": "caries",
+            "score": 0.4885,
+            "bbox_xyxy": [
+              913.78,
+              812.39,
+              1127.88,
+              1089.12
+            ],
+            "confused_with_other_target_class": true
+          },
+          {
+            "image": "val_13.png",
+            "class_predicted": "caries",
+            "score": 0.3125,
+            "bbox_xyxy": [
+              1856.9,
+              481.24,
+              2019.81,
+              807.24
+            ],
+            "confused_with_other_target_class": true
+          },
+          {
+            "image": "val_14.png",
+            "class_predicted": "caries",
+            "score": 0.3958,
+            "bbox_xyxy": [
+              1782.63,
+              688.23,
+              2005.86,
+              996.79
+            ],
+            "confused_with_other_target_class": true
+          },
+          {
+            "image": "val_16.png",
+            "class_predicted": "caries",
+            "score": 0.2981,
+            "bbox_xyxy": [
+              1853.62,
+              675.43,
+              2017.08,
+              959.02
+            ],
+            "confused_with_other_target_class": true
+          },
+          {
+            "image": "val_16.png",
+            "class_predicted": "caries",
+            "score": 0.2749,
+            "bbox_xyxy": [
+              731.05,
+              655.59,
+              985.5,
+              903.39
+            ],
+            "confused_with_other_target_class": true
+          },
+          {
+            "image": "val_16.png",
+            "class_predicted": "caries",
+            "score": 0.0591,
+            "bbox_xyxy": [
+              1954.24,
+              669.66,
+              2154.1,
+              909.35
+            ],
+            "confused_with_other_target_class": true
+          }
+        ],
+        "AP50": 0.335043,
+        "AP50-95": 0.221872,
+        "pr_curve_iou50": [
+          {
+            "score": 0.7869,
+            "precision": 1.0,
+            "recall": 0.009901
+          },
+          {
+            "score": 0.3598,
+            "precision": 0.436364,
+            "recall": 0.237624
+          },
+          {
+            "score": 0.2468,
+            "precision": 0.363636,
+            "recall": 0.39604
+          },
+          {
+            "score": 0.1695,
+            "precision": 0.321212,
+            "recall": 0.524752
+          },
+          {
+            "score": 0.1291,
+            "precision": 0.295455,
+            "recall": 0.643564
+          },
+          {
+            "score": 0.0931,
+            "precision": 0.247273,
+            "recall": 0.673267
+          },
+          {
+            "score": 0.0728,
+            "precision": 0.221212,
+            "recall": 0.722772
+          },
+          {
+            "score": 0.0564,
+            "precision": 0.197403,
+            "recall": 0.752475
+          },
+          {
+            "score": 0.0418,
+            "precision": 0.186364,
+            "recall": 0.811881
+          },
+          {
+            "score": 0.0306,
+            "precision": 0.171717,
+            "recall": 0.841584
+          },
+          {
+            "score": 0.0251,
+            "precision": 0.158182,
+            "recall": 0.861386
+          },
+          {
+            "score": 0.0193,
+            "precision": 0.147107,
+            "recall": 0.881188
+          },
+          {
+            "score": 0.0155,
+            "precision": 0.137879,
+            "recall": 0.90099
+          },
+          {
+            "score": 0.0118,
+            "precision": 0.128671,
+            "recall": 0.910891
+          },
+          {
+            "score": 0.0099,
+            "precision": 0.120779,
+            "recall": 0.920792
+          },
+          {
+            "score": 0.0079,
+            "precision": 0.113939,
+            "recall": 0.930693
+          },
+          {
+            "score": 0.0066,
+            "precision": 0.106818,
+            "recall": 0.930693
+          },
+          {
+            "score": 0.0055,
+            "precision": 0.102674,
+            "recall": 0.950495
+          },
+          {
+            "score": 0.0043,
+            "precision": 0.09798,
+            "recall": 0.960396
+          },
+          {
+            "score": 0.0037,
+            "precision": 0.09378,
+            "recall": 0.970297
+          },
+          {
+            "score": 0.003,
+            "precision": 0.089091,
+            "recall": 0.970297
+          },
+          {
+            "score": 0.0023,
+            "precision": 0.084848,
+            "recall": 0.970297
+          },
+          {
+            "score": 0.0019,
+            "precision": 0.081818,
+            "recall": 0.980198
+          },
+          {
+            "score": 0.0015,
+            "precision": 0.078261,
+            "recall": 0.980198
+          },
+          {
+            "score": 0.0013,
+            "precision": 0.075,
+            "recall": 0.980198
+          },
+          {
+            "score": 0.0011,
+            "precision": 0.072,
+            "recall": 0.980198
+          },
+          {
+            "score": 0.001,
+            "precision": 0.071736,
+            "recall": 0.990099
+          }
+        ]
+      },
+      "caries_profunda": {
+        "class_id": 1,
+        "evaluable": true,
+        "images_with_reference": 20,
+        "reference_annotations": 32,
+        "TP": 12,
+        "FP": 10,
+        "FN": 20,
+        "precision": 0.545455,
+        "recall": 0.375,
+        "F1": 0.444444,
+        "top_false_positives": [
+          {
+            "image": "val_32.png",
+            "class_predicted": "caries_profunda",
+            "score": 0.8359,
+            "bbox_xyxy": [
+              712.65,
+              611.21,
+              924.32,
+              912.94
+            ],
+            "confused_with_other_target_class": true
+          },
+          {
+            "image": "val_10.png",
+            "class_predicted": "caries_profunda",
+            "score": 0.6422,
+            "bbox_xyxy": [
+              1744.3,
+              769.59,
+              1987.5,
+              1059.22
+            ],
+            "confused_with_other_target_class": true
+          },
+          {
+            "image": "val_44.png",
+            "class_predicted": "caries_profunda",
+            "score": 0.189,
+            "bbox_xyxy": [
+              1092.74,
+              348.8,
+              1210.21,
+              611.66
+            ],
+            "confused_with_other_target_class": false
+          },
+          {
+            "image": "val_20.png",
+            "class_predicted": "caries_profunda",
+            "score": 0.1492,
+            "bbox_xyxy": [
+              1068.48,
+              685.22,
+              1297.48,
+              994.89
+            ],
+            "confused_with_other_target_class": false
+          },
+          {
+            "image": "val_21.png",
+            "class_predicted": "caries_profunda",
+            "score": 0.1278,
+            "bbox_xyxy": [
+              947.82,
+              732.44,
+              1118.17,
+              1016.03
+            ],
+            "confused_with_other_target_class": true
+          },
+          {
+            "image": "val_43.png",
+            "class_predicted": "caries_profunda",
+            "score": 0.1062,
+            "bbox_xyxy": [
+              756.7,
+              483.7,
+              903.34,
+              811.58
+            ],
+            "confused_with_other_target_class": true
+          },
+          {
+            "image": "val_2.png",
+            "class_predicted": "caries_profunda",
+            "score": 0.0902,
+            "bbox_xyxy": [
+              486.95,
+              492.26,
+              595.56,
+              605.17
+            ],
+            "confused_with_other_target_class": false
+          },
+          {
+            "image": "val_24.png",
+            "class_predicted": "caries_profunda",
+            "score": 0.0717,
+            "bbox_xyxy": [
+              667.73,
+              843.85,
+              895.09,
+              1096.91
+            ],
+            "confused_with_other_target_class": false
+          },
+          {
+            "image": "val_20.png",
+            "class_predicted": "caries_profunda",
+            "score": 0.0534,
+            "bbox_xyxy": [
+              1069.19,
+              689.58,
+              1271.68,
+              904.29
+            ],
+            "confused_with_other_target_class": false
+          },
+          {
+            "image": "val_49.png",
+            "class_predicted": "caries_profunda",
+            "score": 0.0517,
+            "bbox_xyxy": [
+              1663.29,
+              846.94,
+              1780.65,
+              1101.99
+            ],
+            "confused_with_other_target_class": false
+          }
+        ],
+        "sample_false_negatives": [
+          {
+            "image": "val_0.png",
+            "class_Missed": "caries_profunda",
+            "annotation_id": 180,
+            "bbox_xyxy": [
+              748.0,
+              805.0,
+              1039.0,
+              1046.0
+            ]
+          },
+          {
+            "image": "val_0.png",
+            "class_Missed": "caries_profunda",
+            "annotation_id": 181,
+            "bbox_xyxy": [
+              2023.0,
+              769.0,
+              2285.0,
+              1027.0
+            ]
+          },
+          {
+            "image": "val_11.png",
+            "class_Missed": "caries_profunda",
+            "annotation_id": 167,
+            "bbox_xyxy": [
+              1499.0,
+              651.0,
+              1590.0,
+              898.0
+            ]
+          },
+          {
+            "image": "val_11.png",
+            "class_Missed": "caries_profunda",
+            "annotation_id": 168,
+            "bbox_xyxy": [
+              1411.0,
+              665.0,
+              1495.0,
+              917.0
+            ]
+          },
+          {
+            "image": "val_11.png",
+            "class_Missed": "caries_profunda",
+            "annotation_id": 169,
+            "bbox_xyxy": [
+              1347.0,
+              677.0,
+              1412.0,
+              896.0
+            ]
+          },
+          {
+            "image": "val_13.png",
+            "class_Missed": "caries_profunda",
+            "annotation_id": 93,
+            "bbox_xyxy": [
+              1842.0,
+              492.0,
+              2026.0,
+              807.0
+            ]
+          },
+          {
+            "image": "val_13.png",
+            "class_Missed": "caries_profunda",
+            "annotation_id": 94,
+            "bbox_xyxy": [
+              936.0,
+              804.47,
+              1147.0,
+              1094.0
+            ]
+          },
+          {
+            "image": "val_16.png",
+            "class_Missed": "caries_profunda",
+            "annotation_id": 48,
+            "bbox_xyxy": [
+              1109.0,
+              391.0,
+              1239.0,
+              714.0
+            ]
+          },
+          {
+            "image": "val_16.png",
+            "class_Missed": "caries_profunda",
+            "annotation_id": 49,
+            "bbox_xyxy": [
+              721.0,
+              647.0,
+              986.0,
+              906.0
+            ]
+          },
+          {
+            "image": "val_18.png",
+            "class_Missed": "caries_profunda",
+            "annotation_id": 91,
+            "bbox_xyxy": [
+              1952.17,
+              348.29,
+              2111.59,
+              564.23
+            ]
+          }
+        ],
+        "cross_class_confusions": [
+          {
+            "image": "val_10.png",
+            "class_predicted": "caries_profunda",
+            "score": 0.6422,
+            "bbox_xyxy": [
+              1744.3,
+              769.59,
+              1987.5,
+              1059.22
+            ],
+            "confused_with_other_target_class": true
+          },
+          {
+            "image": "val_21.png",
+            "class_predicted": "caries_profunda",
+            "score": 0.1278,
+            "bbox_xyxy": [
+              947.82,
+              732.44,
+              1118.17,
+              1016.03
+            ],
+            "confused_with_other_target_class": true
+          },
+          {
+            "image": "val_32.png",
+            "class_predicted": "caries_profunda",
+            "score": 0.8359,
+            "bbox_xyxy": [
+              712.65,
+              611.21,
+              924.32,
+              912.94
+            ],
+            "confused_with_other_target_class": true
+          },
+          {
+            "image": "val_43.png",
+            "class_predicted": "caries_profunda",
+            "score": 0.1062,
+            "bbox_xyxy": [
+              756.7,
+              483.7,
+              903.34,
+              811.58
+            ],
+            "confused_with_other_target_class": true
+          }
+        ],
+        "AP50": 0.282882,
+        "AP50-95": 0.199821,
+        "pr_curve_iou50": [
+          {
+            "score": 0.9481,
+            "precision": 1.0,
+            "recall": 0.03125
+          },
+          {
+            "score": 0.6422,
+            "precision": 0.5,
+            "recall": 0.0625
+          },
+          {
+            "score": 0.1902,
+            "precision": 0.75,
+            "recall": 0.1875
+          },
+          {
+            "score": 0.1278,
+            "precision": 0.583333,
+            "recall": 0.21875
+          },
+          {
+            "score": 0.0902,
+            "precision": 0.5625,
+            "recall": 0.28125
+          },
+          {
+            "score": 0.0543,
+            "precision": 0.6,
+            "recall": 0.375
+          },
+          {
+            "score": 0.0388,
+            "precision": 0.5,
+            "recall": 0.375
+          },
+          {
+            "score": 0.0207,
+            "precision": 0.428571,
+            "recall": 0.375
+          },
+          {
+            "score": 0.0136,
+            "precision": 0.375,
+            "recall": 0.375
+          },
+          {
+            "score": 0.0088,
+            "precision": 0.333333,
+            "recall": 0.375
+          },
+          {
+            "score": 0.0082,
+            "precision": 0.3,
+            "recall": 0.375
+          },
+          {
+            "score": 0.0064,
+            "precision": 0.272727,
+            "recall": 0.375
+          },
+          {
+            "score": 0.0058,
+            "precision": 0.25,
+            "recall": 0.375
+          },
+          {
+            "score": 0.0053,
+            "precision": 0.230769,
+            "recall": 0.375
+          },
+          {
+            "score": 0.0039,
+            "precision": 0.214286,
+            "recall": 0.375
+          },
+          {
+            "score": 0.0029,
+            "precision": 0.2,
+            "recall": 0.375
+          },
+          {
+            "score": 0.0025,
+            "precision": 0.1875,
+            "recall": 0.375
+          },
+          {
+            "score": 0.0024,
+            "precision": 0.176471,
+            "recall": 0.375
+          },
+          {
+            "score": 0.0022,
+            "precision": 0.180556,
+            "recall": 0.40625
+          },
+          {
+            "score": 0.0018,
+            "precision": 0.171053,
+            "recall": 0.40625
+          },
+          {
+            "score": 0.0017,
+            "precision": 0.175,
+            "recall": 0.4375
+          },
+          {
+            "score": 0.0014,
+            "precision": 0.166667,
+            "recall": 0.4375
+          },
+          {
+            "score": 0.0013,
+            "precision": 0.159091,
+            "recall": 0.4375
+          },
+          {
+            "score": 0.0012,
+            "precision": 0.152174,
+            "recall": 0.4375
+          },
+          {
+            "score": 0.0011,
+            "precision": 0.145833,
+            "recall": 0.4375
+          },
+          {
+            "score": 0.001,
+            "precision": 0.15,
+            "recall": 0.46875
+          }
+        ]
+      }
+    },
+    "mean_AP50_unweighted": 0.308963,
+    "mean_AP50_95_unweighted": 0.210846,
+    "trivial_zero_detector_reference": {
+      "precision": "undefined",
+      "recall": 0.0,
+      "AP50": 0.0,
+      "AP50-95": 0.0
+    }
+  },
+  "threshold_search_grid_summary": [
+    {
+      "threshold": 0.05,
+      "macro_F1": 0.378348,
+      "macro_recall": 0.578589,
+      "macro_precision": 0.370259
+    },
+    {
+      "threshold": 0.06,
+      "macro_F1": 0.34435,
+      "macro_recall": 0.516863,
+      "macro_precision": 0.366857
+    },
+    {
+      "threshold": 0.07,
+      "macro_F1": 0.350722,
+      "macro_recall": 0.502011,
+      "macro_precision": 0.373337
+    },
+    {
+      "threshold": 0.08,
+      "macro_F1": 0.359914,
+      "macro_recall": 0.48716,
+      "macro_precision": 0.396004
+    },
+    {
+      "threshold": 0.09,
+      "macro_F1": 0.365046,
+      "macro_recall": 0.477258,
+      "macro_precision": 0.401817
+    },
+    {
+      "threshold": 0.1,
+      "macro_F1": 0.376776,
+      "macro_recall": 0.477258,
+      "macro_precision": 0.42782
+    },
+    {
+      "threshold": 0.11,
+      "macro_F1": 0.369328,
+      "macro_recall": 0.461633,
+      "macro_precision": 0.441551
+    },
+    {
+      "threshold": 0.12,
+      "macro_F1": 0.353702,
+      "macro_recall": 0.431157,
+      "macro_precision": 0.431152
+    },
+    {
+      "threshold": 0.13,
+      "macro_F1": 0.365916,
+      "macro_recall": 0.431157,
+      "macro_precision": 0.466584
+    },
+    {
+      "threshold": 0.14,
+      "macro_F1": 0.360159,
+      "macro_recall": 0.406405,
+      "macro_precision": 0.465966
+    },
+    {
+      "threshold": 0.15,
+      "macro_F1": 0.366667,
+      "macro_recall": 0.396504,
+      "macro_precision": 0.503439
+    },
+    {
+      "threshold": 0.16,
+      "macro_F1": 0.34924,
+      "macro_recall": 0.370978,
+      "macro_precision": 0.493333
+    },
+    {
+      "threshold": 0.17,
+      "macro_F1": 0.346342,
+      "macro_recall": 0.356126,
+      "macro_precision": 0.494919
+    },
+    {
+      "threshold": 0.18,
+      "macro_F1": 0.343192,
+      "macro_recall": 0.341275,
+      "macro_precision": 0.496732
+    },
+    {
+      "threshold": 0.19,
+      "macro_F1": 0.346,
+      "macro_recall": 0.336325,
+      "macro_precision": 0.53943
+    },
+    {
+      "threshold": 0.2,
+      "macro_F1": 0.327375,
+      "macro_recall": 0.315749,
+      "macro_precision": 0.528571
+    },
+    {
+      "threshold": 0.21,
+      "macro_F1": 0.327339,
+      "macro_recall": 0.305848,
+      "macro_precision": 0.534066
+    },
+    {
+      "threshold": 0.22,
+      "macro_F1": 0.325515,
+      "macro_recall": 0.295947,
+      "macro_precision": 0.537471
+    },
+    {
+      "threshold": 0.23,
+      "macro_F1": 0.319986,
+      "macro_recall": 0.286046,
+      "macro_precision": 0.535109
+    },
+    {
+      "threshold": 0.24,
+      "macro_F1": 0.316884,
+      "macro_recall": 0.276145,
+      "macro_precision": 0.537323
+    },
+    {
+      "threshold": 0.25,
+      "macro_F1": 0.317526,
+      "macro_recall": 0.271195,
+      "macro_precision": 0.542857
+    },
+    {
+      "threshold": 0.26,
+      "macro_F1": 0.315397,
+      "macro_recall": 0.266244,
+      "macro_precision": 0.543417
+    },
+    {
+      "threshold": 0.27,
+      "macro_F1": 0.309552,
+      "macro_recall": 0.251393,
+      "macro_precision": 0.547361
+    },
+    {
+      "threshold": 0.28,
+      "macro_F1": 0.283273,
+      "macro_recall": 0.230817,
+      "macro_precision": 0.522223
+    },
+    {
+      "threshold": 0.29,
+      "macro_F1": 0.285157,
+      "macro_recall": 0.230817,
+      "macro_precision": 0.526516
+    },
+    {
+      "threshold": 0.3,
+      "macro_F1": 0.283041,
+      "macro_recall": 0.220916,
+      "macro_precision": 0.535865
+    },
+    {
+      "threshold": 0.31,
+      "macro_F1": 0.275718,
+      "macro_recall": 0.211015,
+      "macro_precision": 0.533334
+    },
+    {
+      "threshold": 0.32,
+      "macro_F1": 0.27686,
+      "macro_recall": 0.206065,
+      "macro_precision": 0.546569
+    },
+    {
+      "threshold": 0.33,
+      "macro_F1": 0.266939,
+      "macro_recall": 0.196163,
+      "macro_precision": 0.537879
+    },
+    {
+      "threshold": 0.34,
+      "macro_F1": 0.265757,
+      "macro_recall": 0.191213,
+      "macro_precision": 0.546449
+    },
+    {
+      "threshold": 0.35,
+      "macro_F1": 0.262495,
+      "macro_recall": 0.186262,
+      "macro_precision": 0.548851
+    },
+    {
+      "threshold": 0.36,
+      "macro_F1": 0.260101,
+      "macro_recall": 0.181312,
+      "macro_precision": 0.555555
+    },
+    {
+      "threshold": 0.37,
+      "macro_F1": 0.256579,
+      "macro_recall": 0.176362,
+      "macro_precision": 0.558824
+    },
+    {
+      "threshold": 0.38,
+      "macro_F1": 0.259626,
+      "macro_recall": 0.176362,
+      "macro_precision": 0.572917
+    },
+    {
+      "threshold": 0.39,
+      "macro_F1": 0.249099,
+      "macro_recall": 0.166461,
+      "macro_precision": 0.566667
+    },
+    {
+      "threshold": 0.4,
+      "macro_F1": 0.229351,
+      "macro_recall": 0.146658,
+      "macro_precision": 0.569445
+    },
+    {
+      "threshold": 0.41,
+      "macro_F1": 0.212133,
+      "macro_recall": 0.131807,
+      "macro_precision": 0.566667
+    },
+    {
+      "threshold": 0.42,
+      "macro_F1": 0.199751,
+      "macro_recall": 0.121906,
+      "macro_precision": 0.564102
+    },
+    {
+      "threshold": 0.43,
+      "macro_F1": 0.185908,
+      "macro_recall": 0.112005,
+      "macro_precision": 0.550725
+    },
+    {
+      "threshold": 0.44,
+      "macro_F1": 0.185908,
+      "macro_recall": 0.112005,
+      "macro_precision": 0.550725
+    },
+    {
+      "threshold": 0.45,
+      "macro_F1": 0.163597,
+      "macro_recall": 0.097154,
+      "macro_precision": 0.517544
+    },
+    {
+      "threshold": 0.46,
+      "macro_F1": 0.15611,
+      "macro_recall": 0.092203,
+      "macro_precision": 0.509804
+    },
+    {
+      "threshold": 0.47,
+      "macro_F1": 0.147998,
+      "macro_recall": 0.087252,
+      "macro_precision": 0.489584
+    },
+    {
+      "threshold": 0.48,
+      "macro_F1": 0.147998,
+      "macro_recall": 0.087252,
+      "macro_precision": 0.489584
+    },
+    {
+      "threshold": 0.49,
+      "macro_F1": 0.148367,
+      "macro_recall": 0.087252,
+      "macro_precision": 0.5
+    },
+    {
+      "threshold": 0.5,
+      "macro_F1": 0.148741,
+      "macro_recall": 0.087252,
+      "macro_precision": 0.511905
+    },
+    {
+      "threshold": 0.51,
+      "macro_F1": 0.124941,
+      "macro_recall": 0.071627,
+      "macro_precision": 0.492308
+    },
+    {
+      "threshold": 0.52,
+      "macro_F1": 0.125724,
+      "macro_recall": 0.071627,
+      "macro_precision": 0.527273
+    },
+    {
+      "threshold": 0.53,
+      "macro_F1": 0.125724,
+      "macro_recall": 0.071627,
+      "macro_precision": 0.527273
+    },
+    {
+      "threshold": 0.54,
+      "macro_F1": 0.117117,
+      "macro_recall": 0.066677,
+      "macro_precision": 0.5
+    },
+    {
+      "threshold": 0.55,
+      "macro_F1": 0.108354,
+      "macro_recall": 0.061727,
+      "macro_precision": 0.466666
+    },
+    {
+      "threshold": 0.56,
+      "macro_F1": 0.108604,
+      "macro_recall": 0.061727,
+      "macro_precision": 0.4875
+    },
+    {
+      "threshold": 0.57,
+      "macro_F1": 0.108604,
+      "macro_recall": 0.061727,
+      "macro_precision": 0.4875
+    },
+    {
+      "threshold": 0.58,
+      "macro_F1": 0.099773,
+      "macro_recall": 0.056776,
+      "macro_precision": 0.466666
+    },
+    {
+      "threshold": 0.59,
+      "macro_F1": 0.099773,
+      "macro_recall": 0.056776,
+      "macro_precision": 0.466666
+    },
+    {
+      "threshold": 0.6,
+      "macro_F1": 0.074603,
+      "macro_recall": 0.041151,
+      "macro_precision": 0.5
+    },
+    {
+      "threshold": 0.61,
+      "macro_F1": 0.074787,
+      "macro_recall": 0.041151,
+      "macro_precision": 0.583333
+    },
+    {
+      "threshold": 0.62,
+      "macro_F1": 0.074787,
+      "macro_recall": 0.041151,
+      "macro_precision": 0.583333
+    },
+    {
+      "threshold": 0.63,
+      "macro_F1": 0.074787,
+      "macro_recall": 0.041151,
+      "macro_precision": 0.583333
+    },
+    {
+      "threshold": 0.64,
+      "macro_F1": 0.074973,
+      "macro_recall": 0.041151,
+      "macro_precision": 0.75
+    },
+    {
+      "threshold": 0.65,
+      "macro_F1": 0.076561,
+      "macro_recall": 0.041151,
+      "macro_precision": 0.833333
+    },
+    {
+      "threshold": 0.66,
+      "macro_F1": 0.066947,
+      "macro_recall": 0.0362,
+      "macro_precision": 0.833333
+    },
+    {
+      "threshold": 0.67,
+      "macro_F1": 0.066947,
+      "macro_recall": 0.0362,
+      "macro_precision": 0.833333
+    },
+    {
+      "threshold": 0.68,
+      "macro_F1": 0.039216,
+      "macro_recall": 0.020576,
+      "macro_precision": 0.75
+    },
+    {
+      "threshold": 0.69,
+      "macro_F1": 0.039216,
+      "macro_recall": 0.020576,
+      "macro_precision": 0.75
+    },
+    {
+      "threshold": 0.7,
+      "macro_F1": 0.039216,
+      "macro_recall": 0.020576,
+      "macro_precision": 0.75
+    },
+    {
+      "threshold": 0.71,
+      "macro_F1": 0.039216,
+      "macro_recall": 0.020576,
+      "macro_precision": 0.75
+    },
+    {
+      "threshold": 0.72,
+      "macro_F1": 0.039216,
+      "macro_recall": 0.020576,
+      "macro_precision": 0.75
+    },
+    {
+      "threshold": 0.73,
+      "macro_F1": 0.039216,
+      "macro_recall": 0.020576,
+      "macro_precision": 0.75
+    },
+    {
+      "threshold": 0.74,
+      "macro_F1": 0.039216,
+      "macro_recall": 0.020576,
+      "macro_precision": 0.75
+    },
+    {
+      "threshold": 0.75,
+      "macro_F1": 0.039216,
+      "macro_recall": 0.020576,
+      "macro_precision": 0.75
+    },
+    {
+      "threshold": 0.76,
+      "macro_F1": 0.039216,
+      "macro_recall": 0.020576,
+      "macro_precision": 0.75
+    },
+    {
+      "threshold": 0.77,
+      "macro_F1": 0.039216,
+      "macro_recall": 0.020576,
+      "macro_precision": 0.75
+    },
+    {
+      "threshold": 0.78,
+      "macro_F1": 0.039216,
+      "macro_recall": 0.020576,
+      "macro_precision": 0.75
+    },
+    {
+      "threshold": 0.79,
+      "macro_F1": 0.029412,
+      "macro_recall": 0.015625,
+      "macro_precision": 0.25
+    },
+    {
+      "threshold": 0.8,
+      "macro_F1": 0.029412,
+      "macro_recall": 0.015625,
+      "macro_precision": 0.25
+    },
+    {
+      "threshold": 0.81,
+      "macro_F1": 0.029412,
+      "macro_recall": 0.015625,
+      "macro_precision": 0.25
+    },
+    {
+      "threshold": 0.82,
+      "macro_F1": 0.029412,
+      "macro_recall": 0.015625,
+      "macro_precision": 0.25
+    },
+    {
+      "threshold": 0.83,
+      "macro_F1": 0.029412,
+      "macro_recall": 0.015625,
+      "macro_precision": 0.25
+    },
+    {
+      "threshold": 0.84,
+      "macro_F1": 0.030303,
+      "macro_recall": 0.015625,
+      "macro_precision": 0.5
+    },
+    {
+      "threshold": 0.85,
+      "macro_F1": 0.030303,
+      "macro_recall": 0.015625,
+      "macro_precision": 0.5
+    },
+    {
+      "threshold": 0.86,
+      "macro_F1": 0.030303,
+      "macro_recall": 0.015625,
+      "macro_precision": 0.5
+    },
+    {
+      "threshold": 0.87,
+      "macro_F1": 0.030303,
+      "macro_recall": 0.015625,
+      "macro_precision": 0.5
+    },
+    {
+      "threshold": 0.88,
+      "macro_F1": 0.030303,
+      "macro_recall": 0.015625,
+      "macro_precision": 0.5
+    },
+    {
+      "threshold": 0.89,
+      "macro_F1": 0.030303,
+      "macro_recall": 0.015625,
+      "macro_precision": 0.5
+    },
+    {
+      "threshold": 0.9,
+      "macro_F1": 0.030303,
+      "macro_recall": 0.015625,
+      "macro_precision": 0.5
+    },
+    {
+      "threshold": 0.91,
+      "macro_F1": 0.030303,
+      "macro_recall": 0.015625,
+      "macro_precision": 0.5
+    },
+    {
+      "threshold": 0.92,
+      "macro_F1": 0.030303,
+      "macro_recall": 0.015625,
+      "macro_precision": 0.5
+    },
+    {
+      "threshold": 0.93,
+      "macro_F1": 0.030303,
+      "macro_recall": 0.015625,
+      "macro_precision": 0.5
+    },
+    {
+      "threshold": 0.94,
+      "macro_F1": 0.030303,
+      "macro_recall": 0.015625,
+      "macro_precision": 0.5
+    },
+    {
+      "threshold": 0.95,
+      "macro_F1": 0.0,
+      "macro_recall": 0.0,
+      "macro_precision": 0.0
+    }
+  ],
+  "raw_predictions_count": 1494,
+  "cohort_limitation": "Solo imagenes con anotaciones objetivo; no establece rendimiento en radiografias sanas o no seleccionadas.",
+  "patient_independence_verified": false
+}
