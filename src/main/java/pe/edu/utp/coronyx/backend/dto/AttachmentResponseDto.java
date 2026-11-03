@@ -1,15 +1,20 @@
 package pe.edu.utp.coronyx.backend.dto;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import pe.edu.utp.coronyx.backend.model.Attachment;
 
 import java.time.format.DateTimeFormatter;
+import java.util.Map;
 
 /**
- * DTO de respuesta para archivos adjuntos clínicos y administrativos (F06-A).
+ * DTO de respuesta para archivos adjuntos clínicos y administrativos (F06-A / Fase I ML).
  * Cumple con la representación de identificadores como Strings decimales y
  * omite cualquier detalle de historia clínica técnica privada.
  */
 public class AttachmentResponseDto {
+
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     private String id;
     private String clinicaId;
@@ -30,6 +35,11 @@ public class AttachmentResponseDto {
     private String fechaCreacion;
     private String downloadUrl;
     private String iaEstadoRevision;
+    private String iaNombreModelo;
+    private String iaVersionModelo;
+    private String iaRevisadoPorId;
+    private String iaRevisadoPorNombre;
+    private Map<String, Object> iaHallazgos;
 
     public AttachmentResponseDto() {
     }
@@ -54,6 +64,22 @@ public class AttachmentResponseDto {
         dto.setRegionAnatomica(entity.getRegionAnatomica());
         dto.setEsVisiblePaciente(entity.isEsVisiblePaciente());
         dto.setIaEstadoRevision(entity.getIaEstadoRevision());
+        dto.setIaNombreModelo(entity.getIaNombreModelo());
+        dto.setIaVersionModelo(entity.getIaVersionModelo());
+        if (entity.getIaRevisadoPor() != null) {
+            dto.setIaRevisadoPorId(String.valueOf(entity.getIaRevisadoPor().getId()));
+            if (entity.getIaRevisadoPor().getUsuario() != null) {
+                dto.setIaRevisadoPorNombre(entity.getIaRevisadoPor().getUsuario().getNombreCompleto());
+            }
+        }
+        if (entity.getIaHallazgosJson() != null && !entity.getIaHallazgosJson().isBlank()) {
+            try {
+                dto.setIaHallazgos(OBJECT_MAPPER.readValue(
+                        entity.getIaHallazgosJson(), new TypeReference<Map<String, Object>>() {}));
+            } catch (Exception ignored) {
+                dto.setIaHallazgos(null);
+            }
+        }
         if (entity.getFechaCreacion() != null) {
             dto.setFechaCreacion(entity.getFechaCreacion().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME));
         }
@@ -187,5 +213,45 @@ public class AttachmentResponseDto {
 
     public void setIaEstadoRevision(String iaEstadoRevision) {
         this.iaEstadoRevision = iaEstadoRevision;
+    }
+
+    public String getIaNombreModelo() {
+        return iaNombreModelo;
+    }
+
+    public void setIaNombreModelo(String iaNombreModelo) {
+        this.iaNombreModelo = iaNombreModelo;
+    }
+
+    public String getIaVersionModelo() {
+        return iaVersionModelo;
+    }
+
+    public void setIaVersionModelo(String iaVersionModelo) {
+        this.iaVersionModelo = iaVersionModelo;
+    }
+
+    public String getIaRevisadoPorId() {
+        return iaRevisadoPorId;
+    }
+
+    public void setIaRevisadoPorId(String iaRevisadoPorId) {
+        this.iaRevisadoPorId = iaRevisadoPorId;
+    }
+
+    public String getIaRevisadoPorNombre() {
+        return iaRevisadoPorNombre;
+    }
+
+    public void setIaRevisadoPorNombre(String iaRevisadoPorNombre) {
+        this.iaRevisadoPorNombre = iaRevisadoPorNombre;
+    }
+
+    public Map<String, Object> getIaHallazgos() {
+        return iaHallazgos;
+    }
+
+    public void setIaHallazgos(Map<String, Object> iaHallazgos) {
+        this.iaHallazgos = iaHallazgos;
     }
 }
