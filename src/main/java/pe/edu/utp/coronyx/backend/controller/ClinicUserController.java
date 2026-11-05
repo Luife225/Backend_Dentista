@@ -18,7 +18,7 @@ import pe.edu.utp.coronyx.backend.service.ClinicUserService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/clinic/users")
+@RequestMapping({"/api/v1/clinic/users", "/api/v1/admin/users"})
 @PreAuthorize("hasRole('ADMIN_CLINICA')")
 public class ClinicUserController {
 

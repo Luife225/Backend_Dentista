@@ -1,7 +1,9 @@
 package pe.edu.utp.coronyx.backend.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.Size;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class UpdateClinicUserDto {
 
     @Size(min = 2, max = 100, message = "Los nombres deben tener entre 2 y 100 caracteres")

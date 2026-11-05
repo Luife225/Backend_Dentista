@@ -1,24 +1,29 @@
 package pe.edu.utp.coronyx.backend.dto;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 public class CreateClinicUserDto {
 
+    @JsonAlias({"email", "usernameOrEmail"})
     @NotBlank(message = "El correo electrónico es obligatorio")
     @Email(message = "El formato de correo no es válido")
     @Size(max = 254, message = "El correo no puede exceder 254 caracteres")
     private String correo;
 
+    @JsonAlias({"password"})
     @NotBlank(message = "La contraseña es obligatoria")
     @Size(min = 6, max = 100, message = "La contraseña debe tener al menos 6 caracteres")
     private String clave;
 
+    @JsonAlias({"nombre"})
     @NotBlank(message = "Los nombres son obligatorios")
     @Size(min = 2, max = 100, message = "Los nombres deben tener entre 2 y 100 caracteres")
     private String nombres;
 
+    @JsonAlias({"apellido"})
     @NotBlank(message = "Los apellidos son obligatorios")
     @Size(min = 2, max = 100, message = "Los apellidos deben tener entre 2 y 100 caracteres")
     private String apellidos;
