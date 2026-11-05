@@ -276,9 +276,11 @@ public class HelpdeskController {
         if (dto.catalogoId() != null && !dto.catalogoId().isBlank()) {
             for (HelpdeskCatalogDto c : catalog) {
                 if (c.id().equalsIgnoreCase(dto.catalogoId())) {
-                    imp = c.impacto();
-                    prob = c.probabilidad();
-                    prioridad = c.prioridad();
+                    if (!"INC-GEN-099".equalsIgnoreCase(c.id())) {
+                        imp = c.impacto();
+                        prob = c.probabilidad();
+                        prioridad = c.prioridad();
+                    }
                     sla = c.slaMinutos();
                     respRol = c.responsableRol();
                     respNombre = switch (respRol) {
@@ -297,17 +299,42 @@ public class HelpdeskController {
         if (prioridad == null || prioridad.isBlank()) {
             prioridad = calculatePriority(imp, prob);
         }
+        prioridad = prioridad.trim().toUpperCase().replace("Í", "I");
 
         String nowStr = LocalDateTime.now().format(FORMATTER);
 
         Long safeSolicitanteId = dto.solicitanteId();
-        if (safeSolicitanteId == null && dto.solicitante() != null && jdbcTemplate != null) {
+        if (jdbcTemplate != null) {
+            if (safeSolicitanteId != null) {
+                try {
+                    Integer count = jdbcTemplate.queryForObject("SELECT count(*) FROM usuario WHERE id = ?", Integer.class, safeSolicitanteId);
+                    if (count == null || count == 0) {
+                        safeSolicitanteId = null;
+                    }
+                } catch (Exception ignored) {
+                    safeSolicitanteId = null;
+                }
+            }
+            if (safeSolicitanteId == null && dto.solicitante() != null) {
+                try {
+                    safeSolicitanteId = jdbcTemplate.queryForObject(
+                            "SELECT id FROM usuario WHERE LOWER(correo) = LOWER(?) OR LOWER(TRIM(CONCAT(nombres, ' ', apellidos))) = LOWER(TRIM(?)) LIMIT 1",
+                            Long.class, dto.solicitante().trim(), dto.solicitante().trim()
+                    );
+                } catch (Exception ignored) {}
+            }
+        }
+
+        Long safeResponsableId = dto.responsableId();
+        if (jdbcTemplate != null && safeResponsableId != null) {
             try {
-                safeSolicitanteId = jdbcTemplate.queryForObject(
-                        "SELECT id FROM usuario WHERE LOWER(email) = LOWER(?) OR LOWER(CONCAT(nombres, ' ', apellidos)) = LOWER(?) LIMIT 1",
-                        Long.class, dto.solicitante().trim(), dto.solicitante().trim()
-                );
-            } catch (Exception ignored) {}
+                Integer count = jdbcTemplate.queryForObject("SELECT count(*) FROM usuario WHERE id = ?", Integer.class, safeResponsableId);
+                if (count == null || count == 0) {
+                    safeResponsableId = null;
+                }
+            } catch (Exception ignored) {
+                safeResponsableId = null;
+            }
         }
 
         HelpdeskTicketDto created = new HelpdeskTicketDto(
@@ -319,7 +346,7 @@ public class HelpdeskController {
                 safeSolicitanteId,
                 respNombre != null ? respNombre : "Admin Clínica",
                 respRol != null ? respRol : "ADMIN_CLINICA",
-                dto.responsableId(),
+                safeResponsableId,
                 prob,
                 imp,
                 prioridad,
@@ -341,6 +368,17 @@ public class HelpdeskController {
         // 1. Guardar formalmente en PostgreSQL (usando INT autoincremental y tablas normalizadas 3FN)
         if (jdbcTemplate != null) {
             try {
+                // Sincronizar la secuencia de mesa_ayuda_ticket(id) por si hubo inserciones manuales en migraciones (V25)
+                try {
+                    jdbcTemplate.execute("""
+                        SELECT setval(
+                            pg_get_serial_sequence('mesa_ayuda_ticket', 'id'),
+                            COALESCE((SELECT MAX(id) FROM mesa_ayuda_ticket), 1),
+                            (SELECT COUNT(*) > 0 FROM mesa_ayuda_ticket)
+                        )
+                    """);
+                } catch (Exception ignored) {}
+
                 // Validar llaves foráneas para evitar violación de restricciones referenciales
                 Long safeClinicaId = null;
                 try {
@@ -377,15 +415,21 @@ public class HelpdeskController {
                     } catch (Exception ignored) {}
                 }
 
+                int explicitTicketId = parseTicketId(newId);
+                if (explicitTicketId <= 0) {
+                    Integer maxDbId = jdbcTemplate.queryForObject("SELECT COALESCE(MAX(id), 0) FROM mesa_ayuda_ticket", Integer.class);
+                    explicitTicketId = (maxDbId != null ? maxDbId : 0) + 1;
+                }
+
                 String sql = """
                     INSERT INTO mesa_ayuda_ticket (
-                        clinica_id, catalogo_id, solicitud, solicitante_nombre, solicitante_rol, solicitante_id,
+                        id, clinica_id, catalogo_id, solicitud, solicitante_nombre, solicitante_rol, solicitante_id,
                         responsable_nombre, responsable_rol, responsable_id, probabilidad, impacto, prioridad,
                         estado, tiempo_transcurrido, evidencia,
                         fecha_registro, descripcion_detallada, archivo_adjunto_url,
                         cita_id, paciente_id
                     ) VALUES (
-                        ?, ?, ?, ?, ?, ?,
+                        ?, ?, ?, ?, ?, ?, ?,
                         ?, ?, ?, ?, ?, ?,
                         'PENDIENTE', '1 min', NULL,
                         CURRENT_TIMESTAMP, ?, ?,
@@ -393,6 +437,7 @@ public class HelpdeskController {
                     ) RETURNING id
                 """;
                 Integer generatedId = jdbcTemplate.queryForObject(sql, Integer.class,
+                        explicitTicketId,
                         safeClinicaId,
                         safeCatalogoId,
                         created.solicitud(),
@@ -401,7 +446,7 @@ public class HelpdeskController {
                         safeSolicitanteId,
                         created.responsable(),
                         created.responsableRol(),
-                        created.responsableId(),
+                        safeResponsableId,
                         prob,
                         imp,
                         prioridad,
@@ -562,13 +607,25 @@ public class HelpdeskController {
                 safeResponsableId = Long.parseLong(payload.get("usuarioId").trim());
             } catch (Exception ignored) {}
         }
-        if (safeResponsableId == null && jdbcTemplate != null && usuario != null) {
-            try {
-                safeResponsableId = jdbcTemplate.queryForObject(
-                        "SELECT id FROM usuario WHERE LOWER(email) = LOWER(?) OR LOWER(CONCAT(nombres, ' ', apellidos)) = LOWER(?) LIMIT 1",
-                        Long.class, usuario.trim(), usuario.trim()
-                );
-            } catch (Exception ignored) {}
+        if (jdbcTemplate != null) {
+            if (safeResponsableId != null) {
+                try {
+                    Integer count = jdbcTemplate.queryForObject("SELECT count(*) FROM usuario WHERE id = ?", Integer.class, safeResponsableId);
+                    if (count == null || count == 0) {
+                        safeResponsableId = null;
+                    }
+                } catch (Exception ignored) {
+                    safeResponsableId = null;
+                }
+            }
+            if (safeResponsableId == null && usuario != null) {
+                try {
+                    safeResponsableId = jdbcTemplate.queryForObject(
+                            "SELECT id FROM usuario WHERE LOWER(correo) = LOWER(?) OR LOWER(TRIM(CONCAT(nombres, ' ', apellidos))) = LOWER(TRIM(?)) LIMIT 1",
+                            Long.class, usuario.trim(), usuario.trim()
+                    );
+                } catch (Exception ignored) {}
+            }
         }
 
         // 1. Actualizar en memoria
