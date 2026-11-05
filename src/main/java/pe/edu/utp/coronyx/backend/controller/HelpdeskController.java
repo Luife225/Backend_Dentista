@@ -1,0 +1,759 @@
+package pe.edu.utp.coronyx.backend.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.web.bind.annotation.*;
+import pe.edu.utp.coronyx.backend.dto.HelpdeskBitacoraDto;
+import pe.edu.utp.coronyx.backend.dto.HelpdeskCatalogDto;
+import pe.edu.utp.coronyx.backend.dto.HelpdeskTicketDto;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicLong;
+
+@RestController
+@RequestMapping({"/api/v1/helpdesk", "/helpdesk"})
+public class HelpdeskController {
+
+    private final JdbcTemplate jdbcTemplate;
+
+    private final List<HelpdeskCatalogDto> catalog = new CopyOnWriteArrayList<>();
+    private final List<HelpdeskTicketDto> tickets = new CopyOnWriteArrayList<>();
+    private final List<HelpdeskBitacoraDto> bitacora = new CopyOnWriteArrayList<>();
+    private final AtomicLong bitacoraIdGen = new AtomicLong(100);
+
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
+    public HelpdeskController(@Autowired(required = false) JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+        initFallbackCatalog();
+        initFallbackTickets();
+    }
+
+    private void initFallbackCatalog() {
+        // ── 1. PACIENTE (6 ítems)
+        catalog.add(new HelpdeskCatalogDto("INC-PAC-001", "PACIENTE", "Reprogramación de cita odontológica por imprevisto (con 24 horas de anticipación)", "El paciente solicita cambiar la fecha u hora de su cita programada dentro del plazo de 24 horas previas al turno.", "Asistencia", 3, 2, "ALTO", "RECEPCIONISTA", 20, "/app/agenda", "📅 Ir a Cita en Agenda"));
+        catalog.add(new HelpdeskCatalogDto("INC-PAC-002", "PACIENTE", "Corrección de DNI o Nombre por error de digitación en admisión", "El paciente detecta que sus datos de identidad fueron mal ingresados.", "Asistencia", 2, 2, "MEDIO", "ADMIN_CLINICA", 60, "/app/pacientes", "👤 Ir a Ficha de Paciente"));
+        catalog.add(new HelpdeskCatalogDto("INC-PAC-003", "PACIENTE", "Radiografía o receta médica no visible en portal del paciente", "El paciente tuvo consulta pero los archivos adjuntos permanecen ocultos.", "Incidencia", 2, 2, "MEDIO", "ODONTOLOGO", 30, "/app/pacientes", "📁 Ir a Archivos de Paciente"));
+        catalog.add(new HelpdeskCatalogDto("INC-PAC-004", "PACIENTE", "Falla de conexión, video o audio en sala de Teleodontología", "No se establece enlace WebRTC o token Jitsi en sesión en vivo.", "Incidencia", 3, 3, "CRITICO", "SOPORTE_TECNICO", 10, "/app/teleodontologia", "📹 Ir a Sala Virtual"));
+        catalog.add(new HelpdeskCatalogDto("INC-PAC-005", "PACIENTE", "Bloqueo de cuenta o error de contraseña al ingresar al Portal del Paciente", "El paciente no puede acceder a su portal personal por bloqueo de credenciales y requiere restablecimiento de acceso.", "Acceso", 2, 2, "MEDIO", "ADMIN_CLINICA", 30, "/app/consultorio", "🔑 Restablecer Acceso"));
+        catalog.add(new HelpdeskCatalogDto("INC-PAC-006", "PACIENTE", "Omisión o registro incorrecto de alergia a medicamentos en la Historia Clínica", "El paciente detecta que su alergia medicamentosa o antecedente médico crítico no figura en su ficha clínica.", "Incidencia", 3, 2, "ALTO", "ODONTOLOGO", 20, "/app/pacientes", "🦷 Actualizar Alergia en Ficha"));
+
+        // ── 2. ODONTOLOGO (4 ítems)
+        catalog.add(new HelpdeskCatalogDto("INC-ODO-001", "ODONTOLOGO", "Reasignación urgente de Sillón dental por retraso en cirugía previa", "Procedimiento quirúrgico se extiende y siguiente paciente está en sala.", "Incidencia", 2, 3, "ALTO", "RECEPCIONISTA", 15, "/app/agenda", "📅 Reubicar Sillón en Agenda"));
+        catalog.add(new HelpdeskCatalogDto("INC-ODO-002", "ODONTOLOGO", "Error 413 al cargar archivo binario pesado de radiografía (> 25MB)", "La imagen panorámica supera el umbral estándar del servidor.", "Incidencia", 2, 2, "MEDIO", "SOPORTE_TECNICO", 30, "/app/pacientes", "📁 Subida Manual"));
+        catalog.add(new HelpdeskCatalogDto("INC-ODO-003", "ODONTOLOGO", "Solicitud de adenda médica en historia clínica cerrada por auditoría", "Necesidad de incorporar observación diagnóstica complementaria.", "Asistencia", 1, 2, "BAJO", "ADMIN_CLINICA", 120, "/app/pacientes", "🦷 Ver Historia Clínica"));
+        catalog.add(new HelpdeskCatalogDto("INC-ODO-004", "ODONTOLOGO", "Capacitación técnica en llenado de historia clínica y odontograma digital", "Inducción para nuevos especialistas en el software odontológico.", "Información", 2, 1, "BAJO", "SOPORTE_TECNICO", 120, "/app/pacientes", "🦷 Ver Odontograma"));
+
+        // ── 3. RECEPCIONISTA (2 ítems)
+        catalog.add(new HelpdeskCatalogDto("INC-REC-001", "RECEPCIONISTA", "Anulación urgente de cargo o cobro registrado con monto erróneo en Caja", "Recepción registró un cobro con importe equivocado y requiere que Administración ejecute la anulación autorizada.", "Incidencia", 3, 2, "ALTO", "ADMIN_CLINICA", 15, "/app/caja", "💳 Ir a Caja y Anular"));
+        catalog.add(new HelpdeskCatalogDto("INC-REC-002", "RECEPCIONISTA", "Bloqueo urgente de agenda por ausencia o emergencia médica del odontólogo de turno", "El odontólogo reporta emergencia imprevista; Recepción solicita bloquear su disponibilidad y reprogramar pacientes.", "Incidencia", 3, 2, "ALTO", "ADMIN_CLINICA", 15, "/app/consultorio", "⚙️ Registrar Ausencia Médica"));
+
+        // ── 4. ADMIN_CLINICA (2 ítems)
+        catalog.add(new HelpdeskCatalogDto("INC-ADM-001", "ADMIN_CLINICA", "Bloqueo urgente de credenciales por desvinculación laboral de personal", "Cese de contrato con acceso activo a historias clínicas.", "Incidencia", 1, 3, "ALTO", "ADMIN_CLINICA", 15, "/app/consultorio", "👥 Desactivar Credenciales"));
+        catalog.add(new HelpdeskCatalogDto("INC-ADM-003", "ADMIN_CLINICA", "Solicitud de creación de credenciales de acceso para nueva odontóloga especialista", "Alta de cuenta y perfil RBAC para personal odontológico nuevo.", "Acceso", 2, 2, "MEDIO", "ADMIN_CLINICA", 60, "/app/consultorio", "👥 Crear Usuario"));
+
+        // ── 5. SOPORTE_TECNICO / SUPER_ADMIN (1 ítem)
+        catalog.add(new HelpdeskCatalogDto("INC-TI-001", "SUPER_ADMIN", "Caída de base de datos o error 500 en microservicios de Railway Cloud", "Indisponibilidad del backend o lentitud crítica en consultas de facturación.", "Incidencia", 1, 3, "CRITICO", "SOPORTE_TECNICO", 10, "/app/super-admin", "🖥️ Monitoreo Railway"));
+
+        // ── 6. CASO GENERAL / OTROS (1 ítem transversal)
+        catalog.add(new HelpdeskCatalogDto("INC-GEN-099", "TODOS", "Otros requerimientos o fallas no contempladas en el catálogo (Con Captura)", "Caja de texto libre para detallar el problema y adjuntar captura de evidencia.", "Asistencia", 2, 2, "MEDIO", "ADMIN_CLINICA", 60, null, "📋 Triaje Administrativo"));
+    }
+
+    private void initFallbackTickets() {
+        // Vacio: Permite iniciar el sistema con 0 tickets y datos 100% reales
+    }
+
+    public static String calculatePriority(int impacto, int probabilidad) {
+        int score = impacto * probabilidad;
+        if (score >= 9) return "CRITICO";
+        if (score >= 6) return "ALTO";
+        if (score >= 3) return "MEDIO";
+        return "BAJO";
+    }
+
+    private int parseTicketId(String rawId) {
+        if (rawId == null || rawId.isBlank()) return 0;
+        String digits = rawId.replaceAll("\\D", "");
+        if (digits.isEmpty()) return 0;
+        try {
+            return Integer.parseInt(digits);
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
+
+    private String formatTicketId(int id) {
+        return String.format("TKT-%03d", id);
+    }
+
+    /**
+     * Catálogo de incidencias: lee directamente de PostgreSQL (catalogo_incidencia)
+     */
+    @GetMapping("/catalog")
+    public ResponseEntity<List<HelpdeskCatalogDto>> getCatalog(@RequestParam(required = false) String rol) {
+        if (jdbcTemplate != null) {
+            try {
+                String sql = """
+                    SELECT id, solicitante_rol, titulo, descripcion, tipo_itil,
+                           probabilidad, impacto, prioridad, responsable_rol,
+                           sla_minutos, ruta_accion, accion_label
+                    FROM catalogo_incidencia
+                    WHERE activo = true
+                    ORDER BY id ASC
+                """;
+                List<HelpdeskCatalogDto> dbCatalog = jdbcTemplate.query(sql, (rs, rowNum) -> new HelpdeskCatalogDto(
+                        rs.getString("id"),
+                        rs.getString("solicitante_rol"),
+                        rs.getString("titulo"),
+                        rs.getString("descripcion"),
+                        rs.getString("tipo_itil"),
+                        rs.getInt("impacto"),
+                        rs.getInt("probabilidad"),
+                        rs.getString("prioridad"),
+                        rs.getString("responsable_rol"),
+                        rs.getInt("sla_minutos"),
+                        rs.getString("ruta_accion"),
+                        rs.getString("accion_label")
+                ));
+
+                if (!dbCatalog.isEmpty()) {
+                    if (rol == null || rol.isBlank()) {
+                        return ResponseEntity.ok(dbCatalog);
+                    }
+                    String clean = rol.trim().toUpperCase();
+                    List<HelpdeskCatalogDto> filtered = dbCatalog.stream()
+                            .filter(c -> c.solicitanteRol().equalsIgnoreCase(clean) || c.solicitanteRol().equalsIgnoreCase("TODOS"))
+                            .toList();
+                    return ResponseEntity.ok(filtered);
+                }
+            } catch (Exception e) {
+                System.err.println("[HelpdeskController] Advertencia leyendo catalogo_incidencia en PostgreSQL: " + e.getMessage());
+            }
+        }
+
+        if (rol == null || rol.isBlank()) {
+            return ResponseEntity.ok(new ArrayList<>(catalog));
+        }
+        String cleanRole = rol.trim().toUpperCase();
+        List<HelpdeskCatalogDto> filtered = catalog.stream()
+                .filter(c -> c.solicitanteRol().equalsIgnoreCase(cleanRole) || c.solicitanteRol().equalsIgnoreCase("TODOS"))
+                .toList();
+        return ResponseEntity.ok(filtered);
+    }
+
+    /**
+     * Obtiene todos los tickets directamente de PostgreSQL (mesa_ayuda_ticket)
+     * ordenados por Prioridad de Riesgo (CRITICO > ALTO > MEDIO > BAJO) y luego por Fecha
+     */
+    @GetMapping("/tickets")
+    public ResponseEntity<List<HelpdeskTicketDto>> getAllTickets() {
+        if (jdbcTemplate != null) {
+            try {
+                String sql = """
+                    SELECT t.id, t.catalogo_id, t.solicitud,
+                           COALESCE(t.solicitante_nombre, t.solicitante_rol) as solicitante,
+                           t.solicitante_rol,
+                           COALESCE(t.responsable_nombre, t.responsable_rol) as responsable,
+                           t.responsable_rol,
+                           t.probabilidad, t.impacto, t.prioridad, t.estado,
+                           CASE
+                               WHEN t.estado = 'ATENDIDO' AND t.fecha_resolucion IS NOT NULL THEN
+                                   CASE
+                                       WHEN EXTRACT(EPOCH FROM (t.fecha_resolucion - t.fecha_registro)) / 60 < 1 THEN '1 min'
+                                       WHEN EXTRACT(EPOCH FROM (t.fecha_resolucion - t.fecha_registro)) / 60 < 60 THEN
+                                           CONCAT(FLOOR(EXTRACT(EPOCH FROM (t.fecha_resolucion - t.fecha_registro)) / 60)::INT, ' min')
+                                       ELSE
+                                           CONCAT(
+                                               FLOOR(EXTRACT(EPOCH FROM (t.fecha_resolucion - t.fecha_registro)) / 3600)::INT, ' h ',
+                                               LPAD(FLOOR((EXTRACT(EPOCH FROM (t.fecha_resolucion - t.fecha_registro)) % 3600) / 60)::INT::TEXT, 2, '0'), ' min'
+                                           )
+                                   END
+                               ELSE
+                                   CASE
+                                       WHEN EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - t.fecha_registro)) / 60 < 1 THEN '1 min'
+                                       WHEN EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - t.fecha_registro)) / 60 < 60 THEN
+                                           CONCAT(FLOOR(EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - t.fecha_registro)) / 60)::INT, ' min')
+                                       ELSE
+                                           CONCAT(
+                                               FLOOR(EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - t.fecha_registro)) / 3600)::INT, ' h ',
+                                               LPAD(FLOOR((EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - t.fecha_registro)) % 3600) / 60)::INT::TEXT, 2, '0'), ' min'
+                                           )
+                                   END
+                           END as tiempo_transcurrido,
+                           COALESCE(c.tipo_itil, 'Incidencia') as tipo_itil,
+                           COALESCE(c.sla_minutos, 60) as sla_minutos,
+                           t.evidencia,
+                           to_char(t.fecha_registro, 'YYYY-MM-DD HH24:MI') as fecha_reg,
+                           to_char(t.fecha_resolucion, 'YYYY-MM-DD HH24:MI') as fecha_res,
+                           t.solicitante_id, t.responsable_id,
+                           t.descripcion_detallada, t.archivo_adjunto_url,
+                           t.cita_id, t.paciente_id,
+                           c.ruta_accion, c.accion_label
+                    FROM mesa_ayuda_ticket t
+                    LEFT JOIN catalogo_incidencia c ON t.catalogo_id = c.id
+                    ORDER BY 
+                      CASE UPPER(t.prioridad)
+                        WHEN 'CRITICO' THEN 4
+                        WHEN 'ALTO' THEN 3
+                        WHEN 'MEDIO' THEN 2
+                        ELSE 1
+                      END DESC,
+                      t.fecha_registro DESC
+                """;
+                List<HelpdeskTicketDto> dbTickets = jdbcTemplate.query(sql, (rs, rowNum) -> new HelpdeskTicketDto(
+                        formatTicketId(rs.getInt("id")),
+                        rs.getString("catalogo_id"),
+                        rs.getString("solicitud"),
+                        rs.getString("solicitante"),
+                        rs.getString("solicitante_rol"),
+                        rs.getObject("solicitante_id") != null ? rs.getLong("solicitante_id") : null,
+                        rs.getString("responsable"),
+                        rs.getString("responsable_rol"),
+                        rs.getObject("responsable_id") != null ? rs.getLong("responsable_id") : null,
+                        rs.getInt("probabilidad"),
+                        rs.getInt("impacto"),
+                        rs.getString("prioridad"),
+                        rs.getString("estado"),
+                        rs.getString("tiempo_transcurrido"),
+                        rs.getString("tipo_itil"),
+                        rs.getInt("sla_minutos"),
+                        rs.getString("evidencia"),
+                        rs.getString("fecha_reg"),
+                        rs.getString("fecha_res"),
+                        rs.getString("descripcion_detallada"),
+                        rs.getString("archivo_adjunto_url"),
+                        rs.getObject("cita_id") != null ? rs.getLong("cita_id") : null,
+                        rs.getObject("paciente_id") != null ? rs.getLong("paciente_id") : null,
+                        rs.getString("ruta_accion"),
+                        rs.getString("accion_label")
+                ));
+                return ResponseEntity.ok(dbTickets);
+            } catch (Exception e) {
+                System.err.println("[HelpdeskController] Advertencia leyendo mesa_ayuda_ticket en PostgreSQL: " + e.getMessage());
+            }
+        }
+
+        List<HelpdeskTicketDto> sorted = new ArrayList<>(tickets);
+        sorted.sort((a, b) -> {
+            int pA = priorityWeight(a.prioridad());
+            int pB = priorityWeight(b.prioridad());
+            if (pA != pB) return Integer.compare(pB, pA);
+            return b.fechaRegistro().compareTo(a.fechaRegistro());
+        });
+        return ResponseEntity.ok(sorted);
+    }
+
+    private int priorityWeight(String prio) {
+        if (prio == null) return 1;
+        return switch (prio.toUpperCase()) {
+            case "CRITICO", "CRÍTICO" -> 4;
+            case "ALTO" -> 3;
+            case "MEDIO" -> 2;
+            default -> 1;
+        };
+    }
+
+    @PostMapping("/tickets")
+    public ResponseEntity<HelpdeskTicketDto> createTicket(@RequestBody HelpdeskTicketDto dto) {
+        String newId = dto.id();
+        if (newId == null || newId.isBlank() || isIdTaken(newId)) {
+            newId = computeNextTicketId();
+        }
+
+        int imp = dto.impacto() != null && dto.impacto() > 0 ? dto.impacto() : 2;
+        int prob = dto.probabilidad() != null && dto.probabilidad() > 0 ? dto.probabilidad() : 2;
+        String prioridad = dto.prioridad();
+        String rutaAccion = dto.rutaAccion();
+        String accionLabel = dto.accionLabel();
+        int sla = dto.slaMinutos() != null && dto.slaMinutos() > 0 ? dto.slaMinutos() : 60;
+        String respRol = dto.responsableRol();
+        String respNombre = dto.responsable();
+
+        if (dto.catalogoId() != null && !dto.catalogoId().isBlank()) {
+            for (HelpdeskCatalogDto c : catalog) {
+                if (c.id().equalsIgnoreCase(dto.catalogoId())) {
+                    imp = c.impacto();
+                    prob = c.probabilidad();
+                    prioridad = c.prioridad();
+                    sla = c.slaMinutos();
+                    respRol = c.responsableRol();
+                    respNombre = switch (respRol) {
+                        case "RECEPCIONISTA" -> "Recepcionista";
+                        case "ADMIN_CLINICA" -> "Admin Clínica";
+                        case "ODONTOLOGO" -> "Odontólogo";
+                        default -> "Soporte Técnico TI";
+                    };
+                    if (rutaAccion == null) rutaAccion = c.rutaAccion();
+                    if (accionLabel == null) accionLabel = c.accionLabel();
+                    break;
+                }
+            }
+        }
+
+        if (prioridad == null || prioridad.isBlank()) {
+            prioridad = calculatePriority(imp, prob);
+        }
+
+        String nowStr = LocalDateTime.now().format(FORMATTER);
+
+        Long safeSolicitanteId = dto.solicitanteId();
+        if (safeSolicitanteId == null && dto.solicitante() != null && jdbcTemplate != null) {
+            try {
+                safeSolicitanteId = jdbcTemplate.queryForObject(
+                        "SELECT id FROM usuario WHERE LOWER(email) = LOWER(?) OR LOWER(CONCAT(nombres, ' ', apellidos)) = LOWER(?) LIMIT 1",
+                        Long.class, dto.solicitante().trim(), dto.solicitante().trim()
+                );
+            } catch (Exception ignored) {}
+        }
+
+        HelpdeskTicketDto created = new HelpdeskTicketDto(
+                newId,
+                dto.catalogoId(),
+                dto.solicitud(),
+                dto.solicitante() != null ? dto.solicitante() : "Paciente",
+                dto.solicitanteRol() != null ? dto.solicitanteRol() : "PACIENTE",
+                safeSolicitanteId,
+                respNombre != null ? respNombre : "Admin Clínica",
+                respRol != null ? respRol : "ADMIN_CLINICA",
+                dto.responsableId(),
+                prob,
+                imp,
+                prioridad,
+                "PENDIENTE",
+                "1 min",
+                dto.tipoItil() != null ? dto.tipoItil() : "Incidencia",
+                sla,
+                null,
+                nowStr,
+                null,
+                dto.descripcionDetallada(),
+                dto.archivoAdjuntoUrl(),
+                dto.citaId(),
+                dto.pacienteId(),
+                rutaAccion,
+                accionLabel
+        );
+
+        // 1. Guardar formalmente en PostgreSQL (usando INT autoincremental y tablas normalizadas 3FN)
+        if (jdbcTemplate != null) {
+            try {
+                // Validar llaves foráneas para evitar violación de restricciones referenciales
+                Long safeClinicaId = null;
+                try {
+                    safeClinicaId = jdbcTemplate.queryForObject("SELECT id FROM clinica ORDER BY id ASC LIMIT 1", Long.class);
+                } catch (Exception ignored) {}
+
+                String safeCatalogoId = null;
+                if (dto.catalogoId() != null && !dto.catalogoId().isBlank()) {
+                    try {
+                        Integer count = jdbcTemplate.queryForObject("SELECT count(*) FROM catalogo_incidencia WHERE id = ?", Integer.class, dto.catalogoId());
+                        if (count != null && count > 0) {
+                            safeCatalogoId = dto.catalogoId();
+                        }
+                    } catch (Exception ignored) {}
+                }
+
+                Long safeCitaId = null;
+                if (created.citaId() != null && created.citaId() > 0) {
+                    try {
+                        Integer count = jdbcTemplate.queryForObject("SELECT count(*) FROM cita WHERE id = ?", Integer.class, created.citaId());
+                        if (count != null && count > 0) {
+                            safeCitaId = created.citaId();
+                        }
+                    } catch (Exception ignored) {}
+                }
+
+                Long safePacienteId = null;
+                if (created.pacienteId() != null && created.pacienteId() > 0) {
+                    try {
+                        Integer count = jdbcTemplate.queryForObject("SELECT count(*) FROM paciente WHERE id = ?", Integer.class, created.pacienteId());
+                        if (count != null && count > 0) {
+                            safePacienteId = created.pacienteId();
+                        }
+                    } catch (Exception ignored) {}
+                }
+
+                String sql = """
+                    INSERT INTO mesa_ayuda_ticket (
+                        clinica_id, catalogo_id, solicitud, solicitante_nombre, solicitante_rol, solicitante_id,
+                        responsable_nombre, responsable_rol, responsable_id, probabilidad, impacto, prioridad,
+                        estado, tiempo_transcurrido, evidencia,
+                        fecha_registro, descripcion_detallada, archivo_adjunto_url,
+                        cita_id, paciente_id
+                    ) VALUES (
+                        ?, ?, ?, ?, ?, ?,
+                        ?, ?, ?, ?, ?, ?,
+                        'PENDIENTE', '1 min', NULL,
+                        CURRENT_TIMESTAMP, ?, ?,
+                        ?, ?
+                    ) RETURNING id
+                """;
+                Integer generatedId = jdbcTemplate.queryForObject(sql, Integer.class,
+                        safeClinicaId,
+                        safeCatalogoId,
+                        created.solicitud(),
+                        created.solicitante(),
+                        created.solicitanteRol(),
+                        safeSolicitanteId,
+                        created.responsable(),
+                        created.responsableRol(),
+                        created.responsableId(),
+                        prob,
+                        imp,
+                        prioridad,
+                        created.descripcionDetallada(),
+                        created.archivoAdjuntoUrl(),
+                        safeCitaId,
+                        safePacienteId
+                );
+
+                int numericTicketId = generatedId != null ? generatedId : parseTicketId(newId);
+                newId = formatTicketId(numericTicketId);
+                created = new HelpdeskTicketDto(
+                        newId,
+                        created.catalogoId(),
+                        created.solicitud(),
+                        created.solicitante(),
+                        created.solicitanteRol(),
+                        created.solicitanteId(),
+                        created.responsable(),
+                        created.responsableRol(),
+                        created.responsableId(),
+                        created.probabilidad(),
+                        created.impacto(),
+                        created.prioridad(),
+                        created.estado(),
+                        created.tiempoTranscurrido(),
+                        created.tipoItil(),
+                        created.slaMinutos(),
+                        created.evidencia(),
+                        created.fechaRegistro(),
+                        created.fechaResolucion(),
+                        created.descripcionDetallada(),
+                        created.archivoAdjuntoUrl(),
+                        created.citaId(),
+                        created.pacienteId(),
+                        created.rutaAccion(),
+                        created.accionLabel()
+                );
+
+                // Insertar en mesa_ayuda_bitacora usando la llave foránea INT (ticket_id)
+                jdbcTemplate.update("""
+                    INSERT INTO mesa_ayuda_bitacora (
+                        ticket_id, fecha_hora, estado_anterior, estado_nuevo,
+                        usuario_nombre, usuario_rol, accion, comentario_evidencia, tiempo_transcurrido_minutos
+                    ) VALUES (?, CURRENT_TIMESTAMP, NULL, 'PENDIENTE', ?, ?, 'CREACION', ?, 0)
+                """, numericTicketId, created.solicitante(), created.solicitanteRol(), created.solicitud());
+
+                System.out.println("[HelpdeskController] ✅ Ticket INT #" + numericTicketId + " (" + newId + ") insertado formalmente en PostgreSQL mesa_ayuda_ticket.");
+            } catch (Exception e) {
+                System.err.println("[HelpdeskController] Error al guardar en PostgreSQL mesa_ayuda_ticket: " + e.getMessage());
+            }
+        }
+
+        // 2. Mantener en memoria
+        final String finalNewId = created.id();
+        tickets.removeIf(t -> t.id().equalsIgnoreCase(finalNewId));
+        tickets.add(0, created);
+
+        bitacora.add(new HelpdeskBitacoraDto(
+                bitacoraIdGen.incrementAndGet(),
+                newId,
+                nowStr,
+                null,
+                "PENDIENTE",
+                created.solicitante(),
+                created.solicitanteRol(),
+                "CREACION",
+                created.solicitud()
+        ));
+
+        return ResponseEntity.ok(created);
+    }
+
+    private boolean isIdTaken(String id) {
+        if (id == null || id.isBlank()) return false;
+        int numericId = parseTicketId(id);
+        if (jdbcTemplate != null && numericId > 0) {
+            try {
+                Integer count = jdbcTemplate.queryForObject(
+                        "SELECT count(*) FROM mesa_ayuda_ticket WHERE id = ?",
+                        Integer.class,
+                        numericId
+                );
+                if (count != null && count > 0) return true;
+            } catch (Exception ignored) {}
+        }
+        return tickets.stream().anyMatch(t -> t.id().equalsIgnoreCase(id));
+    }
+
+    private synchronized String computeNextTicketId() {
+        int next = 1;
+        if (jdbcTemplate != null) {
+            try {
+                Integer maxDb = jdbcTemplate.queryForObject(
+                        "SELECT COALESCE(MAX(id), 0) FROM mesa_ayuda_ticket",
+                        Integer.class
+                );
+                if (maxDb != null && maxDb >= next) {
+                    next = maxDb + 1;
+                }
+            } catch (Exception ignored) {}
+        }
+
+        int maxMem = tickets.stream()
+                .mapToInt(t -> parseTicketId(t.id()))
+                .max()
+                .orElse(0);
+        if (maxMem >= next) {
+            next = maxMem + 1;
+        }
+
+        String candidate = formatTicketId(next);
+        while (isIdTaken(candidate)) {
+            next++;
+            candidate = formatTicketId(next);
+        }
+        return candidate;
+    }
+
+    /**
+     * Transición de estado auditada: actualiza mesa_ayuda_ticket y agrega traza a mesa_ayuda_bitacora en PostgreSQL
+     */
+    @PatchMapping("/tickets/{id}/status")
+    public ResponseEntity<HelpdeskTicketDto> updateTicketStatus(
+            @PathVariable String id,
+            @RequestBody Map<String, String> payload) {
+
+        String targetStatus = payload.get("estado");
+        if (targetStatus == null || targetStatus.isBlank()) {
+            targetStatus = payload.get("nuevoEstado");
+        }
+        if (targetStatus == null || targetStatus.isBlank()) {
+            return ResponseEntity.badRequest().build();
+        }
+        targetStatus = targetStatus.trim().toUpperCase();
+
+        String usuario = payload.getOrDefault("usuarioNombre", "Resolutor");
+        String rawRol = payload.getOrDefault("usuarioRol", "ADMIN_CLINICA");
+        String rol = "ADMIN_CLINICA";
+        if (rawRol != null && !rawRol.isBlank()) {
+            rol = switch (rawRol.trim().toUpperCase()) {
+                case "RECEPCIONISTA", "RECEPCIÓN" -> "RECEPCIONISTA";
+                case "ODONTOLOGO", "ODONTÓLOGO" -> "ODONTOLOGO";
+                case "SOPORTE_TECNICO", "SOPORTE TÉCNICO", "SUPER_ADMIN" -> "SOPORTE_TECNICO";
+                case "PACIENTE" -> "PACIENTE";
+                default -> rawRol.trim().toUpperCase();
+            };
+        }
+        String evidencia = payload.get("evidencia");
+        String nowStr = LocalDateTime.now().format(FORMATTER);
+
+        String oldStatus = "PENDIENTE";
+
+        // Determinar responsable_id de la persona activa que atiende o resuelve
+        Long safeResponsableId = null;
+        if (payload.containsKey("usuarioId") && payload.get("usuarioId") != null && !payload.get("usuarioId").isBlank()) {
+            try {
+                safeResponsableId = Long.parseLong(payload.get("usuarioId").trim());
+            } catch (Exception ignored) {}
+        }
+        if (safeResponsableId == null && jdbcTemplate != null && usuario != null) {
+            try {
+                safeResponsableId = jdbcTemplate.queryForObject(
+                        "SELECT id FROM usuario WHERE LOWER(email) = LOWER(?) OR LOWER(CONCAT(nombres, ' ', apellidos)) = LOWER(?) LIMIT 1",
+                        Long.class, usuario.trim(), usuario.trim()
+                );
+            } catch (Exception ignored) {}
+        }
+
+        // 1. Actualizar en memoria
+        int numericId = parseTicketId(id);
+        HelpdeskTicketDto updated = null;
+        for (int i = 0; i < tickets.size(); i++) {
+            HelpdeskTicketDto cur = tickets.get(i);
+            if (cur.id().equalsIgnoreCase(id) || parseTicketId(cur.id()) == numericId) {
+                oldStatus = cur.estado();
+                updated = new HelpdeskTicketDto(
+                        cur.id(),
+                        cur.catalogoId(),
+                        cur.solicitud(),
+                        cur.solicitante(),
+                        cur.solicitanteRol(),
+                        cur.solicitanteId(),
+                        usuario != null && !usuario.isBlank() ? usuario : cur.responsable(),
+                        rol != null && !rol.isBlank() ? rol : cur.responsableRol(),
+                        safeResponsableId != null ? safeResponsableId : cur.responsableId(),
+                        cur.probabilidad(),
+                        cur.impacto(),
+                        cur.prioridad(),
+                        targetStatus,
+                        cur.tiempoTranscurrido(),
+                        cur.tipoItil(),
+                        cur.slaMinutos(),
+                        evidencia != null ? evidencia : cur.evidencia(),
+                        cur.fechaRegistro(),
+                        targetStatus.equals("ATENDIDO") ? nowStr : cur.fechaResolucion(),
+                        cur.descripcionDetallada(),
+                        cur.archivoAdjuntoUrl(),
+                        cur.citaId(),
+                        cur.pacienteId(),
+                        cur.rutaAccion(),
+                        cur.accionLabel()
+                );
+                tickets.set(i, updated);
+                break;
+            }
+        }
+
+        String accion = switch (targetStatus) {
+            case "EN_PROCESO" -> "INICIO_ATENCION";
+            case "ATENDIDO" -> "RESOLUCION";
+            case "CANCELADO" -> "CANCELACION";
+            default -> "CAMBIO_ESTADO";
+        };
+
+        // 2. Persistir formalmente en PostgreSQL (mesa_ayuda_ticket y mesa_ayuda_bitacora usando INT)
+        if (jdbcTemplate != null && numericId > 0) {
+            try {
+                jdbcTemplate.update("""
+                    UPDATE mesa_ayuda_ticket
+                    SET estado = ?,
+                        evidencia = COALESCE(?, evidencia),
+                        responsable_id = COALESCE(?, responsable_id),
+                        responsable_nombre = CASE WHEN ? IS NOT NULL AND ? != '' THEN ? ELSE responsable_nombre END,
+                        responsable_rol = CASE WHEN ? IS NOT NULL AND ? != '' THEN ? ELSE responsable_rol END,
+                        fecha_resolucion = CASE WHEN ? = 'ATENDIDO' THEN CURRENT_TIMESTAMP ELSE fecha_resolucion END,
+                        tiempo_transcurrido = CASE
+                            WHEN ? = 'ATENDIDO' THEN
+                                CASE
+                                    WHEN EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - fecha_registro)) / 60 < 1 THEN '1 min'
+                                    WHEN EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - fecha_registro)) / 60 < 60 THEN
+                                        CONCAT(FLOOR(EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - fecha_registro)) / 60)::INT, ' min')
+                                    ELSE
+                                        CONCAT(
+                                            FLOOR(EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - fecha_registro)) / 3600)::INT, ' h ',
+                                            LPAD(FLOOR((EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - fecha_registro)) % 3600) / 60)::INT::TEXT, 2, '0'), ' min'
+                                        )
+                                END
+                            ELSE tiempo_transcurrido
+                        END
+                    WHERE id = ?
+                """, targetStatus, evidencia, safeResponsableId, usuario, usuario, usuario, rol, rol, rol, targetStatus, targetStatus, numericId);
+
+                jdbcTemplate.update("""
+                    INSERT INTO mesa_ayuda_bitacora (
+                        ticket_id, fecha_hora, estado_anterior, estado_nuevo,
+                        usuario_nombre, usuario_rol, accion, comentario_evidencia, tiempo_transcurrido_minutos
+                    ) VALUES (
+                        ?, CURRENT_TIMESTAMP, ?, ?, ?, ?, ?, ?,
+                        COALESCE((SELECT FLOOR(EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - fecha_registro)) / 60)::INT FROM mesa_ayuda_ticket WHERE id = ?), 1)
+                    )
+                """, numericId, oldStatus, targetStatus, usuario, rol, accion, evidencia != null ? evidencia : "Transición formal a " + targetStatus, numericId);
+
+                System.out.println("[HelpdeskController] ✅ Ticket INT #" + numericId + " actualizado a " + targetStatus + " con responsable_id=" + safeResponsableId + " (" + usuario + ").");
+            } catch (Exception e) {
+                System.err.println("[HelpdeskController] Error actualizando PostgreSQL: " + e.getMessage());
+            }
+        }
+
+        // Agregar a bitacora en memoria
+        bitacora.add(new HelpdeskBitacoraDto(
+                bitacoraIdGen.incrementAndGet(),
+                id,
+                nowStr,
+                oldStatus,
+                targetStatus,
+                usuario,
+                rol,
+                accion,
+                evidencia != null ? evidencia : "Transición formal a " + targetStatus
+        ));
+
+        if (updated != null) {
+            return ResponseEntity.ok(updated);
+        }
+
+        // Si no estaba en memoria pero se actualizó en PostgreSQL, devolver DTO sintetizado
+        return ResponseEntity.ok(new HelpdeskTicketDto(
+                id, null, "Ticket " + id, usuario, rol, null, usuario, rol, safeResponsableId,
+                2, 2, "MEDIO", targetStatus, "15 min", "Incidencia", 60,
+                evidencia, nowStr, nowStr, null, null, null, null, null, null
+        ));
+    }
+
+    /**
+     * Endpoint de compatibilidad hacia atrás: resolver ticket directamente
+     */
+    @PutMapping("/tickets/{id}/resolve")
+    public ResponseEntity<HelpdeskTicketDto> resolveTicket(
+            @PathVariable String id,
+            @RequestBody(required = false) Map<String, String> payload) {
+
+        Map<String, String> patchPayload = new HashMap<>();
+        patchPayload.put("estado", "ATENDIDO");
+        if (payload != null && payload.containsKey("evidencia")) {
+            patchPayload.put("evidencia", payload.get("evidencia"));
+        } else {
+            patchPayload.put("evidencia", "Atendido y resuelto formalmente por mano humana.");
+        }
+        if (payload != null && payload.containsKey("usuarioId")) {
+            patchPayload.put("usuarioId", payload.get("usuarioId"));
+        }
+        if (payload != null && payload.containsKey("usuarioNombre")) {
+            patchPayload.put("usuarioNombre", payload.get("usuarioNombre"));
+        }
+        if (payload != null && payload.containsKey("usuarioRol")) {
+            patchPayload.put("usuarioRol", payload.get("usuarioRol"));
+        }
+
+        return updateTicketStatus(id, patchPayload);
+    }
+
+    /**
+     * Obtiene el historial de bitácora directamente de PostgreSQL (mesa_ayuda_bitacora)
+     */
+    @GetMapping("/tickets/{id}/bitacora")
+    public ResponseEntity<List<HelpdeskBitacoraDto>> getTicketBitacora(@PathVariable String id) {
+        int numericId = parseTicketId(id);
+        if (jdbcTemplate != null && numericId > 0) {
+            try {
+                String sql = """
+                    SELECT id, ticket_id, to_char(fecha_hora, 'YYYY-MM-DD HH24:MI') as f_hora,
+                           estado_anterior, estado_nuevo, usuario_nombre, usuario_rol,
+                           accion, comentario_evidencia
+                    FROM mesa_ayuda_bitacora
+                    WHERE ticket_id = ?
+                    ORDER BY id ASC
+                """;
+                List<HelpdeskBitacoraDto> dbHistory = jdbcTemplate.query(sql, (rs, rowNum) -> new HelpdeskBitacoraDto(
+                        rs.getLong("id"),
+                        formatTicketId(rs.getInt("ticket_id")),
+                        rs.getString("f_hora"),
+                        rs.getString("estado_anterior"),
+                        rs.getString("estado_nuevo"),
+                        rs.getString("usuario_nombre"),
+                        rs.getString("usuario_rol"),
+                        rs.getString("accion"),
+                        rs.getString("comentario_evidencia")
+                ), numericId);
+
+                if (!dbHistory.isEmpty()) {
+                    return ResponseEntity.ok(dbHistory);
+                }
+            } catch (Exception e) {
+                System.err.println("[HelpdeskController] Advertencia leyendo mesa_ayuda_bitacora en PostgreSQL: " + e.getMessage());
+            }
+        }
+
+        List<HelpdeskBitacoraDto> history = bitacora.stream()
+                .filter(b -> b.ticketId().equalsIgnoreCase(id) || parseTicketId(b.ticketId()) == numericId)
+                .sorted(Comparator.comparing(HelpdeskBitacoraDto::id))
+                .toList();
+        return ResponseEntity.ok(history);
+    }
+}

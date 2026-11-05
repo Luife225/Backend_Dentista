@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Diagramas Oficiales APF3 - Coronyx Dental (UTP)</title>
+  <style>
+    :root {
+      --primary: #0f172a;
+      --blue: #2563eb;
+      --blue-bg: #eff6ff;
+      --emerald: #059669;
+      --emerald-bg: #ecfdf5;
+      --amber: #d97706;
+      --amber-bg: #fffbeb;
+      --purple: #7c3aed;
+      --purple-bg: #f5f3ff;
+      --border: #cbd5e1;
+    }
+    * {
+      box-sizing: border-box;
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    }
+    body {
+      margin: 0;
+      padding: 24px;
+      background: #f1f5f9;
+      color: #1e293b;
+    }
+    .page-card {
+      max-width: 960px;
+      margin: 0 auto 36px auto;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 12px;
+      padding: 28px 32px;
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+    }
+    .section-tag {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: #e0e7ff;
+      color: #1d4ed8;
+      margin-bottom: 8px;
+    }
+    h2 {
+      margin: 0 0 6px 0;
+      font-size: 20px;
+      color: #0f172a;
+    }
+    p.subtitle {
+      margin: 0 0 22px 0;
+      font-size: 13.5px;
+      color: #475569;
+    }
+    .flow-vertical {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+    }
+    .step-box {
+      width: 100%;
+      max-width: 720px;
+      background: #f8fafc;
+      border: 1.5px solid #94a3b8;
+      border-radius: 10px;
+      padding: 13px 18px;
+      text-align: center;
+      position: relative;
+    }
+    .step-box.blue {
+      background: var(--blue-bg);
+      border-color: #60a5fa;
+    }
+    .step-box.emerald {
+      background: var(--emerald-bg);
+      border-color: #34d399;
+    }
+    .step-box.purple {
+      background: var(--purple-bg);
+      border-color: #a78bfa;
+    }
+    .step-box.amber {
+      background: var(--amber-bg);
+      border-color: #fbbf24;
+    }
+    .step-title {
+      font-weight: 700;
+      font-size: 14px;
+      color: #0f172a;
+      margin-bottom: 3px;
+    }
+    .step-desc {
+      font-size: 12.5px;
+      color: #334155;
+      line-height: 1.4;
+    }
+    .arrow {
+      font-size: 18px;
+      font-weight: 700;
+      color: #475569;
+      line-height: 1;
+      padding: 6px 0;
+    }
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      width: 100%;
+      max-width: 720px;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      width: 100%;
+      max-width: 720px;
+    }
+    .mini-card {
+      border: 1.5px solid #94a3b8;
+      border-radius: 8px;
+      padding: 10px;
+      text-align: center;
+      background: #ffffff;
+    }
+    .mini-card strong {
+      display: block;
+      font-size: 13px;
+      margin-bottom: 3px;
+    }
+    .mini-card span {
+      font-size: 11.5px;
+      color: #475569;
+    }
+    .caption {
+      text-align: center;
+      font-size: 12.5px;
+      font-style: italic;
+      color: #475569;
+      margin-top: 18px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- DIAGRAMA 1: SECCIÓN 4.5 FLUJO DE ATENCIÓN DE SOLICITUDES -->
+  <div class="page-card">
+    <span class="section-tag">Sección 4.5 del Informe APF3</span>
+    <h2>Flujo de Atención de Solicitudes (Registro → Clasificación → Asignación → Atención → Verificación → Cierre)</h2>
+    <p class="subtitle">Proceso estructurado del módulo de Gestión de Solicitudes e Incidencias conectado a PostgreSQL.</p>
+
+    <div class="flow-vertical">
+      <div class="step-box blue">
+        <div class="step-title">1. REGISTRO DE LA SOLICITUD</div>
+        <div class="step-desc">El usuario ingresa a <strong>Solicitudes / Mesa de Ayuda</strong> (<code>/app/solicitudes</code>) y selecciona una opción predefinida de su rol en <code>catalogo_incidencia</code> (o redacta un caso especial en <em>"Otros"</em> con captura).</div>
+      </div>
+      <div class="arrow">↓</div>
+
+      <div class="step-box purple">
+        <div class="step-title">2. CLASIFICACIÓN Y CÁLCULO AUTOMÁTICO DE PRIORIDAD</div>
+        <div class="step-desc">El sistema clasifica el tipo de solicitud (<em>Información, Acceso, Asistencia o Incidencia</em>) y multiplica <strong>Impacto (1..3) × Probabilidad (1..3)</strong>:</div>
+      </div>
+      <div class="arrow">↓</div>
+
+      <div class="grid-4">
+        <div class="mini-card" style="background:#fef2f2;border-color:#f87171;">
+          <strong style="color:#b91c1c;">CRÍTICO (9 pts)</strong>
+          <span>Atención inmediata</span>
+        </div>
+        <div class="mini-card" style="background:#fff7ed;border-color:#fb923c;">
+          <strong style="color:#c2410c;">ALTO (6 pts)</strong>
+          <span>Prioridad en el turno</span>
+        </div>
+        <div class="mini-card" style="background:#fefce8;border-color:#facc15;">
+          <strong style="color:#a16207;">MEDIO (3–4 pts)</strong>
+          <span>Dentro de la jornada</span>
+        </div>
+        <div class="mini-card" style="background:#f0fdf4;border-color:#4ade80;">
+          <strong style="color:#15803d;">BAJO (1–2 pts)</strong>
+          <span>Consulta informativa</span>
+        </div>
+      </div>
+      <div class="arrow">↓</div>
+
+      <div class="step-box">
+        <div class="step-title">3. ASIGNACIÓN AUTOMÁTICA Y PERSISTENCIA EN POSTGRESQL</div>
+        <div class="step-desc">Se inserta el ticket en <code>mesa_ayuda_ticket</code> con llave primaria <code>id INT</code> autoincremental (<code>IDENTITY</code>), estado <code>PENDIENTE</code> y <code>solicitante_id</code>. Se registra la traza <code>CREACION</code> en <code>mesa_ayuda_bitacora</code> (<code>ticket_id INT [FK]</code>) y se deriva a la bandeja del rol responsable (<em>Recepcionista, Odontólogo, Admin Clínica o Soporte Técnico</em>).</div>
+      </div>
+      <div class="arrow">↓</div>
+
+      <div class="step-box amber">
+        <div class="step-title">4. ATENCIÓN OPERATIVA Y NAVEGACIÓN DIRECTA</div>
+        <div class="step-desc">El responsable presiona <strong>"Iniciar Atención"</strong> (estado pasa a <code>EN_PROCESO</code> y se enlaza <code>responsable_id</code>). Mediante el botón de acceso rápido (<em>Ir a Agenda, Ir a Ficha de Paciente, Sala Virtual, Consultorio</em>) ejecuta la solución en el sistema.</div>
+      </div>
+      <div class="arrow">↓</div>
+
+      <div class="step-box">
+        <div class="step-title">5. VERIFICACIÓN Y REGISTRO DE EVIDENCIA</div>
+        <div class="step-desc">El responsable comprueba que el cambio fue aplicado correctamente en el módulo clínico o administrativo y redacta el comentario de evidencia de la solución (o el motivo de rechazo si no procede).</div>
+      </div>
+      <div class="arrow">↓</div>
+
+      <div class="grid-2">
+        <div class="step-box emerald">
+          <div class="step-title">6A. CIERRE: ESTADO ATENDIDO</div>
+          <div class="step-desc">Se registra <code>fecha_resolucion</code> y el trigger <code>trg_calcular_tiempo_transcurrido</code> calcula los minutos/horas exactos en PostgreSQL.</div>
+        </div>
+        <div class="step-box" style="background:#fef2f2;border-color:#f87171;">
+          <div class="step-title">6B. CIERRE: ESTADO CANCELADO</div>
+          <div class="step-desc">Se guarda el motivo justificado de cancelación en <code>mesa_ayuda_bitacora</code> y la fecha de cierre para consulta del solicitante.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="caption">Figura 4.2: Diagrama de Flujo de Atención de Solicitudes en Coronyx Dental.</div>
+  </div>
+
+  <!-- DIAGRAMA 2: SECCIÓN 5.2 FLUJO DE INTEGRACIÓN CONTINUA (CI) -->
+  <div class="page-card">
+    <span class="section-tag">Sección 5.2 del Informe APF3</span>
+    <h2>Flujo de Integración Continua (CI) en GitHub Actions</h2>
+    <p class="subtitle">Pipeline automatizado de verificación ejecutado en cada envío de código (Backend Java 21 y Frontend React 19).</p>
+
+    <div class="flow-vertical">
+      <div class="step-box blue">
+        <div class="step-title">1. Desarrollo del código</div>
+        <div class="step-desc">Implementación de mejoras en ramas de trabajo (<code>feature/postgresql-modelo-gamboa</code>, <code>feature/login-base-gamboa</code>, <code>feature/sebastian</code>).</div>
+      </div>
+      <div class="arrow">↓</div>
+
+      <div class="step-box">
+        <div class="step-title">2. Commit</div>
+        <div class="step-desc">Registro local en Git con formato estandarizado: <code>"v1: se realizaron cambios en..."</code>.</div>
+      </div>
+      <div class="arrow">↓</div>
+
+      <div class="step-box">
+        <div class="step-title">3. Push al repositorio</div>
+        <div class="step-desc">Sincronización hacia los repositorios remotos en GitHub (<code>Luife225/Backend_Dentista</code> y <code>Luife225/Frontend_Dentista</code>).</div>
+      </div>
+      <div class="arrow">↓</div>
+
+      <div class="step-box purple">
+        <div class="step-title">4. Ejecución del flujo CI (GitHub Actions)</div>
+        <div class="step-desc">Activación automática del workflow <code>.github/workflows/ci.yml</code> en contenedor Linux limpio (<code>ubuntu-latest</code>) con OpenJDK 21 Temurin y Node.js 22 + pnpm.</div>
+      </div>
+      <div class="arrow">↓</div>
+
+      <div class="step-box amber">
+        <div class="step-title">5. Compilación o validación</div>
+        <div class="step-desc"><strong>Backend:</strong> <code>./mvnw clean test-compile</code> + verificación de las 24 migraciones SQL Flyway (<code>V1</code> a <code>V24</code>).<br/><strong>Frontend:</strong> Validación estática de tipos con TypeScript (<code>pnpm run typecheck</code>) y <code>vite build</code>.</div>
+      </div>
+      <div class="arrow">↓</div>
+
+      <div class="step-box">
+        <div class="step-title">6. Pruebas automatizadas</div>
+        <div class="step-desc"><strong>Backend:</strong> Suite JUnit 5 (<code>HelpdeskServiceUnitTest</code>: 8 pruebas de matriz 3×3, catálogo, bitácora, citas, PDF y teleconsulta).<br/><strong>Frontend:</strong> Suite Node Test Runner (13 pruebas de servicios, sesión JWT, inventario y Google Meet).</div>
+      </div>
+      <div class="arrow">↓</div>
+
+      <div class="step-box emerald">
+        <div class="step-title">7. Resultados</div>
+        <div class="step-desc">Verificación aprobada (<code>BUILD SUCCESS ✅</code>), generación de artefactos de producción (<code>.jar</code> y carpeta <code>dist/</code>) y habilitación para fusión en <code>main</code> y despliegue en Railway Cloud.</div>
+      </div>
+    </div>
+
+    <div class="caption">Figura 5.1: Diagrama del Flujo de Integración Continua (CI) implementado en GitHub Actions.</div>
+  </div>
+
+  <!-- DIAGRAMA 3: SECCIÓN 6.2 ARQUITECTURA FINAL DESPLEGADA -->
+  <div class="page-card">
+    <span class="section-tag">Sección 6.2 del Informe APF3</span>
+    <h2>Arquitectura Final Desplegada de Coronyx Dental</h2>
+    <p class="subtitle">Interacción en capas entre el Usuario, Frontend, Backend, Base de Datos e Infraestructura de Alojamiento.</p>
+
+    <div class="flow-vertical">
+      <div class="step-box blue">
+        <div class="step-title">👤 USUARIO FINAL (Navegador Web HTTPS)</div>
+        <div class="step-desc">Roles autenticados: <strong>Paciente</strong>, <strong>Recepcionista</strong>, <strong>Odontólogo</strong>, <strong>Administrador de Clínica</strong> y <strong>Soporte Técnico</strong>.</div>
+      </div>
+      <div class="arrow">↓</div>
+
+      <div class="step-box">
+        <div class="step-title">💻 FRONTEND WEB (React 19 + TypeScript + Vite 6 + Tailwind CSS)</div>
+        <div class="step-desc">Interfaz SPA con Login en Modo Claro Clínico, Agenda Interactiva, Historia Clínica, Odontograma Digital FDI, Portal del Paciente, Sala de Videollamada (Google Meet / Jitsi) y Tablero de Mesa de Ayuda.</div>
+      </div>
+      <div class="arrow">↓ <span style="font-size:11.5px;font-weight:600;color:#2563eb;">Peticiones REST JSON + Cabecera Authorization: Bearer &lt;JWT&gt;</span></div>
+
+      <div class="step-box purple">
+        <div class="step-title">⚙️ BACKEND API REST (Spring Boot + Java 21 LTS)</div>
+        <div class="step-desc">Controladores REST (<code>/api/v1/auth</code>, <code>/patients</code>, <code>/appointments</code>, <code>/clinical-encounters</code>, <code>/inventario</code>, <code>/helpdesk</code>), Seguridad Criptográfica (<code>BCrypt</code> + <code>HMAC-SHA256</code>), Reglas Transaccionales y Motor Flyway (<code>V1</code> a <code>V24</code>).</div>
+      </div>
+      <div class="arrow">↓ <span style="font-size:11.5px;font-weight:600;color:#059669;">Conexión JDBC (HikariCP Pool) + Transacciones ACID</span></div>
+
+      <div class="step-box emerald">
+        <div class="step-title">🗄️ BASE DE DATOS RELACIONAL (PostgreSQL 16 / 17)</div>
+        <div class="step-desc">Esquema normalizado en <strong>3FN</strong>: Tablas clínicas (<code>clinica</code>, <code>usuario</code>, <code>rol</code>, <code>paciente</code>, <code>cita</code>, <code>atencion_clinica</code>, <code>version_atencion_clinica</code>, <code>version_odontograma</code>), operativas (<code>inventario_insumo</code>, <code>caja_cargo</code>) y de soporte (<code>catalogo_incidencia</code>, <code>mesa_ayuda_ticket [id INT PK]</code>, <code>mesa_ayuda_bitacora [ticket_id INT FK]</code> + Trigger <code>trg_calcular_tiempo_transcurrido</code>).</div>
+      </div>
+      <div class="arrow">↓</div>
+
+      <div class="step-box amber">
+        <div class="step-title">☁️ INFRAESTRUCTURA DE ALOJAMIENTO (Railway Cloud & Contenedores Docker)</div>
+        <div class="step-desc">Servicios gestionados en Railway Cloud (Frontend, Backend y PostgreSQL) sincronizados con GitHub + Contenedor Docker Jitsi Meet / Google Meet para Teleodontología y variables de entorno seguras (<code>DB_URL</code>, <code>JWT_SECRET</code>, <code>CORS_ALLOWED_ORIGINS</code>).</div>
+      </div>
+    </div>
+
+    <div class="caption">Figura 6.1: Arquitectura Final Desplegada del Sistema Web Coronyx Dental.</div>
+  </div>
+
+</body>
+</html>
+

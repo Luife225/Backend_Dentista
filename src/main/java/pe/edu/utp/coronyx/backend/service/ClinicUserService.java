@@ -58,14 +58,11 @@ public class ClinicUserService {
         if (principal == null) {
             throw new AccessDeniedException("No se encontró una sesión activa");
         }
-        if (principal.isSuperAdmin()) {
-            throw new AccessDeniedException("Acceso denegado: SUPER_ADMIN no tiene acceso operativo para administrar cuentas de clínica");
-        }
-        if (!"ADMIN_CLINICA".equalsIgnoreCase(principal.getRol())) {
-            throw new AccessDeniedException("Acceso denegado: solo ADMIN_CLINICA puede gestionar las cuentas y membresías de la clínica");
+        if (!"ADMIN_CLINICA".equalsIgnoreCase(principal.getRol()) && !"SUPER_ADMIN".equalsIgnoreCase(principal.getRol())) {
+            throw new AccessDeniedException("Acceso denegado: solo ADMIN_CLINICA o SUPER_ADMIN puede gestionar las cuentas y membresías de la clínica");
         }
         if (principal.getClinicaId() == null) {
-            throw new AccessDeniedException("Acceso denegado: el administrador no tiene una clínica activa asignada");
+            throw new AccessDeniedException("Acceso denegado: el usuario no tiene una clínica activa asignada");
         }
     }
 

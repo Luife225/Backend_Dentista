@@ -14,7 +14,7 @@ import java.util.Set;
 @Transactional(readOnly = true)
 public class SessionIdentityService {
     public static final Set<String> OPERATIVE_ROLES = Set.of(
-            "ADMIN_CLINICA", "RECEPCIONISTA", "ODONTOLOGO", "PACIENTE");
+            "SUPER_ADMIN", "ADMIN_CLINICA", "RECEPCIONISTA", "ODONTOLOGO", "PACIENTE");
 
     private final ClinicUserRepository memberships;
     private final PatientRepository patients;

@@ -889,7 +889,7 @@ public class AppointmentService {
         if (principal == null) {
             throw new AccessDeniedException("No se encontró una sesión activa");
         }
-        if (principal.isSuperAdmin()) {
+        if (principal.isSuperAdmin() && principal.getClinicaId() == null) {
             throw new AccessDeniedException("Acceso denegado: SUPER_ADMIN no tiene acceso operativo para agendar o gestionar citas");
         }
         if (principal.getClinic() == null || principal.getClinicaId() == null) {

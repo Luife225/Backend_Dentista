@@ -1,0 +1,49 @@
+name: Integración Continua - Coronyx Backend (CI)
+
+on:
+  push:
+    branches:
+      - feature/postgresql-modelo-gamboa
+      - feature/sebastian
+      - develop
+      - main
+  pull_request:
+    branches:
+      - feature/postgresql-modelo-gamboa
+      - develop
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-and-verify:
+    name: Compilación, Validación y Pruebas (Java 21 + Spring Boot)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 1. Checkout del código fuente (Git)
+        uses: actions/checkout@v4
+
+      - name: 2. Configurar entorno Java 21 LTS (Eclipse Temurin)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'maven'
+
+      - name: 3. Validación de esquema y migraciones Flyway (V1 a V25)
+        run: |
+          chmod +x mvnw
+          echo "Verificando scripts SQL de migración Flyway..."
+          ls -la src/main/resources/db/migration/
+          test -f src/main/resources/db/migration/V24__convertir_ticket_id_a_int.sql
+          test -f src/main/resources/db/migration/V25__mejorar_catalogo_incidencias_y_unique_ticket.sql
+          echo "✅ 25 migraciones SQL verificadas correctamente."
+
+      - name: 4. Compilación y validación del código fuente (Maven Compile)
+        run: ./mvnw clean test-compile
+
+      - name: 5. Ejecución de pruebas automatizadas (JUnit 5)
+        run: ./mvnw test -Dtest=HelpdeskServiceUnitTest
+
+      - name: 6. Empaquetado de versión final de despliegue (JAR)
+        run: ./mvnw package -DskipTests

@@ -40,7 +40,7 @@ public class PatientService {
         if (principal == null) {
             throw new AccessDeniedException("No se encontró una sesión activa");
         }
-        if (principal.isSuperAdmin()) {
+        if (principal.isSuperAdmin() && principal.getClinicaId() == null) {
             throw new AccessDeniedException("Acceso denegado: SUPER_ADMIN no tiene acceso operativo a expedientes clínicos");
         }
         if ("PACIENTE".equalsIgnoreCase(principal.getRol())) {
@@ -64,7 +64,7 @@ public class PatientService {
         if (principal == null) {
             throw new AccessDeniedException("No se encontró una sesión activa");
         }
-        if (principal.isSuperAdmin()) {
+        if (principal.isSuperAdmin() && principal.getClinicaId() == null) {
             throw new AccessDeniedException("Acceso denegado: SUPER_ADMIN no tiene acceso operativo a expedientes clínicos");
         }
 
@@ -181,7 +181,7 @@ public class PatientService {
         if (principal == null) {
             throw new AccessDeniedException("No se encontró una sesión activa");
         }
-        if (principal.isSuperAdmin()) {
+        if (principal.isSuperAdmin() && principal.getClinicaId() == null) {
             throw new AccessDeniedException("Acceso denegado: SUPER_ADMIN no tiene acceso operativo para dar de alta pacientes");
         }
         if ("PACIENTE".equalsIgnoreCase(principal.getRol())) {
@@ -233,7 +233,7 @@ public class PatientService {
         if (principal == null) {
             throw new AccessDeniedException("No se encontró una sesión activa");
         }
-        if (principal.isSuperAdmin()) {
+        if (principal.isSuperAdmin() && principal.getClinicaId() == null) {
             throw new AccessDeniedException("Acceso denegado: SUPER_ADMIN no tiene acceso operativo para modificar pacientes");
         }
         if ("PACIENTE".equalsIgnoreCase(principal.getRol())) {
@@ -321,11 +321,8 @@ public class PatientService {
         if (principal == null) {
             throw new AccessDeniedException("No se encontró una sesión activa");
         }
-        if (principal.isSuperAdmin()) {
-            throw new AccessDeniedException("Acceso denegado: SUPER_ADMIN no tiene acceso operativo para archivar pacientes");
-        }
-        if (!"ADMIN_CLINICA".equalsIgnoreCase(principal.getRol())) {
-            throw new AccessDeniedException("Acceso denegado: solo ADMIN_CLINICA tiene autorización para archivar expedientes");
+        if (!"ADMIN_CLINICA".equalsIgnoreCase(principal.getRol()) && !"SUPER_ADMIN".equalsIgnoreCase(principal.getRol())) {
+            throw new AccessDeniedException("Acceso denegado: solo ADMIN_CLINICA o SUPER_ADMIN tiene autorización para archivar expedientes");
         }
         if (principal.getClinicaId() == null) {
             throw new AccessDeniedException("Acceso denegado: el usuario no tiene una clínica activa asignada");
@@ -494,7 +491,7 @@ public class PatientService {
         if (principal == null) {
             throw new AccessDeniedException("No se encontró una sesión activa");
         }
-        if (principal.isSuperAdmin() || "PACIENTE".equalsIgnoreCase(principal.getRol())) {
+        if ((principal.isSuperAdmin() && principal.getClinicaId() == null) || "PACIENTE".equalsIgnoreCase(principal.getRol())) {
             throw new AccessDeniedException("Acceso denegado: no autorizado para consultar la lista administrativa de pacientes");
         }
         if (principal.getClinicaId() == null) {

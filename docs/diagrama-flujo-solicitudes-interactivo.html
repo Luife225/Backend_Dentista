@@ -1,0 +1,1622 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CORONYX — Flujo de Atención de Solicitudes e Incidentes ITIL 4 (Diagrama Interactivo Multi-Rol)</title>
+  <!-- Cytoscape.js para visualización de grafos de alta performance -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.28.1/cytoscape.min.js"></script>
+  <!-- Dagre layout para organización jerárquica automática de entidades -->
+  <script src="https://cdn.jsdelivr.net/npm/dagre@0.8.5/dist/dagre.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/cytoscape-dagre@2.5.0/cytoscape-dagre.min.js"></script>
+  <!-- Fuentes Google: Outfit para UI y Fira Code para datos técnicos -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0b0f17;
+      --panel-bg: rgba(18, 24, 38, 0.94);
+      --border-color: #26334d;
+      --text-main: #e2e8f0;
+      --text-muted: #94a3b8;
+      --accent: #1e8c82;
+      --accent-glow: #5fc9be;
+      --critico: #8b5cf6;
+      --alto: #ef4444;
+      --medio: #f59e0b;
+      --bajo: #64748b;
+      --paciente: #0ea5e9;
+      --odontologo: #10b981;
+      --recepcion: #f59e0b;
+      --admin: #a855f7;
+      --ti: #6366f1;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: radial-gradient(circle at 15% 15%, #151d30, #090d15 70%);
+      color: var(--text-main);
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+    }
+
+    /* BARRA SUPERIOR (HEADER) */
+    header {
+      position: absolute;
+      top: 14px;
+      left: 18px;
+      right: 18px;
+      z-index: 20;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--panel-bg);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 10px 22px;
+      box-shadow: 0 10px 35px rgba(0,0,0,0.55);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo-badge {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #1E8C82, #0B3D3A);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      border: 1px solid rgba(95,201,190,0.4);
+      box-shadow: 0 0 14px rgba(95,201,190,0.3);
+    }
+
+    .brand h1 {
+      font-size: 1.12rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.3px;
+    }
+
+    .brand .subtitle {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      margin-top: 1px;
+    }
+
+    .version-tag {
+      background: rgba(95, 201, 190, 0.15);
+      color: var(--accent-glow);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+      border: 1px solid rgba(95, 201, 190, 0.35);
+    }
+
+    /* FILTROS POR ROL Y CONTROLES */
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .role-filters {
+      display: flex;
+      background: rgba(11, 16, 27, 0.85);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 3px;
+      gap: 3px;
+    }
+
+    .role-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 6px 11px;
+      border-radius: 7px;
+      font-size: 0.77rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .role-btn:hover {
+      color: #fff;
+      background: rgba(255,255,255,0.06);
+    }
+
+    .role-btn.active {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 0 12px rgba(30, 140, 130, 0.5);
+    }
+
+    .btn {
+      background: #1a2336;
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      padding: 7px 12px;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .btn:hover {
+      background: #232f48;
+      color: #fff;
+      border-color: #3b82f6;
+    }
+
+    .btn.primary {
+      background: linear-gradient(135deg, #1e8c82, #14615a);
+      color: #fff;
+      border: 1px solid #5fc9be;
+    }
+
+    .btn.primary:hover {
+      box-shadow: 0 0 16px rgba(95, 201, 190, 0.45);
+    }
+
+    /* CONTENEDOR CYTOSCAPE */
+    #cy {
+      width: 100vw;
+      height: 100vh;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 1;
+    }
+
+    /* BARRA DE BÚSQUEDA FLOTANTE */
+    .search-bar {
+      position: absolute;
+      top: 86px;
+      left: 20px;
+      z-index: 15;
+      background: var(--panel-bg);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 7px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+      width: 290px;
+    }
+
+    .search-bar input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #fff;
+      font-family: inherit;
+      font-size: 0.82rem;
+      width: 100%;
+    }
+
+    .search-bar input::placeholder {
+      color: #64748b;
+    }
+
+    /* PANEL LATERAL DE DETALLE */
+    #detail-panel {
+      position: absolute;
+      top: 86px;
+      right: 20px;
+      width: 440px;
+      max-height: calc(100vh - 120px);
+      background: var(--panel-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 22px;
+      z-index: 25;
+      overflow-y: auto;
+      box-shadow: 0 16px 50px rgba(0,0,0,0.65);
+      display: none;
+      animation: slideInRight 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes slideInRight {
+      from { opacity: 0; transform: translateX(25px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .detail-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 14px;
+    }
+
+    .detail-title h2 {
+      font-size: 1.15rem;
+      color: #fff;
+      font-weight: 700;
+      line-height: 1.3;
+    }
+
+    .detail-phase {
+      display: inline-block;
+      margin-top: 6px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      padding: 3px 8px;
+      border-radius: 5px;
+      background: rgba(99, 102, 241, 0.18);
+      color: #a5b4fc;
+      border: 1px solid rgba(99, 102, 241, 0.35);
+    }
+
+    .close-btn {
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      font-size: 1.25rem;
+      cursor: pointer;
+      line-height: 1;
+      padding: 4px;
+    }
+
+    .close-btn:hover {
+      color: #fff;
+    }
+
+    .detail-body {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      background: rgba(11, 16, 27, 0.6);
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(38, 51, 77, 0.5);
+    }
+
+    .meta-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .meta-label {
+      font-size: 0.68rem;
+      color: #64748b;
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+    }
+
+    .meta-value {
+      font-size: 0.8rem;
+      color: #e2e8f0;
+      font-weight: 600;
+    }
+
+    .badge-prio {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 5px;
+    }
+
+    .badge-prio.CRÍTICO { background: rgba(139, 92, 246, 0.25); color: #c4b5fd; border: 1px solid #8b5cf6; }
+    .badge-prio.ALTO { background: rgba(239, 68, 68, 0.25); color: #fca5a5; border: 1px solid #ef4444; }
+    .badge-prio.MEDIO { background: rgba(245, 158, 11, 0.25); color: #fcd34d; border: 1px solid #f59e0b; }
+    .badge-prio.BAJO { background: rgba(100, 116, 139, 0.25); color: #cbd5e1; border: 1px solid #64748b; }
+
+    .detail-section-title {
+      font-size: 0.74rem;
+      color: var(--accent-glow);
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+
+    .detail-desc {
+      font-size: 0.84rem;
+      color: #cbd5e1;
+      line-height: 1.5;
+    }
+
+    .code-box {
+      background: #090d15;
+      border: 1px solid #1e293b;
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.74rem;
+      color: #38bdf8;
+      overflow-x: auto;
+      line-height: 1.45;
+    }
+
+    /* CALCULADORA DE MATRIZ 3x3 FLOTANTE */
+    #matrix-modal {
+      position: absolute;
+      top: 86px;
+      left: 325px;
+      background: var(--panel-bg);
+      backdrop-filter: blur(18px);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 18px;
+      z-index: 20;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.6);
+      width: 320px;
+      display: none;
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .matrix-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .matrix-selector {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .selector-row label {
+      font-size: 0.72rem;
+      color: #94a3b8;
+      display: block;
+      margin-bottom: 4px;
+      font-weight: 600;
+    }
+
+    .selector-row select {
+      width: 100%;
+      background: #0d131f;
+      border: 1px solid var(--border-color);
+      color: #fff;
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      font-family: inherit;
+    }
+
+    .matrix-result {
+      background: rgba(13, 19, 31, 0.8);
+      border-radius: 10px;
+      border: 1px solid #1e293b;
+      padding: 12px;
+      text-align: center;
+    }
+
+    .score-badge {
+      font-size: 1.5rem;
+      font-weight: 800;
+      font-family: 'Fira Code', monospace;
+      color: #fff;
+      margin: 4px 0;
+    }
+
+    .sla-result {
+      font-size: 0.74rem;
+      color: #94a3b8;
+    }
+
+    /* LEYENDA INFERIOR */
+    .legend {
+      position: absolute;
+      bottom: 16px;
+      left: 18px;
+      z-index: 15;
+      background: var(--panel-bg);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 9px 18px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      font-size: 0.76rem;
+      box-shadow: 0 6px 25px rgba(0,0,0,0.4);
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+    }
+
+    /* ESTILO DE BOTONES FLOTANTES DE ZOOM */
+    .zoom-toolbar {
+      position: absolute;
+      bottom: 16px;
+      right: 18px;
+      z-index: 15;
+      display: flex;
+      gap: 6px;
+      background: var(--panel-bg);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 5px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+    }
+
+    .zoom-btn {
+      background: #162032;
+      border: 1px solid #23314d;
+      color: #fff;
+      width: 32px;
+      height: 32px;
+      border-radius: 7px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 0.95rem;
+      transition: all 0.15s;
+    }
+
+    .zoom-btn:hover {
+      background: var(--accent);
+      border-color: var(--accent-glow);
+    }
+
+    /* GUÍA DE TECLAS / TIPS */
+    .quick-tip {
+      position: absolute;
+      bottom: 60px;
+      left: 18px;
+      z-index: 15;
+      font-size: 0.72rem;
+      color: #64748b;
+      background: rgba(11, 16, 27, 0.75);
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid rgba(38, 51, 77, 0.4);
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER SUPERIOR -->
+  <header>
+    <div class="brand">
+      <div class="logo-badge">🦷</div>
+      <div>
+        <h1>CORONYX · Flujo de Atención de Solicitudes e Incidentes</h1>
+        <div class="subtitle">ITIL 4 & ISO/IEC 20000-1 · Matriz 3x3 · Enrutamiento por Rol · Bitácora Inmutable · Acceso Operativo Directo</div>
+      </div>
+      <div class="version-tag">Sprint 05 · v5.0</div>
+    </div>
+
+    <!-- CONTROLES Y FILTROS POR ROL -->
+    <div class="controls">
+      <div class="role-filters">
+        <button class="role-btn active" onclick="filterByRole('ALL')">🌟 Todos</button>
+        <button class="role-btn" onclick="filterByRole('PACIENTE')">👤 Paciente</button>
+        <button class="role-btn" onclick="filterByRole('ODONTOLOGO')">🦷 Odontólogo</button>
+        <button class="role-btn" onclick="filterByRole('RECEPCIONISTA')">📋 Recepción</button>
+        <button class="role-btn" onclick="filterByRole('ADMIN_CLINICA')">⚙️ Admin Clínica</button>
+        <button class="role-btn" onclick="filterByRole('SOPORTE_TECNICO')">🖥️ Soporte TI</button>
+      </div>
+
+      <button class="btn" onclick="toggleMatrixModal()">🧮 Matriz 3x3</button>
+      <button class="btn" onclick="resetLayout()">🔄 Reordenar</button>
+      <button class="btn primary" onclick="fitView()">🎯 Centrar</button>
+    </div>
+  </header>
+
+  <!-- BUSCADOR FLOTANTE -->
+  <div class="search-bar">
+    <span>🔍</span>
+    <input type="text" id="searchInput" placeholder="Buscar etapa, rol o incidencia (ej. DNI, Cita)..." oninput="handleSearch()">
+  </div>
+
+  <!-- GUÍA RÁPIDA -->
+  <div class="quick-tip">💡 Haz clic en cualquier nodo para abrir su panel de detalles, SLA, código y evidencia. Arrastra para mover el lienzo.</div>
+
+  <!-- CONTENEDOR PRINCIPAL CYTOSCAPE -->
+  <div id="cy"></div>
+
+  <!-- PANEL LATERAL DE DETALLES -->
+  <div id="detail-panel">
+    <div class="detail-header">
+      <div class="detail-title">
+        <h2 id="dt-label">Título de la Etapa</h2>
+        <span id="dt-phase" class="detail-phase">Fase ITIL</span>
+      </div>
+      <button class="close-btn" onclick="closeDetailPanel()">✕</button>
+    </div>
+
+    <div class="detail-body">
+      <div class="meta-grid">
+        <div class="meta-item">
+          <span class="meta-label">Rol Involucrado</span>
+          <span class="meta-value" id="dt-role">--</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Prioridad / SLA</span>
+          <span class="meta-value" id="dt-prio">--</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Tipo de Solicitud ITIL</span>
+          <span class="meta-value" id="dt-itil">--</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Estado en BD</span>
+          <span class="meta-value" id="dt-status">--</span>
+        </div>
+      </div>
+
+      <div>
+        <div class="detail-section-title">Descripción y Propósito Clínico</div>
+        <p class="detail-desc" id="dt-desc">Descripción...</p>
+      </div>
+
+      <div id="dt-code-container">
+        <div class="detail-section-title">Evidencia de Implementación (Código / Endpoint / BD)</div>
+        <pre class="code-box" id="dt-code">Código...</pre>
+      </div>
+
+      <div id="dt-action-plus" style="display:none; background:rgba(30,140,130,0.15); border:1px solid #1e8c82; padding:10px 12px; border-radius:8px;">
+        <div style="font-size:0.72rem; font-weight:700; color:#5fc9be; text-transform:uppercase;">⚡ PLUS: Acceso Operativo Directo</div>
+        <div id="dt-action-text" style="font-size:0.8rem; color:#e2e8f0; margin-top:3px;">--</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL FLOTANTE CALCULADORA MATRIZ 3x3 -->
+  <div id="matrix-modal">
+    <div class="matrix-title">
+      <span>🧮 Matriz 3x3 de Riesgo</span>
+      <button class="close-btn" onclick="toggleMatrixModal()">✕</button>
+    </div>
+    <div class="matrix-selector">
+      <div class="selector-row">
+        <label>1. Impacto Operativo / Daño (1 a 3):</label>
+        <select id="sel-impacto" onchange="calculateMatrix()">
+          <option value="3">3 - Alto (Paraliza atención / Legal)</option>
+          <option value="2" selected>2 - Medio (Degrada / Afecta 1 cita)</option>
+          <option value="1">1 - Bajo (Informativo / Trámite)</option>
+        </select>
+      </div>
+      <div class="selector-row">
+        <label>2. Probabilidad de Ocurrencia (1 a 3):</label>
+        <select id="sel-prob" onchange="calculateMatrix()">
+          <option value="3">3 - Alta (Casi diario / Muy frecuente)</option>
+          <option value="2" selected>2 - Media (Semanal / Ocasional)</option>
+          <option value="1">1 - Baja (Raro / Mensual)</option>
+        </select>
+      </div>
+    </div>
+    <div class="matrix-result">
+      <div style="font-size:0.7rem; color:#94a3b8; text-transform:uppercase; font-weight:700;">Puntaje = Impacto × Probabilidad</div>
+      <div class="score-badge" id="mat-score">4 pts</div>
+      <div id="mat-badge" class="badge-prio MEDIO" style="margin-bottom:6px;">PRIORIDAD: MEDIO</div>
+      <div class="sla-result" id="mat-sla">Acuerdo de Nivel de Servicio (SLA): <strong>60 minutos</strong></div>
+    </div>
+  </div>
+
+  <!-- LEYENDA DE ESTADOS Y PRIORIDADES -->
+  <div class="legend">
+    <div class="legend-item"><span class="dot" style="background:var(--critico);"></span> 🟣 Crítico (SLA 10m)</div>
+    <div class="legend-item"><span class="dot" style="background:var(--alto);"></span> 🔴 Alto (SLA 20m)</div>
+    <div class="legend-item"><span class="dot" style="background:var(--medio);"></span> 🟡 Medio (SLA 60m)</div>
+    <div class="legend-item"><span class="dot" style="background:var(--bajo);"></span> ⚪ Bajo (SLA 120m)</div>
+    <div class="legend-item"><span class="dot" style="background:var(--accent);"></span> 🟢 PLUS Directo</div>
+    <div class="legend-item"><span class="dot" style="background:#6366f1;"></span> 📑 Bitácora Auditada</div>
+  </div>
+
+  <!-- BOTONES DE ZOOM FLOTANTES -->
+  <div class="zoom-toolbar">
+    <button class="zoom-btn" onclick="zoomIn()" title="Acercar">+</button>
+    <button class="zoom-btn" onclick="zoomOut()" title="Alejar">−</button>
+    <button class="zoom-btn" onclick="fitView()" title="Ajustar">⛶</button>
+  </div>
+
+  <script>
+    // ── DEFINICIÓN DE NODOS Y ARISTAS DEL FLUJO ITIL ───────────────────────────
+    const elements = [
+      // FASE 1: ENTRADA Y AUTENTICACIÓN
+      {
+        data: {
+          id: 'start',
+          label: '1. Detección de Falla\no Necesidad',
+          phase: 'Fase 1: Entrada',
+          role: 'TODOS',
+          color: '#38bdf8',
+          shape: 'round-rectangle',
+          desc: 'El usuario (paciente, doctor, recepcionista o administrador) detecta una incidencia técnica, necesidad de servicio o contingencia en la clínica.',
+          code: 'Evento en cliente web (Vite React) o reporte presencial en recepción.',
+          itil: 'Detección de Incidente / Service Request',
+          status: 'INICIAL',
+          prio: '--',
+          sla: '--'
+        }
+      },
+      {
+        data: {
+          id: 'auth_check',
+          label: '¿Usuario Autenticado\nen el Sistema?',
+          phase: 'Fase 1: Seguridad',
+          role: 'SEGURIDAD',
+          color: '#64748b',
+          shape: 'diamond',
+          desc: 'Se evalúa la existencia de un token JWT válido (HS256) en localStorage (coronyx_jwt_token) con rol asignado.',
+          code: 'if (!user || !token) navigate("/login"); else renderApp();',
+          itil: 'Control de Acceso / Seguridad',
+          status: 'VERIFICACIÓN',
+          prio: '--',
+          sla: '--'
+        }
+      },
+      {
+        data: {
+          id: 'portal_paciente',
+          label: 'Portal del Paciente\n(/portal con DNI)',
+          phase: 'Fase 1: Acceso',
+          role: 'PACIENTE',
+          color: '#0ea5e9',
+          shape: 'round-rectangle',
+          desc: 'Acceso seguro para el paciente utilizando su número de DNI y contraseña o token temporal para autogestión de citas y soporte.',
+          code: 'GET /api/v1/auth/patient-session\nHeaders: Authorization: Bearer <jwt>',
+          itil: 'Service Portal / Self-Service',
+          status: 'AUTENTICADO',
+          prio: '--',
+          sla: '--'
+        }
+      },
+      {
+        data: {
+          id: 'menu_helpdesk',
+          label: '2. Mesa de Ayuda\n(/app/solicitudes)',
+          phase: 'Fase 2: Service Desk',
+          role: 'TODOS',
+          color: '#10b981',
+          shape: 'round-rectangle',
+          desc: 'Interfaz centralizada de Mesa de Ayuda (MesaAyuda.tsx). Permite visualizar tickets abiertos, asignados al rol y registrar nuevas peticiones.',
+          code: 'Route: <ProtectedRoute allowedRoles={["ODONTOLOGO","RECEPCIONISTA","ADMIN_CLINICA","SUPER_ADMIN","PACIENTE"]}><MesaAyuda /></ProtectedRoute>',
+          itil: 'Service Desk Interface (ITIL 4)',
+          status: 'ACTIVO',
+          prio: '--',
+          sla: '--'
+        }
+      },
+
+      // FASE 2: CATÁLOGO SEGMENTADO POR ROL
+      {
+        data: {
+          id: 'cat_filter',
+          label: 'Catálogo de Incidencias\nFiltrado por Rol',
+          phase: 'Fase 2: Catálogo',
+          role: 'SISTEMA',
+          color: '#a855f7',
+          shape: 'diamond',
+          desc: 'El sistema presenta únicamente las opciones predeterminadas que corresponden a la función del solicitante. El usuario NO inventa la prioridad técnica.',
+          code: 'GET /api/v1/helpdesk/catalog?rol=${userRole}\nSELECT * FROM catalogo_incidencia WHERE solicitante_rol = :rol AND activo = true;',
+          itil: 'Service Catalogue Management',
+          status: 'FILTRADO',
+          prio: '--',
+          sla: '--'
+        }
+      },
+      {
+        data: {
+          id: 'cat_paciente',
+          label: 'Canal PACIENTE\n(Citas, DNI, Teleodontología)',
+          phase: 'Fase 2: Catálogo',
+          role: 'PACIENTE',
+          color: '#0ea5e9',
+          shape: 'round-rectangle',
+          desc: 'Opciones predeterminadas para el paciente: Reprogramación urgente (<2h), Corrección de DNI/Nombre, Radiografía no visible, Falla de conexión en sala virtual.',
+          code: 'INC-PAC-001 a INC-PAC-005 en catalogo_incidencia.',
+          itil: 'Asistencia y Consultas de Paciente',
+          status: 'CATÁLOGO',
+          prio: 'ALTO / MEDIO',
+          sla: '20 a 60 min'
+        }
+      },
+      {
+        data: {
+          id: 'cat_odontologo',
+          label: 'Canal ODONTÓLOGO\n(Sillones, Archivos >25MB, Adendas)',
+          phase: 'Fase 2: Catálogo',
+          role: 'ODONTOLOGO',
+          color: '#10b981',
+          shape: 'round-rectangle',
+          desc: 'Opciones clínicas para el dentista: Reasignación urgente de sillón por cirugía previa, Error 413 al cargar radiografía panorámica pesada, Solicitud de adenda a historia cerrada.',
+          code: 'INC-ODO-001 a INC-ODO-003 en catalogo_incidencia.',
+          itil: 'Incidencias Operativas Clínicas',
+          status: 'CATÁLOGO',
+          prio: 'ALTO / MEDIO',
+          sla: '15 a 30 min'
+        }
+      },
+      {
+        data: {
+          id: 'cat_recepcion',
+          label: 'Canal RECEPCIÓN\n(No-Shows, Horario Laboral)',
+          phase: 'Fase 2: Catálogo',
+          role: 'RECEPCIONISTA',
+          color: '#f59e0b',
+          shape: 'round-rectangle',
+          desc: 'Opciones de flujo asistencial: Liberación de sillón por inasistencia física (Paciente No-Show), Solicitud de turno especial fuera de la franja laboral de la sede.',
+          code: 'INC-REC-001 a INC-REC-002 en catalogo_incidencia.',
+          itil: 'Gestión de Capacidad y Asistencia',
+          status: 'CATÁLOGO',
+          prio: 'ALTO / BAJO',
+          sla: '15 a 120 min'
+        }
+      },
+      {
+        data: {
+          id: 'cat_admin',
+          label: 'Canal ADMIN CLÍNICA\n(Personal, Servidor Railway)',
+          phase: 'Fase 2: Catálogo',
+          role: 'ADMIN_CLINICA',
+          color: '#a855f7',
+          shape: 'round-rectangle',
+          desc: 'Opciones de gobernanza y plataforma: Bloqueo urgente de credenciales por desvinculación de personal, Caída de base de datos o error 500 en servicios de Railway Cloud.',
+          code: 'INC-ADM-001 a INC-ADM-002 en catalogo_incidencia.',
+          itil: 'Seguridad y Continuidad del Servicio',
+          status: 'CATÁLOGO',
+          prio: 'CRÍTICO / ALTO',
+          sla: '10 a 15 min'
+        }
+      },
+      {
+        data: {
+          id: 'cat_otros',
+          label: 'Canal "OTROS"\n(Texto Libre + Captura)',
+          phase: 'Fase 2: Excepción',
+          role: 'TODOS',
+          color: '#64748b',
+          shape: 'round-rectangle',
+          desc: 'Bandeja de contingencia para requerimientos no contemplados en el catálogo. Permite redactar el problema y adjuntar captura de evidencia. Enrutado por defecto al Admin Clínica.',
+          code: 'INC-GEN-099 con multipart/form-data para captura adjunta.',
+          itil: 'Incident Logging / General Request',
+          status: 'EXCEPCIÓN',
+          prio: 'MEDIO (Calculado)',
+          sla: '60 min'
+        }
+      },
+
+      // FASE 3: MATRIZ 3x3 Y MOTOR DE PRIORIZACIÓN
+      {
+        data: {
+          id: 'matrix_engine',
+          label: '3. Motor de Priorización\nMatriz 3x3 (Impacto × Probabilidad)',
+          phase: 'Fase 3: Priorización',
+          role: 'MOTOR ITIL',
+          color: '#f43f5e',
+          shape: 'diamond',
+          desc: 'Calcula objetivamente la severidad: Puntaje = Impacto (1..3) × Probabilidad (1..3). Puntaje 9: Crítico; 6: Alto; 3-4: Medio; 1-2: Bajo.',
+          code: 'function calcularPrioridad(imp, prob) {\n  const score = imp * prob;\n  if (score >= 9) return "CRÍTICO";\n  if (score >= 6) return "ALTO";\n  if (score >= 3) return "MEDIO";\n  return "BAJO";\n}',
+          itil: 'Incident Categorization & Prioritization',
+          status: 'EVALUACIÓN',
+          prio: 'AUTOMÁTICO',
+          sla: 'Asignado'
+        }
+      },
+      {
+        data: {
+          id: 'prio_critico',
+          label: '🟣 CRÍTICO (Score 9)\nSLA: 10 Minutos',
+          phase: 'Fase 3: Severidad',
+          role: 'MOTOR ITIL',
+          color: '#8b5cf6',
+          shape: 'round-rectangle',
+          desc: 'Impacto Alto (3) × Probabilidad Alta (3) = 9. Paraliza totalmente la atención en vivo (ej. sala de teleconsulta caída o caída de BD en Railway). Se atiende de primero.',
+          code: 'prioridad: "CRÍTICO", sla_minutos: 10',
+          itil: 'Major Incident Management',
+          status: 'CRÍTICO',
+          prio: 'CRÍTICO',
+          sla: '10 min'
+        }
+      },
+      {
+        data: {
+          id: 'prio_alto',
+          label: '🔴 ALTO (Score 6)\nSLA: 20 Minutos',
+          phase: 'Fase 3: Severidad',
+          role: 'MOTOR ITIL',
+          color: '#ef4444',
+          shape: 'round-rectangle',
+          desc: 'Impacto Alto × Probabilidad Media, o Impacto Medio × Probabilidad Alta (ej. colisión de sillón dental o reprogramación urgente < 2h).',
+          code: 'prioridad: "ALTO", sla_minutos: 20',
+          itil: 'High Priority Incident',
+          status: 'ALTO',
+          prio: 'ALTO',
+          sla: '20 min'
+        }
+      },
+      {
+        data: {
+          id: 'prio_medio',
+          label: '🟡 MEDIO (Score 3-4)\nSLA: 60 Minutos',
+          phase: 'Fase 3: Severidad',
+          role: 'MOTOR ITIL',
+          color: '#f59e0b',
+          shape: 'round-rectangle',
+          desc: 'Impacto Medio × Probabilidad Media (ej. corrección de DNI antes de emitir comprobante o radiografía pesada).',
+          code: 'prioridad: "MEDIO", sla_minutos: 60',
+          itil: 'Medium Priority Incident',
+          status: 'MEDIO',
+          prio: 'MEDIO',
+          sla: '60 min'
+        }
+      },
+      {
+        data: {
+          id: 'prio_bajo',
+          label: '⚪ BAJO (Score 1-2)\nSLA: 120 Minutos',
+          phase: 'Fase 3: Severidad',
+          role: 'MOTOR ITIL',
+          color: '#64748b',
+          shape: 'round-rectangle',
+          desc: 'Impacto Bajo × Probabilidad Baja o Media. Consultas informativas o trámites diferibles (ej. horarios de fin de semana o precios).',
+          code: 'prioridad: "BAJO", sla_minutos: 120',
+          itil: 'Low Priority / Service Request',
+          status: 'BAJO',
+          prio: 'BAJO',
+          sla: '120 min'
+        }
+      },
+
+      // FASE 4: PERSISTENCIA Y REGISTRO EN BITÁCORA
+      {
+        data: {
+          id: 'save_ticket_db',
+          label: '4. Persistencia en Base de Datos\n(mesa_ayuda_ticket - PENDIENTE)',
+          phase: 'Fase 4: Persistencia',
+          role: 'POSTGRESQL',
+          color: '#0284c7',
+          shape: 'barrel',
+          desc: 'Inserción del ticket en la base de datos PostgreSQL alojada en Railway con código determinista (TKT-XXX), estado inicial PENDIENTE y cuenta regresiva de SLA.',
+          code: 'POST /api/v1/helpdesk/tickets\nINSERT INTO mesa_ayuda_ticket (id, solicitud, prioridad, estado, sla_minutos) VALUES (...);',
+          itil: 'Incident Registration & Tracking',
+          status: 'PENDIENTE',
+          prio: 'Calculada',
+          sla: 'Corriendo'
+        }
+      },
+      {
+        data: {
+          id: 'log_creacion',
+          label: 'Bitácora de Auditoría:\nRegistro Inmutable CREACIÓN',
+          phase: 'Fase 4: Auditoría',
+          role: 'BITÁCORA',
+          color: '#6366f1',
+          shape: 'round-rectangle',
+          desc: 'La tabla mesa_ayuda_bitacora registra el primer evento inmutable: fecha/hora exacta, usuario solicitante, rol, acción CREACION y comentario inicial.',
+          code: 'INSERT INTO mesa_ayuda_bitacora (ticket_id, estado_anterior, estado_nuevo, accion, usuario_nombre, comentario)\nVALUES (id, NULL, "PENDIENTE", "CREACION", user, desc);',
+          itil: 'Audit Trail / Service Records',
+          status: 'AUDITADO',
+          prio: '--',
+          sla: '--'
+        }
+      },
+
+      // FASE 5: DESPACHO Y ROLES RESOLUTORES
+      {
+        data: {
+          id: 'dispatch_role',
+          label: 'Enrutamiento Automático\nal Rol Resolutor Competente',
+          phase: 'Fase 5: Despacho',
+          role: 'SISTEMA',
+          color: '#8b5cf6',
+          shape: 'diamond',
+          desc: 'El ticket es derivado a la bandeja especializada del rol resolutor asignado. Se notifica al operador con badge en vivo en la barra de navegación.',
+          code: 'WHERE responsable_rol = :currentRole AND estado != "ATENDIDO"\nNotificación en vivo vía BroadcastChannel.',
+          itil: 'Incident Assignment & Escalation',
+          status: 'ASIGNADO',
+          prio: '--',
+          sla: '--'
+        }
+      },
+      {
+        data: {
+          id: 'box_soporte_ti',
+          label: 'Bandeja SOPORTE TI\n(Caídas, Conexión, Servidores)',
+          phase: 'Fase 5: Resolución',
+          role: 'SOPORTE_TECNICO',
+          color: '#6366f1',
+          shape: 'round-rectangle',
+          desc: 'Resuelve problemas de infraestructura, tokens JWT expirados, enlace WebRTC de teleodontología o límites de subida en Railway.',
+          code: 'Usuario: superadmin@coronyx.pe\nRol: SUPER_ADMIN (Soporte Técnico TI)',
+          itil: 'Tier 2/3 Technical Support',
+          status: 'ASIGNADO TI',
+          prio: 'CRÍTICO / ALTO',
+          sla: '10 a 30 min'
+        }
+      },
+      {
+        data: {
+          id: 'box_admin_clinica',
+          label: 'Bandeja ADMIN CLÍNICA\n(Personal, DNI, Horarios, Triaje)',
+          phase: 'Fase 5: Resolución',
+          role: 'ADMIN_CLINICA',
+          color: '#a855f7',
+          shape: 'round-rectangle',
+          desc: 'Resuelve bloqueos de credenciales por desvinculación, corrección de DNI en ficha clínica, permisos de personal y clasifica solicitudes de "Otros".',
+          code: 'Usuario: admin@coronyx.pe\nRol: ADMIN_CLINICA',
+          itil: 'Service Level & Clinic Administration',
+          status: 'ASIGNADO ADMIN',
+          prio: 'ALTO / MEDIO',
+          sla: '15 a 60 min'
+        }
+      },
+      {
+        data: {
+          id: 'box_recepcionista',
+          label: 'Bandeja RECEPCIONISTA\n(Citas, Sillones, No-Shows)',
+          phase: 'Fase 5: Resolución',
+          role: 'RECEPCIONISTA',
+          color: '#f59e0b',
+          shape: 'round-rectangle',
+          desc: 'Atiende reprogramaciones de citas presenciales, reubica sillones dentales por retrasos quirúrgicos y gestiona inasistencias físicas (No-Show).',
+          code: 'Usuario: recepcion@coronyx.pe\nRol: RECEPCIONISTA',
+          itil: 'Operations & Appointment Coordination',
+          status: 'ASIGNADO RECEP',
+          prio: 'ALTO / MEDIO',
+          sla: '15 a 20 min'
+        }
+      },
+      {
+        data: {
+          id: 'box_odontologo',
+          label: 'Bandeja ODONTÓLOGO\n(Radiografías, Recetas, Historias)',
+          phase: 'Fase 5: Resolución',
+          role: 'ODONTOLOGO',
+          color: '#10b981',
+          shape: 'round-rectangle',
+          desc: 'Activa visibilidad de recetas o radiografías periapicales en el portal del paciente y emite adendas médicas aclaratorias.',
+          code: 'Usuario: odontologo@coronyx.pe\nRol: ODONTOLOGO',
+          itil: 'Clinical Practice Support',
+          status: 'ASIGNADO DOCTOR',
+          prio: 'MEDIO / BAJO',
+          sla: '30 a 120 min'
+        }
+      },
+
+      // FASE 6: ATENCIÓN OPERATIVA Y ACCESO DIRECTO (PLUS)
+      {
+        data: {
+          id: 'take_ticket',
+          label: '5. Toma del Caso:\n"Iniciar Atención"',
+          phase: 'Fase 6: Ejecución',
+          role: 'RESOLUTOR',
+          color: '#38bdf8',
+          shape: 'round-rectangle',
+          desc: 'El operador responsable pulsa "Iniciar Atención". El ticket transiciona a EN_PROCESO, deteniendo cualquier ambigüedad sobre quién está trabajando en el caso.',
+          code: 'PATCH /api/v1/helpdesk/tickets/{id}/status\nPayload: { nuevoEstado: "EN_PROCESO", comentario: "Tomado por resolutor..." }',
+          itil: 'Incident Investigation & Diagnosis',
+          status: 'EN_PROCESO',
+          prio: '--',
+          sla: 'Consumiendo'
+        }
+      },
+      {
+        data: {
+          id: 'log_in_proc',
+          label: 'Bitácora de Auditoría:\nRegistro INICIO_ATENCIÓN',
+          phase: 'Fase 6: Auditoría',
+          role: 'BITÁCORA',
+          color: '#6366f1',
+          shape: 'round-rectangle',
+          desc: 'mesa_ayuda_bitacora registra el cambio: estado_anterior = PENDIENTE, estado_nuevo = EN_PROCESO con sello de tiempo exacto.',
+          code: 'INSERT INTO mesa_ayuda_bitacora (ticket_id, estado_anterior, estado_nuevo, accion, comentario)...',
+          itil: 'Progress Logging',
+          status: 'AUDITADO',
+          prio: '--',
+          sla: '--'
+        }
+      },
+      {
+        data: {
+          id: 'action_direct_plus',
+          label: '⚡ PLUS: Botón de Acceso\nOperativo Directo en Ticket',
+          phase: 'Fase 6: PLUS Operativo',
+          role: 'INTERFAZ UI',
+          color: '#1e8c82',
+          shape: 'round-rectangle',
+          desc: 'Para no obligar a la recepcionista a buscar manualmente entre meses y días, el ticket muestra botones como "📅 Ir a Cita en Agenda" o "👤 Ir a Ficha Paciente". Navega al recurso exacto en 1 clic.',
+          code: 'navigate(`/app/agenda?citaId=${ticket.citaId}&autoOpen=true`)\nnavigate(`/app/pacientes?pacienteId=${ticket.pacienteId}`)',
+          itil: 'Seamless Operational Linking (PLUS)',
+          status: 'ACCESO DIRECTO',
+          prio: '--',
+          sla: '--',
+          actionPlus: 'Abre directamente la cita en Agenda o la Ficha del Paciente sin búsqueda manual.'
+        }
+      },
+      {
+        data: {
+          id: 'exec_action',
+          label: 'Ejecución de la Solución\nen el Sistema',
+          phase: 'Fase 6: Resolución',
+          role: 'RESOLUTOR',
+          color: '#10b981',
+          shape: 'round-rectangle',
+          desc: 'El resolutor realiza la modificación correspondiente: reprograma el turno, cambia el sillón, corrige el DNI o activa la visibilidad de la receta.',
+          code: 'Acciones transaccionales REST:\nPUT /api/v1/citas/{id}/reprogramar\nPUT /api/v1/patients/{id}',
+          itil: 'Resolution and Recovery',
+          status: 'MODIFICADO',
+          prio: '--',
+          sla: '--'
+        }
+      },
+
+      // FASE 7: EVALUACIÓN Y CIERRE CON EVIDENCIA
+      {
+        data: {
+          id: 'eval_policy',
+          label: '¿Cumple Políticas\nde la Clínica?',
+          phase: 'Fase 7: Verificación',
+          role: 'RESOLUTOR',
+          color: '#f59e0b',
+          shape: 'diamond',
+          desc: 'Se valida si el requerimiento es procedente. Por ejemplo: reprogramación con más de 2h es válida; con 15 minutos sin urgencia médica justificada es rechazada.',
+          code: 'if (horasDiferencia < 2 && !motivoUrgente) return rechazarSolicitud();',
+          itil: 'Policy & SLA Compliance Check',
+          status: 'EVALUACIÓN',
+          prio: '--',
+          sla: '--'
+        }
+      },
+      {
+        data: {
+          id: 'resolve_ticket',
+          label: '6. Cierre con Evidencia:\nTicket ATENDIDO',
+          phase: 'Fase 7: Cierre',
+          role: 'RESOLUTOR',
+          color: '#10b981',
+          shape: 'round-rectangle',
+          desc: 'El operador documenta la evidencia humana (ej. "Paciente llamado por teléfono, cita movida al 26/10 11:00am, sillón anterior liberado") y confirma la resolución.',
+          code: 'PATCH /api/v1/helpdesk/tickets/{id}/status\nPayload: { nuevoEstado: "ATENDIDO", comentario: "Evidencia..." }',
+          itil: 'Incident Resolution & Closure',
+          status: 'ATENDIDO',
+          prio: '--',
+          sla: 'Cumplido'
+        }
+      },
+      {
+        data: {
+          id: 'cancel_ticket',
+          label: 'Rechazo Justificado:\nTicket CANCELADO',
+          phase: 'Fase 7: Cierre',
+          role: 'RESOLUTOR',
+          color: '#ef4444',
+          shape: 'round-rectangle',
+          desc: 'El ticket se cierra como CANCELADO fundamentando la causal (ej. "Solicitud fuera de franja laboral dominical" o "Paciente no responde a llamadas de confirmación").',
+          code: 'PATCH /api/v1/helpdesk/tickets/{id}/status\nPayload: { nuevoEstado: "CANCELADO", comentario: "Motivo..." }',
+          itil: 'Incident Cancellation / Rejection',
+          status: 'CANCELADO',
+          prio: '--',
+          sla: '--'
+        }
+      },
+      {
+        data: {
+          id: 'log_audit_close',
+          label: 'Bitácora de Auditoría:\nRegistro RESOLUCIÓN / CANCELACIÓN',
+          phase: 'Fase 7: Auditoría',
+          role: 'BITÁCORA',
+          color: '#6366f1',
+          shape: 'round-rectangle',
+          desc: 'Sello cronológico definitivo en mesa_ayuda_bitacora con usuario responsable, fecha/hora de cierre y comentario de evidencia humana.',
+          code: 'INSERT INTO mesa_ayuda_bitacora (ticket_id, estado_anterior, estado_nuevo, accion, comentario)...',
+          itil: 'Audit Compliance & Historical Log',
+          status: 'AUDITADO FINAL',
+          prio: '--',
+          sla: '--'
+        }
+      },
+      {
+        data: {
+          id: 'notify_user',
+          label: 'Notificación en Vivo\nal Solicitante',
+          phase: 'Fase 7: Comunicación',
+          role: 'SISTEMA',
+          color: '#0ea5e9',
+          shape: 'round-rectangle',
+          desc: 'El ticket pasa a estado ATENDIDO en la pantalla del usuario en tiempo real sin recargar página gracias al BroadcastChannel y polling sincronizado.',
+          code: 'const channel = new BroadcastChannel("coronyx_helpdesk_channel");\nchannel.postMessage({ type: "TICKET_UPDATED", ticketId });',
+          itil: 'User Notification & Satisfaction',
+          status: 'NOTIFICADO',
+          prio: '--',
+          sla: '--'
+        }
+      },
+      {
+        data: {
+          id: 'end_flow',
+          label: '7. Fin del Proceso:\nTicket Cerrado y Auditado',
+          phase: 'Fase 7: Fin',
+          role: 'SISTEMA',
+          color: '#10b981',
+          shape: 'round-rectangle',
+          desc: 'El incidente queda sellado en base de datos. Se contabiliza en los reportes de rendimiento y cumplimiento de SLA de la clínica.',
+          code: 'Ticket inmutable disponible para auditoría médica y fiscalización.',
+          itil: 'Continual Service Improvement',
+          status: 'CERRADO',
+          prio: '--',
+          sla: 'Archivado'
+        }
+      },
+
+      // ── ARISTAS (CONEXIONES DIRECCIONALES) ──────────────────────────────────
+      { data: { id: 'e1', source: 'start', target: 'auth_check', label: 'Detecta necesidad' } },
+      { data: { id: 'e2', source: 'auth_check', target: 'menu_helpdesk', label: 'Usuario autenticado' } },
+      { data: { id: 'e3', source: 'auth_check', target: 'portal_paciente', label: 'Paciente externo' } },
+      { data: { id: 'e4', source: 'portal_paciente', target: 'menu_helpdesk', label: 'Accede a Mesa de Ayuda' } },
+      { data: { id: 'e5', source: 'menu_helpdesk', target: 'cat_filter', label: 'Abre modal de solicitud' } },
+      
+      // Derivación de Catálogos por Rol
+      { data: { id: 'e6', source: 'cat_filter', target: 'cat_paciente', label: 'Rol: PACIENTE' } },
+      { data: { id: 'e7', source: 'cat_filter', target: 'cat_odontologo', label: 'Rol: ODONTÓLOGO' } },
+      { data: { id: 'e8', source: 'cat_filter', target: 'cat_recepcion', label: 'Rol: RECEPCIONISTA' } },
+      { data: { id: 'e9', source: 'cat_filter', target: 'cat_admin', label: 'Rol: ADMIN_CLÍNICA' } },
+      { data: { id: 'e10', source: 'cat_filter', target: 'cat_otros', label: 'Caso no catalogado' } },
+
+      // Conexión a la Matriz 3x3
+      { data: { id: 'e11', source: 'cat_paciente', target: 'matrix_engine', label: 'Selecciona opción 1-clic' } },
+      { data: { id: 'e12', source: 'cat_odontologo', target: 'matrix_engine', label: 'Selecciona opción 1-clic' } },
+      { data: { id: 'e13', source: 'cat_recepcion', target: 'matrix_engine', label: 'Selecciona opción 1-clic' } },
+      { data: { id: 'e14', source: 'cat_admin', target: 'matrix_engine', label: 'Selecciona opción 1-clic' } },
+      { data: { id: 'e15', source: 'cat_otros', target: 'matrix_engine', label: 'Impacto/Prob. seleccionados' } },
+
+      // Salidas de la Matriz 3x3
+      { data: { id: 'e16', source: 'matrix_engine', target: 'prio_critico', label: 'Score 9 (3×3)' } },
+      { data: { id: 'e17', source: 'matrix_engine', target: 'prio_alto', label: 'Score 6 (3×2, 2×3)' } },
+      { data: { id: 'e18', source: 'matrix_engine', target: 'prio_medio', label: 'Score 3-4 (2×2, 3×1)' } },
+      { data: { id: 'e19', source: 'matrix_engine', target: 'prio_bajo', label: 'Score 1-2 (1×1, 1×2)' } },
+
+      // Persistencia en BD
+      { data: { id: 'e20', source: 'prio_critico', target: 'save_ticket_db', label: 'SLA 10m' } },
+      { data: { id: 'e21', source: 'prio_alto', target: 'save_ticket_db', label: 'SLA 20m' } },
+      { data: { id: 'e22', source: 'prio_medio', target: 'save_ticket_db', label: 'SLA 60m' } },
+      { data: { id: 'e23', source: 'prio_bajo', target: 'save_ticket_db', label: 'SLA 120m' } },
+
+      // Bitácora de Creación
+      { data: { id: 'e24', source: 'save_ticket_db', target: 'log_creacion', label: 'Auditoría inicial' } },
+      { data: { id: 'e25', source: 'log_creacion', target: 'dispatch_role', label: 'Despacho automático' } },
+
+      // Enrutamiento a Bandejas
+      { data: { id: 'e26', source: 'dispatch_role', target: 'box_soporte_ti', label: 'Falla TI / Servidores' } },
+      { data: { id: 'e27', source: 'dispatch_role', target: 'box_admin_clinica', label: 'Personal / DNI / Otros' } },
+      { data: { id: 'e28', source: 'dispatch_role', target: 'box_recepcionista', label: 'Agenda / Sillones' } },
+      { data: { id: 'e29', source: 'dispatch_role', target: 'box_odontologo', label: 'Recetas / Historias' } },
+
+      // Iniciar Atención
+      { data: { id: 'e30', source: 'box_soporte_ti', target: 'take_ticket', label: 'Toma el caso' } },
+      { data: { id: 'e31', source: 'box_admin_clinica', target: 'take_ticket', label: 'Toma el caso' } },
+      { data: { id: 'e32', source: 'box_recepcionista', target: 'take_ticket', label: 'Toma el caso' } },
+      { data: { id: 'e33', source: 'box_odontologo', target: 'take_ticket', label: 'Toma el caso' } },
+
+      // Transición a EN_PROCESO
+      { data: { id: 'e34', source: 'take_ticket', target: 'log_in_proc', label: 'Sella inicio' } },
+      { data: { id: 'e35', source: 'log_in_proc', target: 'action_direct_plus', label: 'Habilita enlace contextual' } },
+      { data: { id: 'e36', source: 'action_direct_plus', target: 'exec_action', label: 'Navegación en 1 clic' } },
+
+      // Verificación de Políticas
+      { data: { id: 'e37', source: 'exec_action', target: 'eval_policy', label: 'Verifica procedencia' } },
+      { data: { id: 'e38', source: 'eval_policy', target: 'resolve_ticket', label: 'Procede (Acción ejecutada)' } },
+      { data: { id: 'e39', source: 'eval_policy', target: 'cancel_ticket', label: 'No procede (Fuera de política)' } },
+
+      // Cierre y Bitácora Final
+      { data: { id: 'e40', source: 'resolve_ticket', target: 'log_audit_close', label: 'Sella resolución' } },
+      { data: { id: 'e41', source: 'cancel_ticket', target: 'log_audit_close', label: 'Sella cancelación' } },
+      { data: { id: 'e42', source: 'log_audit_close', target: 'notify_user', label: 'Actualización en vivo' } },
+      { data: { id: 'e43', source: 'notify_user', target: 'end_flow', label: 'Ciclo cerrado' } }
+    ];
+
+    // ── INICIALIZACIÓN DE CYTOSCAPE CON LAYOUT DAGRE ───────────────────────────
+    let cy;
+
+    document.addEventListener("DOMContentLoaded", function () {
+      initCytoscape();
+      calculateMatrix(); // Inicializar calculadora
+    });
+
+    function initCytoscape() {
+      cy = cytoscape({
+        container: document.getElementById('cy'),
+        elements: elements,
+        boxSelectionEnabled: false,
+        autounselectify: false,
+        style: [
+          // ESTILO GENERAL DE NODOS
+          {
+            selector: 'node',
+            style: {
+              'label': 'data(label)',
+              'color': '#ffffff',
+              'text-valign': 'center',
+              'text-halign': 'center',
+              'text-wrap': 'wrap',
+              'text-max-width': '140px',
+              'font-family': 'Outfit, sans-serif',
+              'font-size': '11px',
+              'font-weight': '600',
+              'background-color': '#162238',
+              'border-width': '2px',
+              'border-color': 'data(color)',
+              'width': '160px',
+              'height': '60px',
+              'shape': 'data(shape)',
+              'transition-property': 'background-color, border-color, border-width, width, height',
+              'transition-duration': '0.2s',
+              'text-outline-color': '#0d131f',
+              'text-outline-width': '1px'
+            }
+          },
+
+          // FORMAS ESPECÍFICAS
+          {
+            selector: 'node[shape = "diamond"]',
+            style: {
+              'width': '135px',
+              'height': '85px',
+              'font-size': '10px'
+            }
+          },
+          {
+            selector: 'node[shape = "barrel"]',
+            style: {
+              'width': '170px',
+              'height': '68px',
+              'background-color': '#032b43'
+            }
+          },
+
+          // NODO PLUS DIRECTO DESTACADO
+          {
+            selector: 'node[id = "action_direct_plus"]',
+            style: {
+              'border-width': '3px',
+              'border-color': '#5fc9be',
+              'background-color': '#0e413c',
+              'color': '#5fc9be',
+              'shadow-blur': '20px',
+              'shadow-color': 'rgba(95,201,190,0.6)',
+              'shadow-opacity': 0.8
+            }
+          },
+
+          // SELECCIÓN Y HOVER
+          {
+            selector: 'node:selected',
+            style: {
+              'border-width': '4px',
+              'border-color': '#ffffff',
+              'shadow-blur': '25px',
+              'shadow-color': 'rgba(255,255,255,0.7)',
+              'shadow-opacity': 0.9
+            }
+          },
+
+          // ESTILO DE ARISTAS (EDGES)
+          {
+            selector: 'edge',
+            style: {
+              'width': 2,
+              'line-color': '#2e3e5f',
+              'target-arrow-color': '#2e3e5f',
+              'target-arrow-shape': 'triangle',
+              'curve-style': 'bezier',
+              'arrow-scale': 1.1,
+              'label': 'data(label)',
+              'color': '#94a3b8',
+              'font-family': 'Outfit, sans-serif',
+              'font-size': '9px',
+              'text-background-color': '#090d15',
+              'text-background-opacity': 0.85,
+              'text-background-padding': '3px',
+              'text-background-shape': 'roundrectangle',
+              'text-rotation': 'autorotate'
+            }
+          },
+
+          // ARISTAS SELECCIONADAS O CONECTADAS
+          {
+            selector: 'edge.highlighted',
+            style: {
+              'width': 3.5,
+              'line-color': '#5fc9be',
+              'target-arrow-color': '#5fc9be',
+              'color': '#5fc9be',
+              'z-index': 999
+            }
+          },
+          {
+            selector: 'node.highlighted',
+            style: {
+              'border-width': '3.5px',
+              'border-color': '#5fc9be',
+              'shadow-blur': '20px',
+              'shadow-color': 'rgba(95,201,190,0.5)'
+            }
+          },
+          {
+            selector: '.dimmed',
+            style: {
+              'opacity': 0.15
+            }
+          }
+        ],
+
+        layout: {
+          name: 'dagre',
+          rankDir: 'TB', // Top to Bottom
+          nodeSep: 45,
+          rankSep: 65,
+          padding: 80,
+          animate: true,
+          animationDuration: 400
+        }
+      });
+
+      // EVENTO: CLIC EN NODO -> MOSTRAR PANEL DE DETALLES
+      cy.on('tap', 'node', function (evt) {
+        const node = evt.target;
+        showDetail(node.data());
+        highlightPath(node);
+      });
+
+      // EVENTO: CLIC EN FONDO -> DESMARCAR
+      cy.on('tap', function (evt) {
+        if (evt.target === cy) {
+          clearHighlights();
+          closeDetailPanel();
+        }
+      });
+
+      // Centrar después de renderizar
+      cy.ready(function () {
+        cy.fit(null, 60);
+      });
+    }
+
+    // ── MOSTRAR PANEL LATERAL CON DATOS DETALLADOS ─────────────────────────────
+    function showDetail(data) {
+      document.getElementById('dt-label').innerText = data.label.replace(/\n/g, ' ');
+      document.getElementById('dt-phase').innerText = data.phase || 'Fase ITIL';
+      document.getElementById('dt-role').innerText = data.role || '--';
+      document.getElementById('dt-itil').innerText = data.itil || '--';
+      document.getElementById('dt-status').innerText = data.status || '--';
+      document.getElementById('dt-desc').innerText = data.desc || 'Sin descripción disponible.';
+
+      // Prioridad y Badge
+      const prioEl = document.getElementById('dt-prio');
+      prioEl.innerHTML = '';
+      if (data.prio && data.prio !== '--') {
+        const span = document.createElement('span');
+        span.className = `badge-prio ${data.prio}`;
+        span.innerText = `${data.prio} (${data.sla || 'SLA variable'})`;
+        prioEl.appendChild(span);
+      } else {
+        prioEl.innerText = '--';
+      }
+
+      // Código técnico
+      const codeContainer = document.getElementById('dt-code-container');
+      if (data.code) {
+        codeContainer.style.display = 'block';
+        document.getElementById('dt-code').innerText = data.code;
+      } else {
+        codeContainer.style.display = 'none';
+      }
+
+      // PLUS Directo
+      const actionPlus = document.getElementById('dt-action-plus');
+      if (data.actionPlus) {
+        actionPlus.style.display = 'block';
+        document.getElementById('dt-action-text').innerText = data.actionPlus;
+      } else {
+        actionPlus.style.display = 'none';
+      }
+
+      document.getElementById('detail-panel').style.display = 'block';
+    }
+
+    function closeDetailPanel() {
+      document.getElementById('detail-panel').style.display = 'none';
+    }
+
+    // ── RESALTAR RUTA / FLUJO COMPLETO DEL NODO SELECCIONADO ───────────────────
+    function highlightPath(node) {
+      clearHighlights();
+      // Predecesores y sucesores directos
+      const connected = node.predecessors().union(node.successors()).union(node);
+      cy.elements().addClass('dimmed');
+      connected.removeClass('dimmed').addClass('highlighted');
+    }
+
+    function clearHighlights() {
+      cy.elements().removeClass('dimmed highlighted');
+    }
+
+    // ── FILTRO POR ROL SOLICITANTE O RESOLUTOR ─────────────────────────────────
+    function filterByRole(role) {
+      // Actualizar botones de filtro
+      document.querySelectorAll('.role-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+
+      if (role === 'ALL') {
+        clearHighlights();
+        cy.elements().removeClass('dimmed');
+        fitView();
+        return;
+      }
+
+      clearHighlights();
+      cy.elements().addClass('dimmed');
+
+      // Nodos que coincidan con el rol o sean universales
+      const matching = cy.nodes().filter(n => {
+        const r = n.data('role') || '';
+        return r.includes(role) || r === 'TODOS' || r === 'SISTEMA' || r === 'MOTOR ITIL' || r === 'POSTGRESQL' || r === 'BITÁCORA';
+      });
+
+      matching.removeClass('dimmed');
+      matching.connectedEdges().filter(e => {
+        return !e.source().hasClass('dimmed') && !e.target().hasClass('dimmed');
+      }).removeClass('dimmed').addClass('highlighted');
+
+      cy.animate({
+        fit: { elements: matching, padding: 80 },
+        duration: 400
+      });
+    }
+
+    // ── BÚSQUEDA EN TIEMPO REAL ────────────────────────────────────────────────
+    function handleSearch() {
+      const q = document.getElementById('searchInput').value.toLowerCase().trim();
+      if (!q) {
+        clearHighlights();
+        return;
+      }
+
+      clearHighlights();
+      cy.elements().addClass('dimmed');
+
+      const matches = cy.nodes().filter(n => {
+        const label = (n.data('label') || '').toLowerCase();
+        const desc = (n.data('desc') || '').toLowerCase();
+        const role = (n.data('role') || '').toLowerCase();
+        const itil = (n.data('itil') || '').toLowerCase();
+        return label.includes(q) || desc.includes(q) || role.includes(q) || itil.includes(q);
+      });
+
+      if (matches.length > 0) {
+        matches.removeClass('dimmed').addClass('highlighted');
+        matches.connectedEdges().removeClass('dimmed');
+        cy.animate({
+          fit: { elements: matches, padding: 100 },
+          duration: 350
+        });
+      }
+    }
+
+    // ── CALCULADORA FLOTANTE DE LA MATRIZ 3x3 ──────────────────────────────────
+    function toggleMatrixModal() {
+      const m = document.getElementById('matrix-modal');
+      m.style.display = m.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function calculateMatrix() {
+      const imp = parseInt(document.getElementById('sel-impacto').value, 10);
+      const prob = parseInt(document.getElementById('sel-prob').value, 10);
+      const score = imp * prob;
+
+      const scoreEl = document.getElementById('mat-score');
+      const badgeEl = document.getElementById('mat-badge');
+      const slaEl = document.getElementById('mat-sla');
+
+      scoreEl.innerText = `${score} pts`;
+
+      let prio = 'BAJO';
+      let slaText = '120 minutos (Programable / Trámite)';
+
+      if (score >= 9) {
+        prio = 'CRÍTICO';
+        slaText = '10 minutos (Atención inmediata obligatoria)';
+      } else if (score >= 6) {
+        prio = 'ALTO';
+        slaText = '20 minutos (Prioridad alta en agenda)';
+      } else if (score >= 3) {
+        prio = 'MEDIO';
+        slaText = '60 minutos (Turno clínico en curso)';
+      }
+
+      badgeEl.className = `badge-prio ${prio}`;
+      badgeEl.innerText = `PRIORIDAD: ${prio}`;
+      slaEl.innerHTML = `Acuerdo de Nivel de Servicio (SLA): <strong>${slaText}</strong>`;
+    }
+
+    // ── CONTROLES DE ZOOM Y LAYOUT ─────────────────────────────────────────────
+    function zoomIn() {
+      cy.zoom(cy.zoom() * 1.25);
+    }
+
+    function zoomOut() {
+      cy.zoom(cy.zoom() * 0.8);
+    }
+
+    function fitView() {
+      cy.animate({
+        fit: { elements: cy.elements(), padding: 50 },
+        duration: 300
+      });
+    }
+
+    function resetLayout() {
+      cy.layout({
+        name: 'dagre',
+        rankDir: 'TB',
+        nodeSep: 45,
+        rankSep: 65,
+        padding: 80,
+        animate: true,
+        animationDuration: 400
+      }).run();
+    }
+  </script>
+</body>
+</html>
