@@ -302,8 +302,8 @@ public class InventoryCatalogService {
         CatalogImportBatch batch = new CatalogImportBatch();
         batch.clinica = p.getClinic();
         batch.loteId = request.loteId();
-        batch.nombreArchivo = request.nombreArchivo();
-        batch.hoja = request.hoja();
+        batch.nombreArchivo = request.nombreArchivo() != null && !request.nombreArchivo().isBlank() ? request.nombreArchivo() : "catalogo_insumos.xlsx";
+        batch.hoja = request.hoja() != null && !request.hoja().isBlank() ? request.hoja() : "BIEN&SERVICIOS";
         batch.totalFilas = request.items().size();
         batch.filasImportadas = importedCount;
         batch.creadoPor = p.getMembership();

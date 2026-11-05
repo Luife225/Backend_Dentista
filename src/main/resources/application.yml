@@ -41,9 +41,9 @@ jwt:
 coronyx:
   teleconsulta:
     jwt-secret: ${JWT_APP_SECRET:coronyx-dental-system-secret-key-2026-super-secure-token-jwt-utp-platform}
-  ml:
-    base-url: ${CORONYX_ML_URL:http://127.0.0.1:8091}
-    default-threshold: ${CORONYX_ML_THRESHOLD:0.25}
-    timeout-ms: ${CORONYX_ML_TIMEOUT_MS:15000}
     jitsi-url: ${JITSI_URL:https://localhost:8443}
     app-id: ${JWT_APP_ID:coronyx-telemed}
+  ml:
+    base-url: ${CORONYX_ML_BASE_URL:${CORONYX_ML_URL:http://127.0.0.1:8091}}
+    default-threshold: ${CORONYX_ML_THRESHOLD:0.25}
+    timeout-ms: ${CORONYX_ML_TIMEOUT_MS:15000}
