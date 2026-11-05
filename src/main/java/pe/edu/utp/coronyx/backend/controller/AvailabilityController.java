@@ -37,7 +37,7 @@ public class AvailabilityController {
         throw new AccessDeniedException("No se encontró una sesión activa o autorizada.");
     }
 
-    @GetMapping("/horarios")
+    @GetMapping({"/horarios", "/horarios-clinica"})
     public ResponseEntity<List<HorarioAtencionDto>> getClinicSchedule(
             @RequestParam(required = false) Long clinicaId,
             @AuthenticationPrincipal UserPrincipal principal) {
