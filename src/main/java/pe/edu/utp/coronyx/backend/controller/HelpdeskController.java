@@ -31,6 +31,37 @@ public class HelpdeskController {
         this.jdbcTemplate = jdbcTemplate;
         initFallbackCatalog();
         initFallbackTickets();
+        syncFriendlyCatalogTextsInDb();
+    }
+
+    private void syncFriendlyCatalogTextsInDb() {
+        if (jdbcTemplate == null) return;
+        try {
+            jdbcTemplate.update("""
+                UPDATE catalogo_incidencia
+                SET descripcion = 'Problemas para conectarse a la videollamada, o fallas de audio y cámara durante la teleconsulta en vivo.'
+                WHERE id = 'INC-PAC-004'
+            """);
+            jdbcTemplate.update("""
+                UPDATE catalogo_incidencia
+                SET titulo = 'No se puede subir radiografía panorámica de gran tamaño (> 25 MB)',
+                    descripcion = 'El archivo de imagen radiográfica supera el límite estándar permitido en el sistema.'
+                WHERE id = 'INC-ODO-002'
+            """);
+            jdbcTemplate.update("""
+                UPDATE catalogo_incidencia
+                SET descripcion = 'Alta de cuenta, asignación de sede y permisos de acceso para personal odontológico nuevo.'
+                WHERE id = 'INC-ADM-003'
+            """);
+            jdbcTemplate.update("""
+                UPDATE catalogo_incidencia
+                SET titulo = 'Interrupción del servicio o lentitud crítica en el sistema clínico',
+                    descripcion = 'Indisponibilidad temporal o lentitud generalizada en la carga de expedientes y citas de la sede.',
+                    accion_label = '🖥️ Monitoreo de Plataforma'
+                WHERE id = 'INC-TI-001'
+            """);
+        } catch (Exception ignored) {
+        }
     }
 
     private void initFallbackCatalog() {
@@ -38,13 +69,13 @@ public class HelpdeskController {
         catalog.add(new HelpdeskCatalogDto("INC-PAC-001", "PACIENTE", "Reprogramación de cita odontológica por imprevisto (con 24 horas de anticipación)", "El paciente solicita cambiar la fecha u hora de su cita programada dentro del plazo de 24 horas previas al turno.", "Asistencia", 3, 2, "ALTO", "RECEPCIONISTA", 20, "/app/agenda", "📅 Ir a Cita en Agenda"));
         catalog.add(new HelpdeskCatalogDto("INC-PAC-002", "PACIENTE", "Corrección de DNI o Nombre por error de digitación en admisión", "El paciente detecta que sus datos de identidad fueron mal ingresados.", "Asistencia", 2, 2, "MEDIO", "ADMIN_CLINICA", 60, "/app/pacientes", "👤 Ir a Ficha de Paciente"));
         catalog.add(new HelpdeskCatalogDto("INC-PAC-003", "PACIENTE", "Radiografía o receta médica no visible en portal del paciente", "El paciente tuvo consulta pero los archivos adjuntos permanecen ocultos.", "Incidencia", 2, 2, "MEDIO", "ODONTOLOGO", 30, "/app/pacientes", "📁 Ir a Archivos de Paciente"));
-        catalog.add(new HelpdeskCatalogDto("INC-PAC-004", "PACIENTE", "Falla de conexión, video o audio en sala de Teleodontología", "No se establece enlace WebRTC o token Jitsi en sesión en vivo.", "Incidencia", 3, 3, "CRITICO", "SOPORTE_TECNICO", 10, "/app/teleodontologia", "📹 Ir a Sala Virtual"));
+        catalog.add(new HelpdeskCatalogDto("INC-PAC-004", "PACIENTE", "Falla de conexión, video o audio en sala de Teleodontología", "Problemas para conectarse a la videollamada, o fallas de audio y cámara durante la teleconsulta en vivo.", "Incidencia", 3, 3, "CRITICO", "SOPORTE_TECNICO", 10, "/app/teleodontologia", "📹 Ir a Sala Virtual"));
         catalog.add(new HelpdeskCatalogDto("INC-PAC-005", "PACIENTE", "Bloqueo de cuenta o error de contraseña al ingresar al Portal del Paciente", "El paciente no puede acceder a su portal personal por bloqueo de credenciales y requiere restablecimiento de acceso.", "Acceso", 2, 2, "MEDIO", "ADMIN_CLINICA", 30, "/app/consultorio", "🔑 Restablecer Acceso"));
         catalog.add(new HelpdeskCatalogDto("INC-PAC-006", "PACIENTE", "Omisión o registro incorrecto de alergia a medicamentos en la Historia Clínica", "El paciente detecta que su alergia medicamentosa o antecedente médico crítico no figura en su ficha clínica.", "Incidencia", 3, 2, "ALTO", "ODONTOLOGO", 20, "/app/pacientes", "🦷 Actualizar Alergia en Ficha"));
 
         // ── 2. ODONTOLOGO (4 ítems)
         catalog.add(new HelpdeskCatalogDto("INC-ODO-001", "ODONTOLOGO", "Reasignación urgente de Sillón dental por retraso en cirugía previa", "Procedimiento quirúrgico se extiende y siguiente paciente está en sala.", "Incidencia", 2, 3, "ALTO", "RECEPCIONISTA", 15, "/app/agenda", "📅 Reubicar Sillón en Agenda"));
-        catalog.add(new HelpdeskCatalogDto("INC-ODO-002", "ODONTOLOGO", "Error 413 al cargar archivo binario pesado de radiografía (> 25MB)", "La imagen panorámica supera el umbral estándar del servidor.", "Incidencia", 2, 2, "MEDIO", "SOPORTE_TECNICO", 30, "/app/pacientes", "📁 Subida Manual"));
+        catalog.add(new HelpdeskCatalogDto("INC-ODO-002", "ODONTOLOGO", "No se puede subir radiografía panorámica de gran tamaño (> 25 MB)", "El archivo de imagen radiográfica supera el límite estándar permitido en el sistema.", "Incidencia", 2, 2, "MEDIO", "SOPORTE_TECNICO", 30, "/app/pacientes", "📁 Subida Manual"));
         catalog.add(new HelpdeskCatalogDto("INC-ODO-003", "ODONTOLOGO", "Solicitud de adenda médica en historia clínica cerrada por auditoría", "Necesidad de incorporar observación diagnóstica complementaria.", "Asistencia", 1, 2, "BAJO", "ADMIN_CLINICA", 120, "/app/pacientes", "🦷 Ver Historia Clínica"));
         catalog.add(new HelpdeskCatalogDto("INC-ODO-004", "ODONTOLOGO", "Capacitación técnica en llenado de historia clínica y odontograma digital", "Inducción para nuevos especialistas en el software odontológico.", "Información", 2, 1, "BAJO", "SOPORTE_TECNICO", 120, "/app/pacientes", "🦷 Ver Odontograma"));
 
@@ -54,10 +85,10 @@ public class HelpdeskController {
 
         // ── 4. ADMIN_CLINICA (2 ítems)
         catalog.add(new HelpdeskCatalogDto("INC-ADM-001", "ADMIN_CLINICA", "Bloqueo urgente de credenciales por desvinculación laboral de personal", "Cese de contrato con acceso activo a historias clínicas.", "Incidencia", 1, 3, "ALTO", "ADMIN_CLINICA", 15, "/app/consultorio", "👥 Desactivar Credenciales"));
-        catalog.add(new HelpdeskCatalogDto("INC-ADM-003", "ADMIN_CLINICA", "Solicitud de creación de credenciales de acceso para nueva odontóloga especialista", "Alta de cuenta y perfil RBAC para personal odontológico nuevo.", "Acceso", 2, 2, "MEDIO", "ADMIN_CLINICA", 60, "/app/consultorio", "👥 Crear Usuario"));
+        catalog.add(new HelpdeskCatalogDto("INC-ADM-003", "ADMIN_CLINICA", "Solicitud de creación de credenciales de acceso para nueva odontóloga especialista", "Alta de cuenta, asignación de sede y permisos de acceso para personal odontológico nuevo.", "Acceso", 2, 2, "MEDIO", "ADMIN_CLINICA", 60, "/app/consultorio", "👥 Crear Usuario"));
 
         // ── 5. SOPORTE_TECNICO / SUPER_ADMIN (1 ítem)
-        catalog.add(new HelpdeskCatalogDto("INC-TI-001", "SUPER_ADMIN", "Caída de base de datos o error 500 en microservicios de Railway Cloud", "Indisponibilidad del backend o lentitud crítica en consultas de facturación.", "Incidencia", 1, 3, "CRITICO", "SOPORTE_TECNICO", 10, "/app/super-admin", "🖥️ Monitoreo Railway"));
+        catalog.add(new HelpdeskCatalogDto("INC-TI-001", "SUPER_ADMIN", "Interrupción del servicio o lentitud crítica en el sistema clínico", "Indisponibilidad temporal o lentitud generalizada en la carga de expedientes y citas de la sede.", "Incidencia", 1, 3, "CRITICO", "SOPORTE_TECNICO", 10, "/app/super-admin", "🖥️ Monitoreo de Plataforma"));
 
         // ── 6. CASO GENERAL / OTROS (1 ítem transversal)
         catalog.add(new HelpdeskCatalogDto("INC-GEN-099", "TODOS", "Otros requerimientos o fallas no contempladas en el catálogo (Con Captura)", "Caja de texto libre para detallar el problema y adjuntar captura de evidencia.", "Asistencia", 2, 2, "MEDIO", "ADMIN_CLINICA", 60, null, "📋 Triaje Administrativo"));
