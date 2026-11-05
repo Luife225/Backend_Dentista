@@ -1,0 +1,286 @@
+<html xmlns:o="urn:schemas-microsoft-com:office:office"
+      xmlns:w="urn:schemas-microsoft-com:office:word"
+      xmlns="http://www.w3.org/TR/REC-html40">
+<head>
+  <meta charset="utf-8">
+  <title>INFORME DEL SPRINT 05 - CORONYX DENTAL</title>
+  <style>
+    body {
+      font-family: Arial, Calibri, sans-serif;
+      font-size: 11pt;
+      line-height: 1.45;
+      color: #111827;
+      margin: 2.5cm;
+    }
+    h1, h2, h3 {
+      color: #0f172a;
+      font-family: Arial, Calibri, sans-serif;
+    }
+    h1 { font-size: 16pt; text-align: center; margin-top: 12pt; margin-bottom: 12pt; }
+    h2 { font-size: 13pt; border-bottom: 1.5px solid #1e3a8a; padding-bottom: 4pt; margin-top: 18pt; }
+    h3 { font-size: 11.5pt; color: #1e3a8a; margin-top: 14pt; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12pt 0;
+      font-size: 9.5pt;
+    }
+    th {
+      background-color: #dbeafe;
+      color: #0f172a;
+      font-weight: bold;
+      border: 1px solid #64748b;
+      padding: 6pt;
+      text-align: center;
+    }
+    td {
+      border: 1px solid #94a3b8;
+      padding: 5pt 6pt;
+      vertical-align: middle;
+    }
+    .center { text-align: center; }
+    .cover { text-align: center; margin-bottom: 28pt; }
+    .box-evidencia {
+      border: 1.5px dashed #475569;
+      background-color: #f8fafc;
+      padding: 16pt;
+      text-align: center;
+      margin: 12pt 0;
+      font-size: 10pt;
+      color: #334155;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="cover">
+    <p><strong>Facultad de Ingeniería</strong><br>
+    Programa Ingeniería de Sistemas e Informática<br>
+    <strong>CURSO INTEGRADOR II: SISTEMAS</strong></p>
+
+    <h1>CORONYX: SISTEMA WEB DE GESTIÓN ODONTOLÓGICA INTEGRAL</h1>
+    <h1>INFORME DEL SPRINT 05</h1>
+
+    <p><strong>Integrantes (Orden Alfabético por Apellido Paterno):</strong><br>
+    Aguilera Terrones, Alan Rubens<br>
+    Chopitea Aguirre, Luis Felipe<br>
+    Chumbes, Adrián Alejandro<br>
+    Gamboa Velásquez, Luis Francisco<br>
+    Pérez Escobedo, Sebastián Maximiliano</p>
+
+    <p><strong>Docente:</strong><br>
+    Mg. Ing. Junior Alexander Neyra Gonzales</p>
+
+    <p><strong>Versión 5.0</strong><br>
+    Noviembre del 2026</p>
+  </div>
+
+  <h2>Historial de Revisiones</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Fecha de Elaboración</th>
+        <th>Versión</th>
+        <th>Elaborado por:</th>
+        <th>Descripción</th>
+        <th>Revisado por:</th>
+        <th>Fecha de Revisión</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="center">03/09/2026</td>
+        <td class="center">1.0</td>
+        <td>Equipo de Desarrollo</td>
+        <td>Propuesta inicial de arquitectura y requerimientos del sistema.</td>
+        <td class="center">Junior Alexander Neyra Gonzales</td>
+        <td class="center">03/09/2026</td>
+      </tr>
+      <tr>
+        <td class="center">11/09/2026</td>
+        <td class="center">2.0</td>
+        <td>Luis Gamboa</td>
+        <td>Modelado físico preliminar de base de datos relacional (11 tablas).</td>
+        <td class="center">Junior Alexander Neyra Gonzales</td>
+        <td class="center">15/09/2026</td>
+      </tr>
+      <tr>
+        <td class="center">20/09/2026</td>
+        <td class="center">3.0</td>
+        <td>Luis Gamboa</td>
+        <td>Incorporación de la entidad rol con permisos en JSONB, reordenamiento de llaves foráneas y normalización de auditoría (12 tablas).</td>
+        <td class="center">Junior Alexander Neyra Gonzales</td>
+        <td class="center">25/09/2026</td>
+      </tr>
+      <tr>
+        <td class="center">01/10/2026</td>
+        <td class="center">4.0</td>
+        <td>Equipo de Desarrollo</td>
+        <td>Implementación del Back-End en Spring Boot y Java 21, conexión con PostgreSQL, autenticación de usuarios, CRUD de pacientes e integración con Front-End.</td>
+        <td class="center">Junior Alexander Neyra Gonzales</td>
+        <td class="center">01/10/2026</td>
+      </tr>
+      <tr>
+        <td class="center">04/11/2026</td>
+        <td class="center">5.0</td>
+        <td>Equipo de Desarrollo</td>
+        <td>Implementación del módulo de Gestión y Seguimiento de Solicitudes e Incidencias, catálogo de 16 incidencias por rol, cálculo automático de prioridad (Impacto × Probabilidad), cálculo automático de tiempo transcurrido, llaves INT autoincrementales con restricción UNIQUE y normalización 3FN en PostgreSQL.</td>
+        <td class="center">Junior Alexander Neyra Gonzales</td>
+        <td class="center">04/11/2026</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>ÍNDICE</h2>
+  <ol>
+    <li>INTRODUCCIÓN</li>
+    <li>DOCUMENTACIÓN
+      <ul><li>2.1. PLANIFICACIÓN DEL SPRINT (ADJUNTAR CAPTURA)</li></ul>
+    </li>
+    <li>GESTIÓN DE SOLICITUDES
+      <ul>
+        <li>3.1. IDENTIFICACIÓN DE INCIDENCIAS</li>
+        <li>3.2. TABLERO DE SEGUIMIENTO DE SOLICITUDES (MÍNIMO 15)</li>
+        <li>3.3. FLUJO DE ATENCIÓN DE SOLICITUDES (DIAGRAMA DE FLUJO)</li>
+      </ul>
+    </li>
+    <li>EVIDENCIAS</li>
+    <li>CONCLUSIONES</li>
+    <li>RECOMENDACIONES</li>
+    <li>BIBLIOGRAFÍA Y REFERENCIAS (FORMATO APA)</li>
+    <li>ANEXOS</li>
+  </ol>
+
+  <h2>1. INTRODUCCIÓN</h2>
+  <p>El presente informe del <strong>Sprint 05</strong> detalla el análisis, diseño e implementación del módulo de <strong>Gestión y Seguimiento de Solicitudes e Incidencias</strong> dentro del sistema web <strong>Coronyx Dental</strong>, desplegado con arquitectura Back-End en <strong>Spring Boot (Java 21)</strong>, base de datos relacional <strong>PostgreSQL</strong> y Front-End en <strong>React con TypeScript</strong>.</p>
+  <p>En los sprints anteriores (Sprints 01 al 04) se construyeron los módulos operativos principales de la clínica odontológica: control de acceso por roles, gestión de pacientes e historias clínicas con odontograma digital, programación de citas con validación de disponibilidad por sillón dental, módulo de teleodontología por videollamada y control de caja e inventario. Durante la operación diaria de estos módulos surgen solicitudes e incidencias con riesgo clínico o administrativo (reprogramaciones de citas con 24 horas de anticipación, omisión o corrección de alergias en la historia clínica, bloqueo de acceso al portal del paciente, anulación urgente de cobros erróneos en Caja o fallas técnicas de conexión).</p>
+  <p>Para evitar que estos requerimientos se gestionen de manera informal o se pierdan sin respuesta, en el <strong>Sprint 05</strong> se implementó un sistema centralizado de tickets que permite:</p>
+  <ol>
+    <li><strong>Identificación clara de incidencias por rol:</strong> Cada usuario (Paciente, Odontólogo, Recepcionista, Administrador de Clínica y Soporte Técnico) cuenta con una lista predefinida de solicitudes según su función, además de una opción general (<em>"Otros"</em>) que permite redactar un caso particular y adjuntar una captura de pantalla.</li>
+    <li><strong>Asignación automática del responsable y de la prioridad:</strong> Cada solicitud se dirige automáticamente al rol encargado de resolverla y recibe un nivel de prioridad objetivo (<code>CRÍTICO</code>, <code>ALTO</code>, <code>MEDIO</code> o <code>BAJO</code>) calculado a partir de su <strong>Impacto (1 al 3)</strong> y su <strong>Probabilidad (1 al 3)</strong>.</li>
+    <li><strong>Seguimiento de estados y cálculo automático del tiempo transcurrido:</strong> Cada ticket se identifica con una llave primaria entera autoincremental (<code>id INT GENERATED BY DEFAULT AS IDENTITY</code>) con restricción explícita <code>UNIQUE</code>, pasa por estados claros (<code>PENDIENTE</code>, <code>EN_PROCESO</code>, <code>ATENDIDO</code> o <code>CANCELADO</code>), vincula en la base de datos al usuario solicitante (<code>solicitante_id</code>) y al trabajador que lo atiende (<code>responsable_id</code>), y calcula de forma automática el tiempo transcurrido mediante un disparador en PostgreSQL.</li>
+    <li><strong>Acceso directo a la pantalla de solución:</strong> Los tickets incluyen un botón de acceso rápido que lleva al responsable directamente a la vista del sistema donde debe ejecutar la solución (Agenda, Pacientes, Caja, Consultorio o Teleodontología).</li>
+  </ol>
+
+  <h2>2. DOCUMENTACIÓN</h2>
+  <h3>2.1. PLANIFICACIÓN DEL SPRINT (ADJUNTAR CAPTURA)</h3>
+  <ul>
+    <li><strong>Duración del Sprint:</strong> 2 semanas (Octubre – Noviembre 2026).</li>
+    <li><strong>Organización del Trabajo:</strong> División de tareas en tablero de seguimiento del equipo, abarcando base de datos PostgreSQL (migraciones Flyway <code>V17</code> a <code>V25</code>), servicios REST en Spring Boot y vistas interactivas en React (<code>/app/solicitudes</code>).</li>
+    <li><strong>Objetivo del Sprint:</strong> Construir e integrar el módulo de registro, asignación, priorización y resolución de solicitudes e incidencias con persistencia real en PostgreSQL, garantizando la trazabilidad completa de al menos 15 solicitudes operativas de la clínica.</li>
+  </ul>
+
+  <div class="box-evidencia">
+    <strong>[ADJUNTAR CAPTURA DE PLANIFICACIÓN DEL SPRINT AQUÍ]</strong><br>
+    Colocar aquí la captura de pantalla del tablero de planificación del equipo (Trello / Jira / GitHub Projects) con las tareas asignadas y completadas en el Sprint 05.
+  </div>
+
+  <h2>3. GESTIÓN DE SOLICITUDES</h2>
+  <h3>3.1. IDENTIFICACIÓN DE INCIDENCIAS</h3>
+  <p>A continuación, se detallan las <strong>16 incidencias y solicitudes</strong> identificadas en la operatoria de la clínica <strong>Coronyx Dental</strong> y registradas en la tabla <code>catalogo_incidencia</code>, indicando el <strong>Responsable</strong> encargado de atender cada caso:</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width:8%;">N°</th>
+        <th style="width:62%;">INCIDENCIA</th>
+        <th style="width:30%;">RESPONSABLE</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td class="center"><strong>1</strong></td><td>Reprogramación de cita odontológica por imprevisto (con 24 horas de anticipación).</td><td><strong>Recepcionista</strong> <em>(Paula Suárez)</em></td></tr>
+      <tr><td class="center"><strong>2</strong></td><td>Corrección de DNI o Nombre por error de digitación en el registro de admisión.</td><td><strong>Admin Clínica</strong> <em>(Carlos Administrador)</em></td></tr>
+      <tr><td class="center"><strong>3</strong></td><td>Radiografía o receta médica no visible en el portal web del paciente.</td><td><strong>Odontólogo</strong> <em>(Dr. Andrés Herrera)</em></td></tr>
+      <tr><td class="center"><strong>4</strong></td><td>Falla de conexión, video o audio en sala de Teleodontología.</td><td><strong>Soporte Técnico</strong> <em>(Super Admin)</em></td></tr>
+      <tr><td class="center"><strong>5</strong></td><td>Bloqueo de cuenta o error de contraseña al ingresar al Portal del Paciente.</td><td><strong>Admin Clínica</strong> <em>(Carlos Administrador)</em></td></tr>
+      <tr><td class="center"><strong>6</strong></td><td>Omisión o registro incorrecto de alergia a medicamentos en la Historia Clínica.</td><td><strong>Odontólogo</strong> <em>(Dr. Andrés Herrera)</em></td></tr>
+      <tr><td class="center"><strong>7</strong></td><td>Reasignación urgente de Sillón dental por retraso en cirugía previa.</td><td><strong>Recepcionista</strong> <em>(Paula Suárez)</em></td></tr>
+      <tr><td class="center"><strong>8</strong></td><td>Error al cargar archivo pesado de radiografía panorámica digital (mayor a 25 MB).</td><td><strong>Soporte Técnico</strong> <em>(Super Admin)</em></td></tr>
+      <tr><td class="center"><strong>9</strong></td><td>Solicitud de nota aclaratoria (adenda) en historia clínica cerrada.</td><td><strong>Admin Clínica</strong> <em>(Carlos Administrador)</em></td></tr>
+      <tr><td class="center"><strong>10</strong></td><td>Capacitación técnica en el llenado de historia clínica y odontograma digital.</td><td><strong>Soporte Técnico</strong> <em>(Super Admin)</em></td></tr>
+      <tr><td class="center"><strong>11</strong></td><td>Anulación urgente de cargo o cobro registrado con monto erróneo en Caja.</td><td><strong>Admin Clínica</strong> <em>(Carlos Administrador)</em></td></tr>
+      <tr><td class="center"><strong>12</strong></td><td>Bloqueo urgente de agenda por ausencia o emergencia médica del odontólogo de turno.</td><td><strong>Admin Clínica</strong> <em>(Carlos Administrador)</em></td></tr>
+      <tr><td class="center"><strong>13</strong></td><td>Bloqueo urgente de credenciales de acceso por cese laboral de personal.</td><td><strong>Admin Clínica</strong> <em>(Carlos Administrador)</em></td></tr>
+      <tr><td class="center"><strong>14</strong></td><td>Solicitud de creación de credenciales de acceso para nueva odontóloga especialista.</td><td><strong>Admin Clínica</strong> <em>(Carlos Administrador)</em></td></tr>
+      <tr><td class="center"><strong>15</strong></td><td>Caída de conexión a base de datos o error de respuesta en el servidor web.</td><td><strong>Soporte Técnico</strong> <em>(Super Admin)</em></td></tr>
+      <tr><td class="center"><strong>16</strong></td><td>Otros requerimientos o fallas no contempladas en el listado (con captura adjunta).</td><td><strong>Admin Clínica</strong> <em>(Carlos Administrador)</em></td></tr>
+    </tbody>
+  </table>
+
+  <h3>3.2. TABLERO DE SEGUIMIENTO DE SOLICITUDES (MÍNIMO 15)</h3>
+  <p>Se presenta el <strong>Tablero de Seguimiento de Solicitudes</strong> con <strong>16 tickets reales</strong> gestionados en el sistema y almacenados en la tabla <code>mesa_ayuda_ticket</code> de PostgreSQL (con llave primaria entera <code>id INT</code> autoincremental y restricción <code>UNIQUE</code>):</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>TICKET</th>
+        <th>SOLICITUD</th>
+        <th>SOLICITANTE</th>
+        <th>RESPONSABLE</th>
+        <th>PRIORIDAD</th>
+        <th>ESTADO</th>
+        <th>TIEMPO TRANSCURRIDO</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td class="center"><strong>TKT-001</strong><br><em>(ID: 1)</em></td><td>Falla de conexión, video o audio en sala de Teleodontología con paciente conectado.</td><td class="center">Luis Francisco Gamboa<br><em>(Paciente)</em></td><td class="center">Super Admin<br><em>(Soporte Técnico)</em></td><td class="center"><strong>CRÍTICO</strong></td><td class="center"><strong>ATENDIDO</strong></td><td class="center">8 min</td></tr>
+      <tr><td class="center"><strong>TKT-002</strong><br><em>(ID: 2)</em></td><td>Reasignación urgente de Sillón dental por retraso en cirugía previa de tercer molar.</td><td class="center">Andrés Herrera<br><em>(Odontólogo)</em></td><td class="center">Paula Suárez<br><em>(Recepcionista)</em></td><td class="center"><strong>ALTO</strong></td><td class="center"><strong>ATENDIDO</strong></td><td class="center">11 min</td></tr>
+      <tr><td class="center"><strong>TKT-003</strong><br><em>(ID: 3)</em></td><td>Reprogramación de cita odontológica por imprevisto (con 24 horas de anticipación).</td><td class="center">Luis Francisco Gamboa<br><em>(Paciente)</em></td><td class="center">Paula Suárez<br><em>(Recepcionista)</em></td><td class="center"><strong>ALTO</strong></td><td class="center"><strong>ATENDIDO</strong></td><td class="center">14 min</td></tr>
+      <tr><td class="center"><strong>TKT-004</strong><br><em>(ID: 4)</em></td><td>Bloqueo urgente de credenciales por desvinculación laboral de personal de turno tarde.</td><td class="center">Carlos Administrador<br><em>(Admin Clínica)</em></td><td class="center">Carlos Administrador<br><em>(Admin Clínica)</em></td><td class="center"><strong>ALTO</strong></td><td class="center"><strong>ATENDIDO</strong></td><td class="center">9 min</td></tr>
+      <tr><td class="center"><strong>TKT-005</strong><br><em>(ID: 5)</em></td><td>Error al cargar archivo pesado de radiografía panorámica (&gt; 25 MB) en ficha clínica.</td><td class="center">Andrés Herrera<br><em>(Odontólogo)</em></td><td class="center">Super Admin<br><em>(Soporte Técnico)</em></td><td class="center"><strong>MEDIO</strong></td><td class="center"><strong>ATENDIDO</strong></td><td class="center">24 min</td></tr>
+      <tr><td class="center"><strong>TKT-006</strong><br><em>(ID: 6)</em></td><td>Corrección de DNI o Nombre por error de digitación en la ficha de admisión.</td><td class="center">Luis Paciente<br><em>(Paciente)</em></td><td class="center">Carlos Administrador<br><em>(Admin Clínica)</em></td><td class="center"><strong>MEDIO</strong></td><td class="center"><strong>ATENDIDO</strong></td><td class="center">32 min</td></tr>
+      <tr><td class="center"><strong>TKT-007</strong><br><em>(ID: 7)</em></td><td>Radiografía o receta médica no visible en el portal web del paciente tras consulta.</td><td class="center">Luis Francisco Gamboa<br><em>(Paciente)</em></td><td class="center">Andrés Herrera<br><em>(Odontólogo)</em></td><td class="center"><strong>MEDIO</strong></td><td class="center"><strong>ATENDIDO</strong></td><td class="center">18 min</td></tr>
+      <tr><td class="center"><strong>TKT-008</strong><br><em>(ID: 8)</em></td><td>Anulación urgente de cargo o cobro registrado con monto erróneo en Caja.</td><td class="center">Paula Suárez<br><em>(Recepcionista)</em></td><td class="center">Carlos Administrador<br><em>(Admin Clínica)</em></td><td class="center"><strong>ALTO</strong></td><td class="center"><strong>ATENDIDO</strong></td><td class="center">12 min</td></tr>
+      <tr><td class="center"><strong>TKT-009</strong><br><em>(ID: 9)</em></td><td>Capacitación técnica en llenado de historia clínica y guardado de odontograma digital.</td><td class="center">Andrés Herrera<br><em>(Odontólogo)</em></td><td class="center">Super Admin<br><em>(Soporte Técnico)</em></td><td class="center"><strong>BAJO</strong></td><td class="center"><strong>ATENDIDO</strong></td><td class="center">42 min</td></tr>
+      <tr><td class="center"><strong>TKT-010</strong><br><em>(ID: 10)</em></td><td>Solicitud de creación de credenciales de acceso para nueva odontóloga especialista.</td><td class="center">Carlos Administrador<br><em>(Admin Clínica)</em></td><td class="center">Carlos Administrador<br><em>(Admin Clínica)</em></td><td class="center"><strong>MEDIO</strong></td><td class="center"><strong>ATENDIDO</strong></td><td class="center">55 min</td></tr>
+      <tr><td class="center"><strong>TKT-011</strong><br><em>(ID: 11)</em></td><td>Bloqueo de cuenta o error de contraseña al ingresar al Portal del Paciente.</td><td class="center">Luis Paciente<br><em>(Paciente)</em></td><td class="center">Carlos Administrador<br><em>(Admin Clínica)</em></td><td class="center"><strong>MEDIO</strong></td><td class="center"><strong>ATENDIDO</strong></td><td class="center">15 min</td></tr>
+      <tr><td class="center"><strong>TKT-012</strong><br><em>(ID: 12)</em></td><td>Bloqueo urgente de agenda por ausencia o emergencia médica del odontólogo de turno.</td><td class="center">Paula Suárez<br><em>(Recepcionista)</em></td><td class="center">Carlos Administrador<br><em>(Admin Clínica)</em></td><td class="center"><strong>ALTO</strong></td><td class="center"><strong>ATENDIDO</strong></td><td class="center">20 min</td></tr>
+      <tr><td class="center"><strong>TKT-013</strong><br><em>(ID: 13)</em></td><td>Solicitud de nota aclaratoria (adenda) en historia clínica cerrada.</td><td class="center">Andrés Herrera<br><em>(Odontólogo)</em></td><td class="center">Carlos Administrador<br><em>(Admin Clínica)</em></td><td class="center"><strong>BAJO</strong></td><td class="center"><strong>ATENDIDO</strong></td><td class="center">1 h 10 min</td></tr>
+      <tr><td class="center"><strong>TKT-014</strong><br><em>(ID: 14)</em></td><td>Omisión o registro incorrecto de alergia a medicamentos en la Historia Clínica.</td><td class="center">Luis Francisco Gamboa<br><em>(Paciente)</em></td><td class="center">Andrés Herrera<br><em>(Odontólogo)</em></td><td class="center"><strong>ALTO</strong></td><td class="center"><strong>ATENDIDO</strong></td><td class="center">16 min</td></tr>
+      <tr><td class="center"><strong>TKT-015</strong><br><em>(ID: 15)</em></td><td>Reprogramación de cita odontológica por imprevisto (con 24 horas de anticipación).</td><td class="center">PRUEBA DEMO<br><em>(Paciente)</em></td><td class="center">Paula Suárez<br><em>(Recepcionista)</em></td><td class="center"><strong>ALTO</strong></td><td class="center"><strong>ATENDIDO</strong></td><td class="center">4 min</td></tr>
+      <tr><td class="center"><strong>TKT-016</strong><br><em>(ID: 16)</em></td><td>Reprogramación de cita odontológica por imprevisto (con 24 horas de anticipación).</td><td class="center">PRUEBA DEMO<br><em>(Paciente)</em></td><td class="center">Paula Suárez<br><em>(Recepcionista)</em></td><td class="center"><strong>ALTO</strong></td><td class="center"><strong>PENDIENTE</strong></td><td class="center">15 min</td></tr>
+    </tbody>
+  </table>
+
+  <h3>3.3. FLUJO DE ATENCIÓN DE SOLICITUDES (DIAGRAMA DE FLUJO)</h3>
+  <div class="box-evidencia">
+    <strong>[INSERTAR DIAGRAMA DE FLUJO DE ATENCIÓN DE SOLICITUDES AQUÍ]</strong><br>
+    Abrir <code>docs/diagramas-apf3-interactivo.html</code> en el navegador y pegar aquí la captura del Diagrama 1 (Sección 3.3 / 4.5: Registro → Clasificación → Asignación → Atención → Verificación → Cierre).
+  </div>
+
+  <h2>4. EVIDENCIAS</h2>
+  <div class="box-evidencia">
+    <strong>[ADJUNTAR CAPTURA 4.1: TABLERO DE SOLICITUDES EN EL SISTEMA WEB (/app/solicitudes)]</strong>
+  </div>
+  <div class="box-evidencia">
+    <strong>[ADJUNTAR CAPTURA 4.2: TABLAS EN POSTGRESQL / PGADMIN 4 (id INT PK + UNIQUE y ticket_id INT FK)]</strong>
+  </div>
+
+  <h2>5. CONCLUSIONES</h2>
+  <ol>
+    <li><strong>Centralización y Orden en la Atención de Solicitudes:</strong> Se logró reemplazar las consultas informales por un módulo integrado dentro del sistema web <strong>Coronyx Dental</strong>, donde tanto los pacientes como el personal registran sus incidencias a través de opciones claras según su rol.</li>
+    <li><strong>Priorización Objetiva de Casos con Riesgo Real:</strong> Mediante el cálculo automático de prioridad (<em>Impacto × Probabilidad</em>), el sistema ordena la bandeja de trabajo asegurando que los riesgos clínicos y operativos (como fallas en una teleconsulta activa, omisión de alergias en la historia clínica o cobros erróneos en Caja) sean atendidos de manera prioritaria.</li>
+    <li><strong>Distribución Clara de Responsabilidades por Rol:</strong> La asignación directa de cada tipo de solicitud entre <strong>Recepcionista</strong>, <strong>Odontólogo</strong>, <strong>Admin Clínica</strong> y <strong>Soporte Técnico</strong> garantiza que cada requerimiento sea resuelto por el perfil con los permisos correspondientes.</li>
+    <li><strong>Trazabilidad e Integridad en PostgreSQL (3FN + UNIQUE):</strong> Todos los tickets quedan respaldados en las tablas normalizadas <code>catalogo_incidencia</code>, <code>mesa_ayuda_ticket</code> (con llave primaria entera <code>id INT IDENTITY</code> y restricción <code>UNIQUE</code>) y <code>mesa_ayuda_bitacora</code>, enlazando <code>solicitante_id</code> y <code>responsable_id</code> con la tabla <code>usuario</code> y calculando el <code>tiempo_transcurrido</code> mediante un disparador automático en PostgreSQL.</li>
+    <li><strong>Reducción del Tiempo de Respuesta mediante Enlaces Directos:</strong> La incorporación de botones de acceso rápido dentro del ticket permite al responsable dirigirse con un solo clic al módulo exacto (Agenda, Pacientes, Caja, Consultorio o Teleodontología) para ejecutar la solución de inmediato.</li>
+  </ol>
+
+  <h2>6. RECOMENDACIONES</h2>
+  <ol>
+    <li><strong>Notificaciones por Correo Electrónico o Mensajería:</strong> Implementar el envío automático de alertas por correo electrónico cuando se registre una solicitud de prioridad <code>CRÍTICO</code> o cuando el ticket de un paciente cambie al estado <code>ATENDIDO</code>.</li>
+    <li><strong>Alertas Visuales por Tiempo de Espera Prolongado:</strong> Añadir un indicador visual en la bandeja del responsable cuando una solicitud en estado <code>PENDIENTE</code> supere el tiempo estimado de atención, facilitando su seguimiento oportuno.</li>
+    <li><strong>Calificación de la Atención por parte del Solicitante:</strong> Incorporar una breve valoración (de 1 a 5 estrellas) al finalizar la atención de un ticket para medir el grado de conformidad de los pacientes y del personal de la clínica.</li>
+    <li><strong>Actualización Periódica del Catálogo de Solicitudes:</strong> Revisar mensualmente los casos registrados bajo la opción abierta <em>"Otros"</em> para identificar solicitudes frecuentes e incorporarlas como nuevas opciones predefinidas en el catálogo.</li>
+  </ol>
+
+  <h2>BIBLIOGRAFÍA Y REFERENCIAS (FORMATO APA)</h2>
+  <ul>
+    <li>PostgreSQL Global Development Group. (2025). <em>PostgreSQL 16 Documentation: SQL Procedural Language (PL/pgSQL) and Triggers</em>. https://www.postgresql.org/docs/current/plpgsql.html</li>
+    <li>Pressman, R. S., &amp; Maxim, B. R. (2021). <em>Ingeniería del software: Un enfoque práctico</em> (9.ª ed.). McGraw-Hill Education.</li>
+    <li>Sommerville, I. (2016). <em>Ingeniería de software</em> (10.ª ed.). Pearson Educación.</li>
+    <li>Walls, C. (2022). <em>Spring in Action</em> (6.ª ed.). Manning Publications.</li>
+  </ul>
+
+</body>
+</html>
+

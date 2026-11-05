@@ -59,26 +59,26 @@ public class SecurityConfig {
                         // Endpoints públicos de login y salud de infraestructura
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/login", "/auth/login").permitAll()
                         .requestMatchers("/actuator/health", "/actuator/info", "/error").permitAll()
+                        .requestMatchers("/api/v1/helpdesk/**", "/helpdesk/**").permitAll()
 
                         // Revalidación de sesión: requiere token de cualquier rol autorizado
                         .requestMatchers("/api/v1/auth/me", "/auth/me").authenticated()
 
-                        // Directorio de usuarios de la clínica: estrictamente ADMIN_CLINICA
-                        .requestMatchers("/api/v1/auth/users", "/auth/users").hasRole("ADMIN_CLINICA")
+                        // Directorio de usuarios de la clínica: ADMIN_CLINICA y SUPER_ADMIN (Soporte Técnico)
+                        .requestMatchers("/api/v1/auth/users", "/auth/users").hasAnyRole("ADMIN_CLINICA", "SUPER_ADMIN")
 
-                        // CRUD de cuentas y membresías de clínica: exclusivo ADMIN_CLINICA
-                        .requestMatchers("/api/v1/clinic/users/**", "/clinic/users/**").hasRole("ADMIN_CLINICA")
+                        // CRUD de cuentas y membresías de clínica: ADMIN_CLINICA y SUPER_ADMIN
+                        .requestMatchers("/api/v1/clinic/users/**", "/clinic/users/**").hasAnyRole("ADMIN_CLINICA", "SUPER_ADMIN")
 
-                        // Operación clínica de Pacientes y Citas: solo los cuatro roles operativos
-                        // SUPER_ADMIN no tiene asignación de clínica y queda expresamente denegado con 403
+                        // Operación clínica de Pacientes y Citas:
                         .requestMatchers("/api/v1/patients/**", "/patients/**")
-                        .hasAnyRole("ADMIN_CLINICA", "RECEPCIONISTA", "ODONTOLOGO", "PACIENTE")
+                        .hasAnyRole("ADMIN_CLINICA", "RECEPCIONISTA", "ODONTOLOGO", "PACIENTE", "SUPER_ADMIN")
 
                         .requestMatchers("/api/v1/citas/**", "/citas/**")
-                        .hasAnyRole("ADMIN_CLINICA", "RECEPCIONISTA", "ODONTOLOGO", "PACIENTE")
+                        .hasAnyRole("ADMIN_CLINICA", "RECEPCIONISTA", "ODONTOLOGO", "PACIENTE", "SUPER_ADMIN")
 
                         .requestMatchers("/api/v1/me/**", "/me/**")
-                        .hasAnyRole("ADMIN_CLINICA", "RECEPCIONISTA", "ODONTOLOGO", "PACIENTE")
+                        .hasAnyRole("ADMIN_CLINICA", "RECEPCIONISTA", "ODONTOLOGO", "PACIENTE", "SUPER_ADMIN")
 
                         // Historia clínica y atenciones: estrictamente ODONTOLOGO (Admin/recepción/paciente bloqueados con 403)
                         .requestMatchers("/api/v1/clinical-encounters/**", "/clinical-encounters/**",
@@ -88,30 +88,30 @@ public class SecurityConfig {
                         // Archivos adjuntos y radiografías (F06-A, P05): roles operativos y paciente
                         .requestMatchers("/api/v1/attachments/**", "/attachments/**",
                                          "/api/v1/archivos/**", "/archivos/**")
-                        .hasAnyRole("ADMIN_CLINICA", "RECEPCIONISTA", "ODONTOLOGO", "PACIENTE")
+                        .hasAnyRole("ADMIN_CLINICA", "RECEPCIONISTA", "ODONTOLOGO", "PACIENTE", "SUPER_ADMIN")
 
                         // Odontograma (D07/V06): roles operativos y paciente para consultar/gestionar
                         .requestMatchers("/api/v1/odontograma/**", "/odontograma/**")
-                        .hasAnyRole("ADMIN_CLINICA", "RECEPCIONISTA", "ODONTOLOGO", "PACIENTE")
+                        .hasAnyRole("ADMIN_CLINICA", "RECEPCIONISTA", "ODONTOLOGO", "PACIENTE", "SUPER_ADMIN")
 
                         // Disponibilidad y configuración de horarios (A09/R05)
                         .requestMatchers("/api/v1/disponibilidad/**", "/disponibilidad/**")
-                        .hasAnyRole("ADMIN_CLINICA", "RECEPCIONISTA", "ODONTOLOGO", "PACIENTE")
+                        .hasAnyRole("ADMIN_CLINICA", "RECEPCIONISTA", "ODONTOLOGO", "PACIENTE", "SUPER_ADMIN")
 
-                        // Panel y métricas reales (A11/V10): solo equipo clínico
+                        // Panel y métricas reales (A11/V10): equipo clínico y soporte
                         .requestMatchers("/api/v1/dashboard/**", "/dashboard/**")
-                        .hasAnyRole("ADMIN_CLINICA", "RECEPCIONISTA", "ODONTOLOGO")
+                        .hasAnyRole("ADMIN_CLINICA", "RECEPCIONISTA", "ODONTOLOGO", "SUPER_ADMIN")
 
                         // Notificaciones transaccionales (V15): cualquier rol autenticado
                         .requestMatchers("/api/v1/notifications/**", "/notifications/**",
                                          "/api/v1/notificaciones/**", "/notificaciones/**")
-                        .hasAnyRole("ADMIN_CLINICA", "RECEPCIONISTA", "ODONTOLOGO", "PACIENTE")
+                        .hasAnyRole("ADMIN_CLINICA", "RECEPCIONISTA", "ODONTOLOGO", "PACIENTE", "SUPER_ADMIN")
 
                         // Perfil de clínica (V09): lectura para equipo clínico, mutación validada por servicio
                         .requestMatchers("/api/v1/clinic/profile/**", "/api/v1/clinic/**", "/clinic/**")
-                        .hasAnyRole("ADMIN_CLINICA", "RECEPCIONISTA", "ODONTOLOGO")
+                        .hasAnyRole("ADMIN_CLINICA", "RECEPCIONISTA", "ODONTOLOGO", "SUPER_ADMIN")
 
-                        .requestMatchers("/api/v1/caja/**").hasAnyRole("ADMIN_CLINICA", "RECEPCIONISTA", "ODONTOLOGO")
+                        .requestMatchers("/api/v1/caja/**").hasAnyRole("ADMIN_CLINICA", "RECEPCIONISTA", "ODONTOLOGO", "SUPER_ADMIN")
                         .requestMatchers("/api/v1/inventario/**").hasAnyRole("ADMIN_CLINICA", "RECEPCIONISTA")
                         .requestMatchers("/api/v1/teleconsulta/**").hasAnyRole("ADMIN_CLINICA", "ODONTOLOGO", "PACIENTE")
 
