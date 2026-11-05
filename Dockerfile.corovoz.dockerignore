@@ -1,0 +1,7 @@
+*
+!corovoz_python/
+!corovoz_python/**
+corovoz_python/README.md
+corovoz_python/test_corovoz.py
+corovoz_python/__pycache__/
+corovoz_python/**/*.pyc

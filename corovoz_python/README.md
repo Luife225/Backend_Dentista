@@ -121,6 +121,34 @@ El modelo puede cambiarse con `COROVOZ_MODEL_PATH`; el ejecutable con
 y el runtime whisper.cpp fijados en `install_model.py`. En Linux se instala
 `whisper-cli` por separado y se configura su ruta absoluta.
 
+## Despliegue de CoroVoz en Railway
+
+Tu equipo puede usar Windows. Railway compila y ejecuta `Dockerfile.corovoz` en
+Linux; el Dockerfile instala el modelo verificado y compila `whisper-cli` para ese
+entorno. No subas `.corovoz/` ni secretos al repositorio.
+
+1. Crea un servicio Railway desde `Luife225/Backend_Dentista`, rama
+   `feature/AlanAguilera`, con la raíz del repositorio. Configura
+   `RAILWAY_DOCKERFILE_PATH=Dockerfile.corovoz`.
+2. En el servicio Python define `COROVOZ_SERVICE_TOKEN` con un valor aleatorio
+   largo. Deja `COROVOZ_LUNA_ENABLED=false` salvo que hayas preparado su
+   facturación y almacenamiento persistente. Railway proporciona `PORT` y el
+   comando del Dockerfile lo pasa a `COROVOZ_PYTHON_PORT`.
+3. Configura `/health` como ruta de salud y genera un dominio HTTPS en Railway.
+   La ruta solo indica si el modelo y el ejecutable están disponibles; las
+   rutas funcionales siguen exigiendo `X-CoroVoz-Token`.
+4. En el servicio Java define `COROVOZ_PYTHON_URL=https://<dominio>` y el mismo
+   `COROVOZ_SERVICE_TOKEN`; define también
+   `COROVOZ_PYTHON_AUTOSTART=false`. Despliega primero Python y después Java.
+5. Comprueba `/health` (debe devolver `ready: true`) y `/status` con el token
+   (debe devolver `speechReady: true`). Finalmente prueba una transcripción
+   desde la interfaz autenticada.
+
+El modelo queda dentro de la imagen, así que no necesita un volumen. Si activas
+Luna, configura `COROVOZ_LUNA_USAGE_DB` sobre un volumen para conservar sus cuotas
+SQLite entre despliegues. La transcripción admite una solicitud a la vez por
+réplica; dimensiona CPU y memoria según el uso real.
+
 ## Verificación
 
 ```powershell

@@ -1,0 +1,33 @@
+FROM python:3.12-slim-bookworm AS build
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates cmake g++ git make \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN git clone --depth 1 --branch b5130 https://github.com/ggml-org/whisper.cpp.git /tmp/whisper.cpp \
+    && cmake -S /tmp/whisper.cpp -B /tmp/whisper.cpp/build \
+        -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF \
+        -DWHISPER_BUILD_TESTS=OFF -DGGML_NATIVE=OFF \
+    && cmake --build /tmp/whisper.cpp/build --target whisper-cli -j 2 \
+    && install /tmp/whisper.cpp/build/bin/whisper-cli /usr/local/bin/whisper-cli \
+    && rm -rf /tmp/whisper.cpp
+
+WORKDIR /app
+COPY corovoz_python/ /app/corovoz_python/
+RUN python corovoz_python/install_model.py
+
+FROM python:3.12-slim-bookworm
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+COPY --from=build /usr/local/bin/whisper-cli /usr/local/bin/whisper-cli
+COPY --from=build /app/.corovoz/whisper/ggml-base-q5_1.bin /app/.corovoz/whisper/ggml-base-q5_1.bin
+COPY --from=build /app/corovoz_python/ /app/corovoz_python/
+
+ENV COROVOZ_PYTHON_HOST=0.0.0.0 \
+    COROVOZ_MODEL_PATH=/app/.corovoz/whisper/ggml-base-q5_1.bin \
+    COROVOZ_WHISPER_COMMAND=/usr/local/bin/whisper-cli
+
+CMD ["sh", "-c", "exec env COROVOZ_PYTHON_PORT=\"${PORT:-8787}\" python /app/corovoz_python/server.py"]

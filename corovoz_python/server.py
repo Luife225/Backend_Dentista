@@ -44,6 +44,10 @@ class Handler(BaseHTTPRequestHandler):
         return True
 
     def do_GET(self):
+        if self.path == "/health":
+            ready = installed()
+            self.respond(200 if ready else 503, {"ready": ready})
+            return
         if not self.authorized():
             return
         if self.path == "/status":

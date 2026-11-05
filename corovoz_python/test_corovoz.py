@@ -19,6 +19,23 @@ import server
 
 
 class CoroVozPythonTest(unittest.TestCase):
+    def test_health_reports_model_readiness_without_service_token(self):
+        class Probe:
+            path = "/health"
+            response = None
+
+            def respond(self, status, payload):
+                self.response = (status, payload)
+
+            def authorized(self):
+                raise AssertionError("Health must not require the service token")
+
+        for installed, expected in ((True, 200), (False, 503)):
+            with patch.object(server, "installed", return_value=installed):
+                probe = Probe()
+                server.Handler.do_GET(probe)
+                self.assertEqual((expected, {"ready": installed}), probe.response)
+
     def test_every_tooth_starts_a_structured_partial_proposal(self):
         for quadrant in range(1, 5):
             for index in range(1, 9):
