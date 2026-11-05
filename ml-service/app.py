@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Microservicio FastAPI de inferencia ML para CORONYX (Local y Railway).
 
 Endpoints expuestos:
@@ -9,12 +10,12 @@ Endpoints expuestos:
 """
 
 import argparse
+from contextlib import asynccontextmanager
 from email.parser import BytesParser
 from email.policy import default as default_email_policy
 import os
-from typing import Optional
 
-from fastapi import FastAPI, File, Query, Request, Response, UploadFile
+from fastapi import FastAPI, Query, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse
 
@@ -23,6 +24,16 @@ from detector import PanoramicDetectorSession, render_annotated_png_bytes
 DEFAULT_THRESHOLD = float(os.getenv("CORONYX_ML_THRESHOLD", "0.25"))
 default_session = PanoramicDetectorSession(threshold=DEFAULT_THRESHOLD)
 
+
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
+    try:
+        default_session.load()
+    except Exception:
+        pass
+    yield
+
+
 app = FastAPI(
     title="CORONYX ML Service — Detector de Caries en Radiografías Panorámicas",
     description=(
@@ -30,6 +41,7 @@ app = FastAPI(
         "asistida de `caries` (clase 0) y `caries_profunda` (clase 1)."
     ),
     version="1.0.0-mvp",
+    lifespan=lifespan,
 )
 
 app.add_middleware(
@@ -131,17 +143,25 @@ DEMO_HTML = """<!DOCTYPE html>
 """
 
 
-async def _extract_request_image(request: Request, file: Optional[UploadFile]) -> tuple[bytes, str]:
+async def _extract_request_image(request: Request) -> tuple[bytes, str]:
     """Soporta tanto multipart/form-data ('file' desde Swagger/Postman) como binario directo (desde Spring Boot)."""
-    if file is not None:
-        raw_bytes = await file.read()
-        return raw_bytes, file.filename or "upload.png"
+    content_type = request.headers.get("content-type", "").lower()
 
-    content_type = request.headers.get("content-type", "")
-    body = await request.body()
     if "multipart/form-data" in content_type:
+        try:
+            form = await request.form()
+            for key in ("file", "imagen", "radiografia"):
+                item = form.get(key)
+                if item is not None and hasattr(item, "read"):
+                    raw_bytes = await item.read()
+                    filename = getattr(item, "filename", None) or "upload.png"
+                    return raw_bytes, filename
+        except Exception:
+            pass
+
+        body = await request.body()
         raw_mime = (
-            f"Content-Type: {content_type}\r\nMIME-Version: 1.0\r\n\r\n".encode("utf-8")
+            f"Content-Type: {request.headers.get('content-type', '')}\r\nMIME-Version: 1.0\r\n\r\n".encode("utf-8")
             + body
         )
         msg = BytesParser(policy=default_email_policy).parsebytes(raw_mime)
@@ -153,6 +173,7 @@ async def _extract_request_image(request: Request, file: Optional[UploadFile]) -
                 return payload or b"", filename or "upload.png"
         return b"", "empty_multipart"
 
+    body = await request.body()
     file_name = request.headers.get("x-file-name", "radiografia.png")
     return body, file_name
 
@@ -195,13 +216,36 @@ def health_check():
     return JSONResponse(content=payload, status_code=status_code)
 
 
-@app.post("/predict", summary="Analiza una radiografía PNG/JPEG y devuelve hallazgos JSON")
+MULTIPART_OPENAPI = {
+    "requestBody": {
+        "content": {
+            "multipart/form-data": {
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "file": {
+                            "type": "string",
+                            "format": "binary",
+                            "description": "Radiografía panorámica en formato PNG o JPEG.",
+                        }
+                    },
+                }
+            },
+            "application/octet-stream": {
+                "schema": {"type": "string", "format": "binary"}
+            },
+        }
+    }
+}
+
+
+@app.post(
+    "/predict",
+    summary="Analiza una radiografía PNG/JPEG y devuelve hallazgos JSON",
+    openapi_extra=MULTIPART_OPENAPI,
+)
 async def predict_radiograph(
     request: Request,
-    file: Optional[UploadFile] = File(
-        default=None,
-        description="Radiografía panorámica en formato PNG o JPEG (opcional si se envía binario directo).",
-    ),
     threshold: float = Query(
         default=DEFAULT_THRESHOLD,
         ge=0.01,
@@ -209,7 +253,7 @@ async def predict_radiograph(
         description="Umbral mínimo de confianza para reportar hallazgos (por defecto 0.25).",
     ),
 ):
-    raw_bytes, filename = await _extract_request_image(request, file)
+    raw_bytes, filename = await _extract_request_image(request)
     result = default_session.analyze_bytes(
         raw_bytes=raw_bytes,
         file_name=filename,
@@ -227,13 +271,13 @@ async def predict_radiograph(
     return JSONResponse(content=result, status_code=http_code)
 
 
-@app.post("/predict/preview", summary="Analiza una radiografía y devuelve el PNG con las cajas dibujadas")
+@app.post(
+    "/predict/preview",
+    summary="Analiza una radiografía y devuelve el PNG con las cajas dibujadas",
+    openapi_extra=MULTIPART_OPENAPI,
+)
 async def predict_preview(
     request: Request,
-    file: Optional[UploadFile] = File(
-        default=None,
-        description="Radiografía panorámica en formato PNG o JPEG.",
-    ),
     threshold: float = Query(
         default=DEFAULT_THRESHOLD,
         ge=0.01,
@@ -241,7 +285,7 @@ async def predict_preview(
         description="Umbral mínimo de confianza para dibujar cajas (por defecto 0.25).",
     ),
 ):
-    raw_bytes, filename = await _extract_request_image(request, file)
+    raw_bytes, filename = await _extract_request_image(request)
     result = default_session.analyze_bytes(
         raw_bytes=raw_bytes,
         file_name=filename,
@@ -264,6 +308,7 @@ async def predict_preview(
 
 
 def main():
+    # -*- coding: utf-8 -*-
     parser = argparse.ArgumentParser(
         description="Inicia el microservicio FastAPI de inferencia ML para CORONYX."
     )
@@ -282,6 +327,13 @@ def main():
     )
     args = parser.parse_args()
     default_session.operating_threshold = args.umbral
+
+    try:
+        print("Pre-cargando modelo YOLOv8n en memoria...")
+        default_session.load()
+        print(f"Modelo listo (SHA-256: {default_session.weights_sha256[:12]}...)")
+    except Exception as exc:
+        print(f"Advertencia al pre-cargar modelo: {exc}")
 
     import uvicorn  # noqa: PLC0415
 

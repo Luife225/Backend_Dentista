@@ -46,4 +46,4 @@ coronyx:
   ml:
     base-url: ${CORONYX_ML_BASE_URL:${CORONYX_ML_URL:http://127.0.0.1:8091}}
     default-threshold: ${CORONYX_ML_THRESHOLD:0.25}
-    timeout-ms: ${CORONYX_ML_TIMEOUT_MS:15000}
+    timeout-ms: ${CORONYX_ML_TIMEOUT_MS:60000}

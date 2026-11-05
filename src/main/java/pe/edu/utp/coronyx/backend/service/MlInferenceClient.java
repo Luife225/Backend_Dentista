@@ -36,21 +36,22 @@ public class MlInferenceClient {
     private final ObjectMapper objectMapper;
 
     public MlInferenceClient() {
-        this("http://127.0.0.1:8091", 0.25, 15000L);
+        this("http://127.0.0.1:8091", 0.25, 60000L);
     }
 
     @Autowired
     public MlInferenceClient(
             @Value("${coronyx.ml.base-url:http://127.0.0.1:8091}") String baseUrl,
             @Value("${coronyx.ml.default-threshold:0.25}") double defaultThreshold,
-            @Value("${coronyx.ml.timeout-ms:15000}") long timeoutMs) {
+            @Value("${coronyx.ml.timeout-ms:60000}") long timeoutMs) {
         this.baseUrl = baseUrl != null && baseUrl.endsWith("/")
                 ? baseUrl.substring(0, baseUrl.length() - 1)
                 : (baseUrl != null ? baseUrl : "http://127.0.0.1:8091");
         this.defaultThreshold = defaultThreshold;
         this.timeoutMs = Math.max(1000L, timeoutMs);
         this.httpClient = HttpClient.newBuilder()
-                .connectTimeout(Duration.ofMillis(Math.min(5000L, this.timeoutMs)))
+                .version(HttpClient.Version.HTTP_1_1)
+                .connectTimeout(Duration.ofMillis(Math.min(10000L, this.timeoutMs)))
                 .build();
         this.objectMapper = new ObjectMapper();
     }
