@@ -1,0 +1,2303 @@
+{
+  "date": "2026-10-25",
+  "repository": "https://huggingface.co/datasets/ibrahimhamamci/DENTEX",
+  "revision": "7b27ccc8e342dcb774f69adc6ca5e6c09fefce93",
+  "scope": "Vocabulary and format audit only, prior to training; no test image payloads or model predictions",
+  "retrieval_mode": "cached",
+  "archive_bytes": 764834414,
+  "image_files_listed": 250,
+  "json_files": 250,
+  "total_shapes": 1600,
+  "label_code_counts": {
+    "3": 161,
+    "6": 221,
+    "1": 747,
+    "2": 265,
+    "7": 75,
+    "5": 29,
+    "8": 11,
+    "0": 91
+  },
+  "label_name_counts": {
+    "kanal": 161,
+    "gömülü": 221,
+    "çürük": 747,
+    "küretaj": 265,
+    "lezyon": 75,
+    "çekim": 29,
+    "kırık": 11,
+    "saglam": 91
+  },
+  "shape_types": {
+    "polygon": 1600
+  },
+  "json_keys": {
+    "version": 250,
+    "flags": 250,
+    "shapes": 250,
+    "imagePath": 250,
+    "imageData": 250,
+    "imageHeight": 250,
+    "imageWidth": 250,
+    "lineColor": 65,
+    "fillColor": 65
+  },
+  "malformed_labels": [],
+  "ambiguous_image_path_matches": [],
+  "literal_deep_caries_label_present": false,
+  "mapping_to_training_taxonomy_verified": false,
+  "test_images_viewed": false,
+  "inference_or_training_performed": false,
+  "files": [
+    {
+      "file": "disease/label/test_0.json",
+      "sha256": "0ea894b407d63936cc1bbd0e9d1568e57d2ccf6305c2cd3eda62eae407d1fd91",
+      "bytes": 1648,
+      "shapes": 5,
+      "image_path": "test_0.png",
+      "image_width": 2829,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_1.json",
+      "sha256": "84a7f8c37af9209c6e0ee6a8bfe46cf7d336a97cc5e53f8bafe491d06125409e",
+      "bytes": 3222,
+      "shapes": 10,
+      "image_path": "test_1.png",
+      "image_width": 2872,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_10.json",
+      "sha256": "9484374a54b387d5ca4378707231d28d499dc875211cf1220f70e8c00b594d4a",
+      "bytes": 1002,
+      "shapes": 3,
+      "image_path": "test_10.png",
+      "image_width": 2940,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_100.json",
+      "sha256": "c9024763cbcd47e69dc2b1b10e52004ba78b41b9be46430c490cde1bf6d8435b",
+      "bytes": 842,
+      "shapes": 2,
+      "image_path": "test_100.png",
+      "image_width": 2935,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_101.json",
+      "sha256": "3614d824f95014f032fa7deb73b6ef07124324114dd8f9f1cc29de2712530348",
+      "bytes": 3089,
+      "shapes": 10,
+      "image_path": "test_101.png",
+      "image_width": 2915,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_102.json",
+      "sha256": "3687bf524fbb6d0724f274af1ce3b74c83b43ce8e5c9b22c44ebfcf21dd54966",
+      "bytes": 1402,
+      "shapes": 4,
+      "image_path": "test_102.png",
+      "image_width": 2872,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_103.json",
+      "sha256": "cf1ee5c36a692a5a01a039fd800edeb7bec5344e842712bbc38b53e1f3c991b8",
+      "bytes": 3425,
+      "shapes": 8,
+      "image_path": "test_103.png",
+      "image_width": 2872,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_104.json",
+      "sha256": "eff7734fe29354c39e0a42bb1084c0620564c3ad9c6069176abbf3968dd1f2ba",
+      "bytes": 1559,
+      "shapes": 5,
+      "image_path": "test_104.png",
+      "image_width": 2868,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_105.json",
+      "sha256": "d76f0337abf58d5fbf26507cec9f15a3db286ac15bf87bbc045b9f01d7a02d9c",
+      "bytes": 2825,
+      "shapes": 7,
+      "image_path": "test_105.png",
+      "image_width": 2884,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_106.json",
+      "sha256": "ac8850e5217f88f280cc79810bf89707f512328bd31c5aaebe1b925149bc12d3",
+      "bytes": 1258,
+      "shapes": 4,
+      "image_path": "test_106.png",
+      "image_width": 2970,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_107.json",
+      "sha256": "bec719815fb348f4c295df4d2cc1125033fb8fccb025d52ed12fd2171902a25a",
+      "bytes": 2609,
+      "shapes": 6,
+      "image_path": "test_107.png",
+      "image_width": 2771,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_108.json",
+      "sha256": "44f1b3e31159f51b36da4b40babfab7754673e80addbc0cfa6065cbd08e67a38",
+      "bytes": 7259,
+      "shapes": 14,
+      "image_path": "test_108.png",
+      "image_width": 2843,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_109.json",
+      "sha256": "0401653d3a9436edd5aba704da80e4667ab5e11002e68eab587163a8f0669767",
+      "bytes": 3524,
+      "shapes": 7,
+      "image_path": "test_109.png",
+      "image_width": 3000,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_11.json",
+      "sha256": "d6ed4664d814cdad1c5d0adfcd4f582b055b5a57a06d4454c94fc411feaade2f",
+      "bytes": 2210,
+      "shapes": 7,
+      "image_path": "test_11.png",
+      "image_width": 2902,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_110.json",
+      "sha256": "dcd681246e043d0ff681dc4d72f576ec1b58b2ce88d81c2e8c36e2bfe5547ae4",
+      "bytes": 5564,
+      "shapes": 20,
+      "image_path": "test_110.png",
+      "image_width": 2955,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_111.json",
+      "sha256": "120f4465ee37233b031da8e6de3a91126d63662fb8a56d2805fde2b59d0f1897",
+      "bytes": 3560,
+      "shapes": 8,
+      "image_path": "test_111.png",
+      "image_width": 2812,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_112.json",
+      "sha256": "1eac565b507dd3990e17e5f0879a6344f349c50782a26fe063f55778a8add42a",
+      "bytes": 4822,
+      "shapes": 8,
+      "image_path": "test_112.png",
+      "image_width": 2944,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_113.json",
+      "sha256": "8403f909b5e612996e4dc294a5235c55678d142c02bf13b900062a98553b7150",
+      "bytes": 1071,
+      "shapes": 3,
+      "image_path": "test_113.png",
+      "image_width": 2864,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_114.json",
+      "sha256": "4198db6c8e3bc546198e569bac367fe750083f5954d496c3d2bfe57161211d50",
+      "bytes": 4753,
+      "shapes": 14,
+      "image_path": "test_114.png",
+      "image_width": 2872,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_115.json",
+      "sha256": "63342fe799ed9eb2ab1effd058044cc2b6601d08df491991b734986fbbe71d2c",
+      "bytes": 961,
+      "shapes": 3,
+      "image_path": "test_115.png",
+      "image_width": 2893,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_116.json",
+      "sha256": "1add61127feb19cb497733392e3d4bb5847ca16c4e03c654aa7799bbf1a9888a",
+      "bytes": 2882,
+      "shapes": 4,
+      "image_path": "test_116.png",
+      "image_width": 2875,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_117.json",
+      "sha256": "cde179084739da6ce29dddb0eef258f65d35ee7774e01870ef9fdc45a3da446b",
+      "bytes": 6084,
+      "shapes": 7,
+      "image_path": "test_117.png",
+      "image_width": 2916,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_118.json",
+      "sha256": "23e5faa3b4846ed1cdb568dc1cc802a4be0d614e43c2f311ad37a0f25e760299",
+      "bytes": 3298,
+      "shapes": 6,
+      "image_path": "test_118.png",
+      "image_width": 2866,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_119.json",
+      "sha256": "726cace433cc5f15145b5ef2bf54b9ed8057fb6573f011c05a10f7a5ab1182ea",
+      "bytes": 1127,
+      "shapes": 3,
+      "image_path": "test_119.png",
+      "image_width": 2776,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_12.json",
+      "sha256": "54a6b3516de3876661ce7ebf2569023858c0b8c66ae5a9e51000be4528babfc5",
+      "bytes": 639,
+      "shapes": 2,
+      "image_path": "test_12.png",
+      "image_width": 2721,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_120.json",
+      "sha256": "6cead9c3a1a9abde763f4cca1b1ccdbdb0767db6b104076076f544634fe81b9c",
+      "bytes": 2574,
+      "shapes": 8,
+      "image_path": "test_120.png",
+      "image_width": 2872,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_121.json",
+      "sha256": "c1cb3d90a97f1f43f78595815ae5db5aff6c4a574681aa09e219f3a43899428b",
+      "bytes": 1235,
+      "shapes": 4,
+      "image_path": "test_121.png",
+      "image_width": 2945,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_122.json",
+      "sha256": "c30b87b0ca35be16c6de2ebd39ff5f97521fe2acbda1ab715962be2607c52625",
+      "bytes": 2335,
+      "shapes": 7,
+      "image_path": "test_122.png",
+      "image_width": 2872,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_123.json",
+      "sha256": "17c23b7394c47a80ef291eb2e3034aa936e0d0b082e95bdbc8ad7fde7c0f6075",
+      "bytes": 689,
+      "shapes": 2,
+      "image_path": "test_123.png",
+      "image_width": 2872,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_124.json",
+      "sha256": "a0ad411c704f644f7dbf31e2c9ec54402be7cc74cc6ec8decb8126770387c860",
+      "bytes": 4869,
+      "shapes": 16,
+      "image_path": "test_124.png",
+      "image_width": 2872,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_125.json",
+      "sha256": "96a05e58d5dd501f74b9db6ca420c2a525c9377fdf0400153531e294cbe857b4",
+      "bytes": 6719,
+      "shapes": 20,
+      "image_path": "test_125.png",
+      "image_width": 1976,
+      "image_height": 976
+    },
+    {
+      "file": "disease/label/test_126.json",
+      "sha256": "e43385d377aed2496fcaed248fae469f2a0e4b6aa61c73c897f4ceab0f9ac2fa",
+      "bytes": 659,
+      "shapes": 2,
+      "image_path": "test_126.png",
+      "image_width": 2884,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_127.json",
+      "sha256": "b529b6b88cd3044f89801c7f1a0fe46fc33f66f5ec87b78c5b221f8a5ecbb59e",
+      "bytes": 467,
+      "shapes": 1,
+      "image_path": "test_127.png",
+      "image_width": 2969,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_128.json",
+      "sha256": "e62b203b92387e27c491147ec22d70eb314f1b28b6c531c0ae5fdb1330a7401c",
+      "bytes": 1999,
+      "shapes": 3,
+      "image_path": "test_128.png",
+      "image_width": 2891,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_129.json",
+      "sha256": "00fdedf2f13db60588767c01beb70745e8d381f42328ef1b8ce80297ea86e4ba",
+      "bytes": 1632,
+      "shapes": 4,
+      "image_path": "test_129.png",
+      "image_width": 2957,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_13.json",
+      "sha256": "ebb49e73175686c84c661c5db908e4aa915ba54125157202adb77f1eff87ab96",
+      "bytes": 730,
+      "shapes": 1,
+      "image_path": "test_13.png",
+      "image_width": 2844,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_130.json",
+      "sha256": "8d6384636e1184d43154ce793d32a21bbc76f5b98966bf5c9d304637c2c0eb4c",
+      "bytes": 4726,
+      "shapes": 8,
+      "image_path": "test_130.png",
+      "image_width": 2956,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_131.json",
+      "sha256": "94fa9e5d634d3542eb693e16a1caa6db8593c264607a188ee49379439ca2c99d",
+      "bytes": 2425,
+      "shapes": 8,
+      "image_path": "test_131.png",
+      "image_width": 2798,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_132.json",
+      "sha256": "1ebb107b506b52e98ab70375d2eeadd7b0e58b721a9d5c6bbae05af7289227f2",
+      "bytes": 946,
+      "shapes": 1,
+      "image_path": "test_132.png",
+      "image_width": 1976,
+      "image_height": 976
+    },
+    {
+      "file": "disease/label/test_133.json",
+      "sha256": "ee813ce5d476c222e7462c5dbea0e037f300a47328812044a3376c6226835f7c",
+      "bytes": 6907,
+      "shapes": 11,
+      "image_path": "test_133.png",
+      "image_width": 2809,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_134.json",
+      "sha256": "0fa575d33a24413b0baaa9a4ba0c2cdf54e4e311a365aef72b6087c90dcdba85",
+      "bytes": 881,
+      "shapes": 2,
+      "image_path": "test_134.png",
+      "image_width": 2878,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_135.json",
+      "sha256": "f5e1c469a453a65cff2cda9d49a39211a51d399fb74d6bcad18beb929bb7f099",
+      "bytes": 3087,
+      "shapes": 10,
+      "image_path": "test_135.png",
+      "image_width": 2872,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_136.json",
+      "sha256": "ccb4e4d5f06daed40d608db50935f939e9eb4b2bed20d808951b12cf48dc6fb5",
+      "bytes": 666,
+      "shapes": 2,
+      "image_path": "test_136.png",
+      "image_width": 2872,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_137.json",
+      "sha256": "fae8a35d5aeb5362d70b6bda1fa4c0e94567ad1d4d3e7820e9fea2641e6dd37d",
+      "bytes": 1036,
+      "shapes": 3,
+      "image_path": "test_137.png",
+      "image_width": 2865,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_138.json",
+      "sha256": "6db697a59af9d44a2c5764dc0142a37f86a8d64feb9d3745d43cec7dd97144be",
+      "bytes": 2145,
+      "shapes": 7,
+      "image_path": "test_138.png",
+      "image_width": 2799,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_139.json",
+      "sha256": "368fd8a4c45f0dfdefdb788819a3fd66e8e0d07fac5265c0a42f0bc4e007c3a9",
+      "bytes": 3164,
+      "shapes": 6,
+      "image_path": "test_139.png",
+      "image_width": 2902,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_14.json",
+      "sha256": "042c666fcd0a0b2d7223c673e12fab63ce4ebbcd6c98900e7ed5a5721291b39e",
+      "bytes": 411,
+      "shapes": 1,
+      "image_path": "test_14.png",
+      "image_width": 2935,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_140.json",
+      "sha256": "714c973a69140c503c795b065d0b4416ec1ac31a6447051a73bb14c0294699fc",
+      "bytes": 3720,
+      "shapes": 11,
+      "image_path": "test_140.png",
+      "image_width": 2872,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_141.json",
+      "sha256": "f775bf67b469dd87a4b82ee66824d5e7604c40e550085b490ff29615b42a96fc",
+      "bytes": 1648,
+      "shapes": 5,
+      "image_path": "test_141.png",
+      "image_width": 2903,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_142.json",
+      "sha256": "331454eba0fb4ce20c70274d393036e38561fe9d38d4d02f64bd295f7d583a8d",
+      "bytes": 1809,
+      "shapes": 6,
+      "image_path": "test_142.png",
+      "image_width": 2918,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_143.json",
+      "sha256": "2dc2d05206ba89a03b4a86d10c6825b303b06817d425301d505a99c576f3bcf0",
+      "bytes": 3769,
+      "shapes": 6,
+      "image_path": "test_143.png",
+      "image_width": 2872,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_144.json",
+      "sha256": "85a09ea3fef8e9b62f436b9df372db055c040e6367071cc25a9c6a9342ceab16",
+      "bytes": 4040,
+      "shapes": 5,
+      "image_path": "test_144.png",
+      "image_width": 2847,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_145.json",
+      "sha256": "c0450e9267e6b628c3d648023446a67924710b11861b32d5953fe762b60d0899",
+      "bytes": 4685,
+      "shapes": 9,
+      "image_path": "test_145.png",
+      "image_width": 2752,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_146.json",
+      "sha256": "be520d313241b064c52bab03d5c57c7742fc9f848fcc2d059e32ffd30ba8f380",
+      "bytes": 809,
+      "shapes": 2,
+      "image_path": "test_146.png",
+      "image_width": 2878,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_147.json",
+      "sha256": "a4f8ad1407ce7f68d52d2c00801f911c5269d7f131e532b98878f44eef2e85c3",
+      "bytes": 6818,
+      "shapes": 15,
+      "image_path": "test_147.png",
+      "image_width": 2680,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_148.json",
+      "sha256": "73f9f8c85b4bf5226c437c4fcb6c873c1c85912627e5307e90de9c7eb3c83119",
+      "bytes": 3160,
+      "shapes": 10,
+      "image_path": "test_148.png",
+      "image_width": 2868,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_149.json",
+      "sha256": "b842239337774de8a100795e47558795b1764521236e91126655f52a714e8146",
+      "bytes": 2023,
+      "shapes": 7,
+      "image_path": "test_149.png",
+      "image_width": 2949,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_15.json",
+      "sha256": "6d5b404f8f6d592ca1f65832b3df18d761e75ee4227cc706ebc1321bcb08ee07",
+      "bytes": 1197,
+      "shapes": 4,
+      "image_path": "test_15.png",
+      "image_width": 2872,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_150.json",
+      "sha256": "2c60015ed21490d29203eba2aab6e42d9fe19c2d796b2674bc34b77280009865",
+      "bytes": 812,
+      "shapes": 1,
+      "image_path": "test_150.png",
+      "image_width": 2809,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_151.json",
+      "sha256": "ccf431e1c7194c1a1dc25b8e7a193d4069675ac4cfc480df23ddbdc359d9cdc0",
+      "bytes": 2968,
+      "shapes": 7,
+      "image_path": "test_151.png",
+      "image_width": 2801,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_152.json",
+      "sha256": "f9665526b0b0068288903e0e774c6178af48be2a3419893e4c10f2cb36cc2c7a",
+      "bytes": 3668,
+      "shapes": 13,
+      "image_path": "test_152.png",
+      "image_width": 2872,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_153.json",
+      "sha256": "a452b21e5e12d36f25d5e21bd875fcc860c7b1253375eb52f79413050878610d",
+      "bytes": 4009,
+      "shapes": 13,
+      "image_path": "test_153.png",
+      "image_width": 2864,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_154.json",
+      "sha256": "c99fa86a4eb007d009b3e634ddc4accaef74059266a9f29f4d686e91afb8738c",
+      "bytes": 686,
+      "shapes": 2,
+      "image_path": "test_154.png",
+      "image_width": 2868,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_155.json",
+      "sha256": "1c8e8176ca4776328684ccb993ee1751543e347732dea8b9539d5777a2b766ee",
+      "bytes": 1149,
+      "shapes": 3,
+      "image_path": "test_155.png",
+      "image_width": 2702,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_156.json",
+      "sha256": "45ccc3ee4bd72f5f607aafce59c52252836813cad85ae0e6a54c3ba362cd1469",
+      "bytes": 2525,
+      "shapes": 8,
+      "image_path": "test_156.png",
+      "image_width": 2868,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_157.json",
+      "sha256": "855215232c10ed5a81e79bf9b13434ff875ce6d507d5dd75689f92fa369a2438",
+      "bytes": 1779,
+      "shapes": 6,
+      "image_path": "test_157.png",
+      "image_width": 2968,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_158.json",
+      "sha256": "711ca78c97a5d129eabf851e91765af3cc4972773081f4424cf3dbe9fb66d326",
+      "bytes": 2458,
+      "shapes": 8,
+      "image_path": "test_158.png",
+      "image_width": 2508,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_159.json",
+      "sha256": "efc66acb5140a133a5c06a76056ea241c96498c7e2e0bd0a890c6ee620126239",
+      "bytes": 3991,
+      "shapes": 6,
+      "image_path": "test_159.png",
+      "image_width": 2824,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_16.json",
+      "sha256": "f728169dd7a9e0e8524f5563731a3bddd7cd799fc6cc45132214384560504ead",
+      "bytes": 3656,
+      "shapes": 13,
+      "image_path": "test_16.png",
+      "image_width": 2872,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_160.json",
+      "sha256": "efaa49b9a6f2fc37531ea89b42321ec1ccc0efa843138a8999c8b9c516ab3bc5",
+      "bytes": 3642,
+      "shapes": 10,
+      "image_path": "test_160.png",
+      "image_width": 2884,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_161.json",
+      "sha256": "109abf63f34d63ce1f992b39833c282aaaa9784862a8c2ca6ede6b9823e8ba48",
+      "bytes": 3829,
+      "shapes": 13,
+      "image_path": "test_161.png",
+      "image_width": 2848,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_162.json",
+      "sha256": "97b6e6ac2198e9f8dcc49b9321fcd54b034d15e93fb3c5a09d536b1ffe6e7921",
+      "bytes": 1224,
+      "shapes": 4,
+      "image_path": "test_162.png",
+      "image_width": 2868,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_163.json",
+      "sha256": "0a03006c1ecc86a74fb05bb12b1d2165f9102ac086aa5f87bec0e9fb8858e335",
+      "bytes": 807,
+      "shapes": 3,
+      "image_path": "test_163.png",
+      "image_width": 2954,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_164.json",
+      "sha256": "e069e5bcde8e74b431e900ab0ccb96164a6160ab05e3434df3cae285ae4201e9",
+      "bytes": 2880,
+      "shapes": 5,
+      "image_path": "test_164.png",
+      "image_width": 2807,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_165.json",
+      "sha256": "31051820fa8da4cf5b3962857219d2fec9a9b92be0ea45f6beaf8d5ccaa49d9f",
+      "bytes": 1564,
+      "shapes": 5,
+      "image_path": "test_165.png",
+      "image_width": 2750,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_166.json",
+      "sha256": "3a4fab5e605571ca0c0fecf87de6a6da0ec5ad94a9dac5bb4325bb3676a81078",
+      "bytes": 2485,
+      "shapes": 8,
+      "image_path": "test_166.png",
+      "image_width": 2844,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_167.json",
+      "sha256": "8bb64df6dc36bf92039fa647fba9fe3e8b08c99d9c88804e6dc4782c2d4e50b6",
+      "bytes": 2642,
+      "shapes": 8,
+      "image_path": "test_167.png",
+      "image_width": 2832,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_168.json",
+      "sha256": "55441d954302d96f5c854177e3d10a24c62079fdaef33d43809f0767086b29e7",
+      "bytes": 1705,
+      "shapes": 5,
+      "image_path": "test_168.png",
+      "image_width": 2820,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_169.json",
+      "sha256": "a93dbc286f789bccdfda4e23e96c1af08ea224733879dfca95023094791e3428",
+      "bytes": 413,
+      "shapes": 1,
+      "image_path": "test_169.png",
+      "image_width": 2830,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_17.json",
+      "sha256": "c0ffc96905f5c6f05a5027f829d3edb5c0979ec548e4d7f4041d8f3d6790bc11",
+      "bytes": 1876,
+      "shapes": 5,
+      "image_path": "test_17.png",
+      "image_width": 2878,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_170.json",
+      "sha256": "6e42c8d3c18febf2038629775e9c70770ca76fe66658b0ab325672bc3bf3e768",
+      "bytes": 707,
+      "shapes": 2,
+      "image_path": "test_170.png",
+      "image_width": 2951,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_171.json",
+      "sha256": "8731f4a150a336a0f644c5d8384b8e6256ffff20bf16e2cda307abcf8b35809d",
+      "bytes": 2130,
+      "shapes": 6,
+      "image_path": "test_171.png",
+      "image_width": 2985,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_172.json",
+      "sha256": "f9199947a7f62b00155bc49ddb81f5cb97b2b1d652c511561ef5681068b9019f",
+      "bytes": 3438,
+      "shapes": 11,
+      "image_path": "test_172.png",
+      "image_width": 2872,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_173.json",
+      "sha256": "66daee60c05f1661d03598368405cec7f2e7de358aa94ee59f4d5e84221bc8ad",
+      "bytes": 1984,
+      "shapes": 6,
+      "image_path": "test_173.png",
+      "image_width": 2988,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_174.json",
+      "sha256": "b432dc4366119e05df6fa31ca7577dc965019d51af73088bc96d949c8d0440f0",
+      "bytes": 1397,
+      "shapes": 4,
+      "image_path": "test_174.png",
+      "image_width": 2872,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_175.json",
+      "sha256": "5695d2adee90e0907d7af5c400df384cccdc437872e867f53a8e645ed235370a",
+      "bytes": 2455,
+      "shapes": 6,
+      "image_path": "test_175.png",
+      "image_width": 2872,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_176.json",
+      "sha256": "663902a726a3b7dd5c49adefe3d16bd6891cc3b0af46ed64394778a49dce1aaa",
+      "bytes": 1583,
+      "shapes": 4,
+      "image_path": "test_176.png",
+      "image_width": 2895,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_177.json",
+      "sha256": "c76d35d5e2f5f5dcca7b4dab2e7fb8897fcda991454c6327006918f172276a7f",
+      "bytes": 1509,
+      "shapes": 4,
+      "image_path": "test_177.png",
+      "image_width": 3076,
+      "image_height": 1536
+    },
+    {
+      "file": "disease/label/test_178.json",
+      "sha256": "a7569289934a63b51b6ca7635adbf365aa1b767d31b848d65b90d4db389091bf",
+      "bytes": 1369,
+      "shapes": 3,
+      "image_path": "test_178.png",
+      "image_width": 3076,
+      "image_height": 1536
+    },
+    {
+      "file": "disease/label/test_179.json",
+      "sha256": "3daede0d0437987367e30b339764f90674b34796a91b42e7bfdd8ba3fe58ed4e",
+      "bytes": 1153,
+      "shapes": 4,
+      "image_path": "test_179.png",
+      "image_width": 2868,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_18.json",
+      "sha256": "cc5fe6f44d35ab18ce5609d0a15252286410e529109d663a2e9abad20164e151",
+      "bytes": 2901,
+      "shapes": 8,
+      "image_path": "test_18.png",
+      "image_width": 1976,
+      "image_height": 976
+    },
+    {
+      "file": "disease/label/test_180.json",
+      "sha256": "ca4db31e2e7fcea88016d94d2b6f6a31729ace497a7e9a5d91301cff501132e3",
+      "bytes": 2893,
+      "shapes": 9,
+      "image_path": "test_180.png",
+      "image_width": 2868,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_181.json",
+      "sha256": "269e644045649e58dff0d370edb5ae49271fac39dc48fca956ab92f65177e535",
+      "bytes": 3107,
+      "shapes": 10,
+      "image_path": "test_181.png",
+      "image_width": 2983,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_182.json",
+      "sha256": "b6c4a919a5c80c00a628ccf224abb883e9421d1a0b35783ee125243289d45507",
+      "bytes": 2718,
+      "shapes": 9,
+      "image_path": "test_182.png",
+      "image_width": 2636,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_183.json",
+      "sha256": "a82e54d7c7f742f8b71be7be4f1f19a0cf4683ed093649fbc1c9dea84371e36c",
+      "bytes": 763,
+      "shapes": 2,
+      "image_path": "test_183.png",
+      "image_width": 2834,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_184.json",
+      "sha256": "8dacd5a8465aaaa66bb17aad59b1a71c6752a2c149ed7146a00200583632f06a",
+      "bytes": 1550,
+      "shapes": 2,
+      "image_path": "test_184.png",
+      "image_width": 2805,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_185.json",
+      "sha256": "493bd4d722202c07a6dc01177574a5459be86aa888fb77cf4fac86338bf02a76",
+      "bytes": 2512,
+      "shapes": 9,
+      "image_path": "test_185.png",
+      "image_width": 2862,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_186.json",
+      "sha256": "0a7a9083b470057b6e23045f3bc148da03a2812ce9ce6478ed60e490c3027b02",
+      "bytes": 1972,
+      "shapes": 7,
+      "image_path": "test_186.png",
+      "image_width": 2872,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_187.json",
+      "sha256": "c4a99fc71b4e23225884603e201e8265662e73eda4a58bbb1a85066686e38b69",
+      "bytes": 1273,
+      "shapes": 3,
+      "image_path": "test_187.png",
+      "image_width": 2923,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_188.json",
+      "sha256": "78ca863ea8805588643810766bb6cf53cd183647bec9ba22c3fa48f856f2abb5",
+      "bytes": 2356,
+      "shapes": 8,
+      "image_path": "test_188.png",
+      "image_width": 2868,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_189.json",
+      "sha256": "381a9b76cbafaf388b7dd77bf981ff8d9d1ac296a73c8d1e1c2193e0da4bdc2b",
+      "bytes": 1301,
+      "shapes": 2,
+      "image_path": "test_189.png",
+      "image_width": 2954,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_19.json",
+      "sha256": "80bce04956f9ceb4a2d7cc23d4cf98e79dceab97a094f226aae401bcf0b951a7",
+      "bytes": 3193,
+      "shapes": 6,
+      "image_path": "test_19.png",
+      "image_width": 2867,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_190.json",
+      "sha256": "e601f652d3798a7fe75b26974a634e60c3b6778ebe641e064ff47fc3e7e1aad7",
+      "bytes": 396,
+      "shapes": 1,
+      "image_path": "test_190.png",
+      "image_width": 2840,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_191.json",
+      "sha256": "f1715010946621c472e2279ba125a9986e9048bd431ad3c25b601e57e7135361",
+      "bytes": 1724,
+      "shapes": 5,
+      "image_path": "test_191.png",
+      "image_width": 2836,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_192.json",
+      "sha256": "6fe6fe8ca2a6c50e0e8ef04dc5714eeb5aba8c0d19de281bb3da10fa0a12d96e",
+      "bytes": 385,
+      "shapes": 1,
+      "image_path": "test_192.png",
+      "image_width": 2888,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_193.json",
+      "sha256": "85b5826f92cf9b7ddce9f16fd29563c1a490b2724c807612c43ec1d8df24d117",
+      "bytes": 2191,
+      "shapes": 6,
+      "image_path": "test_193.png",
+      "image_width": 2868,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_194.json",
+      "sha256": "40d388490e145f15f87a22fdbe8ef5f8c5d5a3118c1f5651ee54019c927e23f3",
+      "bytes": 805,
+      "shapes": 2,
+      "image_path": "test_194.png",
+      "image_width": 2941,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_195.json",
+      "sha256": "13e92d4734ac9d7e02e25457fd14d2f5e6cc1f547b9185c5a467b2cfe6c6db4f",
+      "bytes": 1973,
+      "shapes": 6,
+      "image_path": "test_195.png",
+      "image_width": 2872,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_196.json",
+      "sha256": "b4a814cf52c5c93970f0b018505aeb32ce9d28717f0ec74b3767a894ba1dc71d",
+      "bytes": 1276,
+      "shapes": 4,
+      "image_path": "test_196.png",
+      "image_width": 2874,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_197.json",
+      "sha256": "acbdba2fb3d5bd671ffcbff45fb5c97829cf0a31ef671c07a6b04fbd5d8af57c",
+      "bytes": 1663,
+      "shapes": 5,
+      "image_path": "test_197.png",
+      "image_width": 3076,
+      "image_height": 1536
+    },
+    {
+      "file": "disease/label/test_198.json",
+      "sha256": "5d869aa62dfe3606f18e771ff5ec8b01c0167f8e038b9607787175a842836d7b",
+      "bytes": 1695,
+      "shapes": 6,
+      "image_path": "test_198.png",
+      "image_width": 2880,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_199.json",
+      "sha256": "7e58c8dfb592c51b1212ebbd4c85a6b5623e3bc0162cf48b7252d265c45c1422",
+      "bytes": 6112,
+      "shapes": 8,
+      "image_path": "test_199.png",
+      "image_width": 2832,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_2.json",
+      "sha256": "f7f0c494ebd6d13246f18a66bbb31ce7783baa97f1a6cfe420eeac52f29b5062",
+      "bytes": 4190,
+      "shapes": 8,
+      "image_path": "test_2.png",
+      "image_width": 2931,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_20.json",
+      "sha256": "af424ef79cefb5fa0109b5f1444c93b4ac24edcaca8a162aef0e7b7126d8b732",
+      "bytes": 3556,
+      "shapes": 6,
+      "image_path": "test_20.png",
+      "image_width": 2904,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_200.json",
+      "sha256": "6dd33479de3ee6da78436a6ed56ad8ec7733861f9f8944fb73257e7c81c47e13",
+      "bytes": 1139,
+      "shapes": 3,
+      "image_path": "test_200.png",
+      "image_width": 2870,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_201.json",
+      "sha256": "abcd430ac745ac1aa4af081c2d1756ca66d624464868b55131a26cc29479eb54",
+      "bytes": 2944,
+      "shapes": 9,
+      "image_path": "test_201.png",
+      "image_width": 2872,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_202.json",
+      "sha256": "72e8cf3a55aec4d7eb4ad954a6f3b35fe10032066c324d7480ba8e27eb5b5d77",
+      "bytes": 1069,
+      "shapes": 1,
+      "image_path": "test_202.png",
+      "image_width": 2736,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_203.json",
+      "sha256": "091ab618688826525969ab19f7ff8162982f1a21e648c217501ad1590b1a1ed3",
+      "bytes": 1667,
+      "shapes": 2,
+      "image_path": "test_203.png",
+      "image_width": 2808,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_204.json",
+      "sha256": "e507f971e23f2f7bc28467e713713f386f0b78ef6460532642ad04e011b6bc91",
+      "bytes": 3748,
+      "shapes": 9,
+      "image_path": "test_204.png",
+      "image_width": 2762,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_205.json",
+      "sha256": "37de8b989d029a7f26de1286e12bf5f8813098a959d630841f5e3d8cdf4da511",
+      "bytes": 1385,
+      "shapes": 4,
+      "image_path": "test_205.png",
+      "image_width": 2950,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_206.json",
+      "sha256": "f5cb4dcd0a483e9bf0fc6fd596cbd243c2dccb53378e777feb42c7498a454989",
+      "bytes": 707,
+      "shapes": 1,
+      "image_path": "test_206.png",
+      "image_width": 2812,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_207.json",
+      "sha256": "f32c7b361a53b4b1b96c266798f9f4b76ff06c0b1c9e774016307a84ab769300",
+      "bytes": 2314,
+      "shapes": 3,
+      "image_path": "test_207.png",
+      "image_width": 2966,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_208.json",
+      "sha256": "6e57bcb794b7e8a6e827d4e7e31ebb728b54b9022e29ed9b15187dc8ff4b6a49",
+      "bytes": 466,
+      "shapes": 1,
+      "image_path": "test_208.png",
+      "image_width": 2892,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_209.json",
+      "sha256": "61993e5a30ef6957251ec542bf9de4b367826c91bc76ae2da352592ed3ba63b2",
+      "bytes": 936,
+      "shapes": 3,
+      "image_path": "test_209.png",
+      "image_width": 2952,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_21.json",
+      "sha256": "31cea3ec80aa5fe7bfb3c7f4132e408eeb6811923c4813500021335aba336848",
+      "bytes": 3229,
+      "shapes": 5,
+      "image_path": "test_21.png",
+      "image_width": 1976,
+      "image_height": 976
+    },
+    {
+      "file": "disease/label/test_210.json",
+      "sha256": "3998620787191cee1c73ee5d99b3e524195ea1dd9f0b10d717d10689752f95ef",
+      "bytes": 5417,
+      "shapes": 7,
+      "image_path": "test_210.png",
+      "image_width": 2932,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_211.json",
+      "sha256": "2e03f1bf98152a1a72fd3b8ba5ebabd3ab49bedb0ba615917cbf6827b1901a6a",
+      "bytes": 5768,
+      "shapes": 18,
+      "image_path": "test_211.png",
+      "image_width": 3076,
+      "image_height": 1536
+    },
+    {
+      "file": "disease/label/test_212.json",
+      "sha256": "ab5905fd8bd759824dc42260fa4d9ecf08c216dcf301c3508220055ad7a667bc",
+      "bytes": 2353,
+      "shapes": 7,
+      "image_path": "test_212.png",
+      "image_width": 2967,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_213.json",
+      "sha256": "f7b0869f9876d823e695cad01a8b71301a94f1193b782af25e6be798cd25fed8",
+      "bytes": 1448,
+      "shapes": 4,
+      "image_path": "test_213.png",
+      "image_width": 2827,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_214.json",
+      "sha256": "c5a70c8065770d2868ed9b051604beb777e41bfee3554365e46ab375565f97a6",
+      "bytes": 4520,
+      "shapes": 4,
+      "image_path": "test_214.png",
+      "image_width": 2874,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_215.json",
+      "sha256": "b03cd961e7d7cc278a3402cc71ea9de504a7c50690d9039b944bb8adad3d4289",
+      "bytes": 4572,
+      "shapes": 9,
+      "image_path": "test_215.png",
+      "image_width": 2896,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_216.json",
+      "sha256": "07775994a6ee08f2b28abd729a787786b4be3e879452ddbe34c07391d686aa15",
+      "bytes": 457,
+      "shapes": 1,
+      "image_path": "test_216.png",
+      "image_width": 2868,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_217.json",
+      "sha256": "4f9841656e5f75a05a24023ca61660c47d63bbdc2919b4140360bf87e35cfa02",
+      "bytes": 3009,
+      "shapes": 9,
+      "image_path": "test_217.png",
+      "image_width": 3076,
+      "image_height": 1536
+    },
+    {
+      "file": "disease/label/test_218.json",
+      "sha256": "9cad240560f41842ade9112692f3a6b6eb562cac34fbe45cff341895af6b6a37",
+      "bytes": 482,
+      "shapes": 1,
+      "image_path": "test_218.png",
+      "image_width": 2950,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_219.json",
+      "sha256": "419af44f2dabb577bcb75f8ef0e8638888e0b18c317828ad69ec08cd8ba1e0b7",
+      "bytes": 2509,
+      "shapes": 7,
+      "image_path": "test_219.png",
+      "image_width": 2872,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_22.json",
+      "sha256": "94daccf7d3a251ba73c7ba65fc291f8a0e9756b39d30df605908befb3dae9d67",
+      "bytes": 1341,
+      "shapes": 4,
+      "image_path": "test_22.png",
+      "image_width": 2664,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_220.json",
+      "sha256": "d59985271b86b4f080780f078be4eaee019c98a93fe15dc36c4cc0090b4be4ae",
+      "bytes": 3257,
+      "shapes": 10,
+      "image_path": "test_220.png",
+      "image_width": 2892,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_221.json",
+      "sha256": "05adcf89d37e7bcb824bfd2d8b7c42caef918d2228fd407d33f2b7b5c046256e",
+      "bytes": 17821,
+      "shapes": 31,
+      "image_path": "test_221.png",
+      "image_width": 2926,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_222.json",
+      "sha256": "d44635c5d22ad9592c941e2935b1f768500cbabfa9fbb6a228ff70c69a9dc151",
+      "bytes": 1130,
+      "shapes": 3,
+      "image_path": "test_222.png",
+      "image_width": 2836,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_223.json",
+      "sha256": "92e1c285e9e2528e495e4230b3de7a9cbf8284259cfed4e94abd38c91c52999e",
+      "bytes": 2578,
+      "shapes": 8,
+      "image_path": "test_223.png",
+      "image_width": 2872,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_224.json",
+      "sha256": "e5a3d613039de4dd2f167d6a6eb193243c93b235d1dde3dd20d7b0a794b14a7d",
+      "bytes": 1321,
+      "shapes": 4,
+      "image_path": "test_224.png",
+      "image_width": 2884,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_225.json",
+      "sha256": "3bc71bcb311fba4bff6dfb7cec589e9986de8982fb8fd63552f19bf5cd6d7abc",
+      "bytes": 22425,
+      "shapes": 31,
+      "image_path": "test_225.png",
+      "image_width": 2846,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_226.json",
+      "sha256": "4e0576c9bb9fa7fb0764038bcde452255a14d53a76f41ac49b9e4c19082850d0",
+      "bytes": 2080,
+      "shapes": 6,
+      "image_path": "test_226.png",
+      "image_width": 2492,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_227.json",
+      "sha256": "bd8768ec850c22235dec43506df4fcb30ff827136d59dbf13a68dba8dcbf0eab",
+      "bytes": 625,
+      "shapes": 2,
+      "image_path": "test_227.png",
+      "image_width": 2856,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_228.json",
+      "sha256": "09315007de750617ffc4d1043b3a70bd3481ceeeb6f93a53d8d20e9512bb064d",
+      "bytes": 3672,
+      "shapes": 12,
+      "image_path": "test_228.png",
+      "image_width": 2876,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_229.json",
+      "sha256": "460799b6423f4f654a1ef42486dee5421502dfc5d421d534a5a10a973f2f5651",
+      "bytes": 708,
+      "shapes": 1,
+      "image_path": "test_229.png",
+      "image_width": 2851,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_23.json",
+      "sha256": "6941823759848ee4fa38237efe6fe3041e06219ae9ebcc79f27db07cc3a7bd6e",
+      "bytes": 860,
+      "shapes": 1,
+      "image_path": "test_23.png",
+      "image_width": 2836,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_230.json",
+      "sha256": "107a1faa1e03fa3551ed88e3850ef25952c258c4c55a39e70d997b13f1585b05",
+      "bytes": 1195,
+      "shapes": 4,
+      "image_path": "test_230.png",
+      "image_width": 2544,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_231.json",
+      "sha256": "2cdf48a7cf041d0635a1fc69317a1220d3ab39eb2c2e18a08412b4160a026fc7",
+      "bytes": 997,
+      "shapes": 3,
+      "image_path": "test_231.png",
+      "image_width": 2892,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_232.json",
+      "sha256": "d29465e86a6a4e2b6b8be840eda33821207ff79220e0fc05a70a3e8d7c577969",
+      "bytes": 2086,
+      "shapes": 7,
+      "image_path": "test_232.png",
+      "image_width": 2896,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_233.json",
+      "sha256": "888727f718d1fdce88224418f88d0e459dac6910ee41df04981552c8bbd1dae4",
+      "bytes": 2835,
+      "shapes": 8,
+      "image_path": "test_233.png",
+      "image_width": 2868,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_234.json",
+      "sha256": "a85945f52498e39f26a50a23f17e89024dcfe48a7f7f4fc80a226a608b2b7354",
+      "bytes": 4449,
+      "shapes": 5,
+      "image_path": "test_234.png",
+      "image_width": 2832,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_235.json",
+      "sha256": "c8e41eac1024021f1ac66b2a532d0a28915784e3395b9ec13e55ba675136d4a1",
+      "bytes": 975,
+      "shapes": 3,
+      "image_path": "test_235.png",
+      "image_width": 2872,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_236.json",
+      "sha256": "9a3551f6dcf4f512969444d00139ba475c229b73a16a88f8196dbbeaa46755c3",
+      "bytes": 1409,
+      "shapes": 4,
+      "image_path": "test_236.png",
+      "image_width": 2872,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_237.json",
+      "sha256": "b45aa3233b05cd37f6441ba2c8fb75e7ec4f68644686013da079f085520018df",
+      "bytes": 413,
+      "shapes": 1,
+      "image_path": "test_237.png",
+      "image_width": 2887,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_238.json",
+      "sha256": "a5c5877e5b5ca6db87e66a1bce0a388f7091f3e792506d1be03594f846111f27",
+      "bytes": 1019,
+      "shapes": 3,
+      "image_path": "test_238.png",
+      "image_width": 2880,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_239.json",
+      "sha256": "e130242954a6ec11753ebf1d4be4ae8e055ecc942a5f9728a5af4d4297d5dac0",
+      "bytes": 1568,
+      "shapes": 5,
+      "image_path": "test_239.png",
+      "image_width": 2872,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_24.json",
+      "sha256": "f104d3a352eb498da257de96b830018742ed8c497fd9aa5436d4923b6924f8e5",
+      "bytes": 1297,
+      "shapes": 4,
+      "image_path": "test_24.png",
+      "image_width": 2891,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_240.json",
+      "sha256": "466c4d2c09fcfc01d7fd54d3981eaaec768d55bd5d9ac24359165619c1d492a8",
+      "bytes": 2336,
+      "shapes": 7,
+      "image_path": "test_240.png",
+      "image_width": 2516,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_241.json",
+      "sha256": "ad7567f7dffcc3b6dd407c55f5c791302f34f506f256e5decb858a35b7b5d568",
+      "bytes": 832,
+      "shapes": 2,
+      "image_path": "test_241.png",
+      "image_width": 2916,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_242.json",
+      "sha256": "2c4056da4dc05e4c5ea19c36398e4e2d8de2853001ddfea15e52daae76814974",
+      "bytes": 704,
+      "shapes": 2,
+      "image_path": "test_242.png",
+      "image_width": 2872,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_243.json",
+      "sha256": "b793896fc24332e0d2c8a3dac212ff9af68513ce8bffebfba234a78b4108ec00",
+      "bytes": 2136,
+      "shapes": 7,
+      "image_path": "test_243.png",
+      "image_width": 2886,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_244.json",
+      "sha256": "8b00dba6c4ff4b683cb895ef14bde9938723d5018b35c7a7542a3b7511a051c9",
+      "bytes": 1566,
+      "shapes": 5,
+      "image_path": "test_244.png",
+      "image_width": 2948,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_245.json",
+      "sha256": "df7c2de58c6b79413b847cee27a2abc96d19818b80ecda4b9fb06486ffdaea55",
+      "bytes": 5700,
+      "shapes": 9,
+      "image_path": "test_245.png",
+      "image_width": 2836,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_246.json",
+      "sha256": "bbf1e42f3d7518f28da90de1173c857f66e9d1550f9b359801172409a2d733fc",
+      "bytes": 2291,
+      "shapes": 7,
+      "image_path": "test_246.png",
+      "image_width": 2872,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_247.json",
+      "sha256": "0ffda65c373c5cbadefe247808601a4b7fb94ffa0d2673c96df0832d933469bc",
+      "bytes": 3991,
+      "shapes": 13,
+      "image_path": "test_247.png",
+      "image_width": 2872,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_248.json",
+      "sha256": "7151e0f97bee2a8f64c990a3931b5affa1cb7e1f4a0fe0e3970db5e9385f53ef",
+      "bytes": 2557,
+      "shapes": 7,
+      "image_path": "test_248.png",
+      "image_width": 2856,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_249.json",
+      "sha256": "23d725ca354dd670be02efa3df7071280e57f6f4c89b4720d6bb10e9f61ad8ff",
+      "bytes": 1478,
+      "shapes": 3,
+      "image_path": "test_249.png",
+      "image_width": 2708,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_25.json",
+      "sha256": "491131a894794f2cd4852632090e551cdd27371b31f1a70dcb78e9dd9a564cad",
+      "bytes": 1584,
+      "shapes": 5,
+      "image_path": "test_25.png",
+      "image_width": 2877,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_26.json",
+      "sha256": "06cdbc2d59bf41ce6545c354605a846b5532e8ffbead6c7c04690845a75404e6",
+      "bytes": 1864,
+      "shapes": 6,
+      "image_path": "test_26.png",
+      "image_width": 2872,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_27.json",
+      "sha256": "db4b7e5827d8a547349b01eaa0eb7bcb609a0148542a30a99a0f8811b9dd4619",
+      "bytes": 2343,
+      "shapes": 8,
+      "image_path": "test_27.png",
+      "image_width": 3076,
+      "image_height": 1536
+    },
+    {
+      "file": "disease/label/test_28.json",
+      "sha256": "2b3e24e817ad59f9693a51ad390d65a7b57983f9fdb2ffe0c02865dc4a22d7a5",
+      "bytes": 3133,
+      "shapes": 5,
+      "image_path": "test_28.png",
+      "image_width": 2807,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_29.json",
+      "sha256": "ea73bc44715a60f942ca91e02e61f6f3eafde3e6406ca424a6de53ba164666c1",
+      "bytes": 2250,
+      "shapes": 7,
+      "image_path": "test_29.png",
+      "image_width": 2853,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_3.json",
+      "sha256": "b0354c9a94d819bb7c5714fc7e8adb6cb796cf91efc2de5262572a664322744f",
+      "bytes": 3494,
+      "shapes": 5,
+      "image_path": "test_3.png",
+      "image_width": 2834,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_30.json",
+      "sha256": "6dc46734477e19aee9966c25e61b9d88ee5e9572b28d0dd17b42b103e873ee60",
+      "bytes": 6202,
+      "shapes": 12,
+      "image_path": "test_30.png",
+      "image_width": 2516,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_31.json",
+      "sha256": "159f738d28c956b6fa30840e862598238cd03cca7fd1da3ae633cbe1bbff40b8",
+      "bytes": 10940,
+      "shapes": 22,
+      "image_path": "test_31.png",
+      "image_width": 2808,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_32.json",
+      "sha256": "0102e696d7210eb880f2d00fb83e5b69c14cb382393727a9e0951549871b3827",
+      "bytes": 2233,
+      "shapes": 7,
+      "image_path": "test_32.png",
+      "image_width": 2792,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_33.json",
+      "sha256": "db19cde1b2abd395c0d8857293020851b58d7301708b9f76b4951dd8eb1ed6b3",
+      "bytes": 631,
+      "shapes": 2,
+      "image_path": "test_33.png",
+      "image_width": 2963,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_34.json",
+      "sha256": "e6c4a507ad66f53df3c62e79b3a809f91e58c1414f2270b7c8fba29bc1d66579",
+      "bytes": 3875,
+      "shapes": 8,
+      "image_path": "test_34.png",
+      "image_width": 2787,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_35.json",
+      "sha256": "96cf95c5d2cd294178af721136eb954de44c3dd2d27151730885cf8f1056520c",
+      "bytes": 1574,
+      "shapes": 5,
+      "image_path": "test_35.png",
+      "image_width": 2872,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_36.json",
+      "sha256": "80ebeb8ded0ddd38bef992ce76ee88c4b6b892661c8c2c0791f5a317e9999738",
+      "bytes": 5843,
+      "shapes": 10,
+      "image_path": "test_36.png",
+      "image_width": 1976,
+      "image_height": 976
+    },
+    {
+      "file": "disease/label/test_37.json",
+      "sha256": "6f690f5cf570ed388e89654d9cf16707d4d918cbf6ca5e891657b9174e37e4df",
+      "bytes": 7849,
+      "shapes": 16,
+      "image_path": "test_37.png",
+      "image_width": 2878,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_38.json",
+      "sha256": "9bfd4a20cf9a3331941148c3349504e58d911b44ba0acc9b2ab0bb67e594ee02",
+      "bytes": 1741,
+      "shapes": 6,
+      "image_path": "test_38.png",
+      "image_width": 2872,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_39.json",
+      "sha256": "3a8896fb9dffb67bfaf838fcdfc7e71c0e8196ad5e1c897ba174184e3c8dcb72",
+      "bytes": 5363,
+      "shapes": 11,
+      "image_path": "test_39.png",
+      "image_width": 2948,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_4.json",
+      "sha256": "401850280a30e169f9633ed27270e27dd92af94b08255563a06ea762a8373aaf",
+      "bytes": 1748,
+      "shapes": 5,
+      "image_path": "test_4.png",
+      "image_width": 2885,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_40.json",
+      "sha256": "43b006f54a7ec1ffdaf67285db8e51a334dd35991e8cf20062293ea143a90eb3",
+      "bytes": 1893,
+      "shapes": 5,
+      "image_path": "test_40.png",
+      "image_width": 2727,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_41.json",
+      "sha256": "f3eb1430325bb52f86fd8c6dfd09c6a84b346113536d473a9b839b509de82ace",
+      "bytes": 1140,
+      "shapes": 3,
+      "image_path": "test_41.png",
+      "image_width": 2868,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_42.json",
+      "sha256": "9956dc1c4e7fda4d23d53a48565775e3e0b3db840ad435d34044ceeee400630e",
+      "bytes": 6479,
+      "shapes": 11,
+      "image_path": "test_42.png",
+      "image_width": 2810,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_43.json",
+      "sha256": "206595bdb76d46783b83907f2dbfdc09f90fd0201a907809da0f9ec3f351c1ab",
+      "bytes": 1104,
+      "shapes": 3,
+      "image_path": "test_43.png",
+      "image_width": 2580,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_44.json",
+      "sha256": "ed334a4ec0b5d47ef35d1bf2c791ca0dfe905967706dcad71bdc7f812e58ab7b",
+      "bytes": 960,
+      "shapes": 3,
+      "image_path": "test_44.png",
+      "image_width": 2954,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_45.json",
+      "sha256": "580c53a6e9a16899c4476f7e7b000e3bd94a5fe2eaf7716ed3baf482007fb785",
+      "bytes": 6926,
+      "shapes": 11,
+      "image_path": "test_45.png",
+      "image_width": 2896,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_46.json",
+      "sha256": "3720734f1f2887b3fc44983f3fd7d622c3bfb4e5aefd22051757ad8d23744b1d",
+      "bytes": 2649,
+      "shapes": 8,
+      "image_path": "test_46.png",
+      "image_width": 2773,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_47.json",
+      "sha256": "37b62f96ff5fcc3ce5ba4db588d539e34426b28d85ed887eaaf76c8c89c29d65",
+      "bytes": 640,
+      "shapes": 2,
+      "image_path": "test_47.png",
+      "image_width": 2991,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_48.json",
+      "sha256": "d0abc578284d5a1e452cae3a4c5cbed2bcbea80c0b8a616c75f85825c2eeb500",
+      "bytes": 1747,
+      "shapes": 4,
+      "image_path": "test_48.png",
+      "image_width": 3002,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_49.json",
+      "sha256": "b7c2a034b254f88e6193b9ab989971816fb797146a4e43d4b5a7372408bfefc8",
+      "bytes": 1943,
+      "shapes": 6,
+      "image_path": "test_49.png",
+      "image_width": 2880,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_5.json",
+      "sha256": "837988addce53db3cf47d1c2171e04198be6337fd38e135f5f5c4676e1329fbf",
+      "bytes": 3871,
+      "shapes": 12,
+      "image_path": "test_5.png",
+      "image_width": 2868,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_50.json",
+      "sha256": "c2237adc2429347dba0fd8a25ebe95d514e6785343c167bd0c942c02eb3e816b",
+      "bytes": 3780,
+      "shapes": 6,
+      "image_path": "test_50.png",
+      "image_width": 2780,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_51.json",
+      "sha256": "8a8a39d3246beffd45bf7f895bc9bf50c14e504ab505de32155afe69020dce24",
+      "bytes": 694,
+      "shapes": 2,
+      "image_path": "test_51.png",
+      "image_width": 2872,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_52.json",
+      "sha256": "62e2e9fa4e0b4c71943cff79fbba83ccac9b03b215611e380c045832b7a3d139",
+      "bytes": 2855,
+      "shapes": 7,
+      "image_path": "test_52.png",
+      "image_width": 2749,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_53.json",
+      "sha256": "863d04b1590fa74c2d3c1f81af970ebedd37b94b519e4719d9648024af933c3b",
+      "bytes": 2823,
+      "shapes": 9,
+      "image_path": "test_53.png",
+      "image_width": 2953,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_54.json",
+      "sha256": "d796aa09bef2e9481383c1f667637b4923f848e0d3d18ed7bcc0f6d058aef9b5",
+      "bytes": 388,
+      "shapes": 1,
+      "image_path": "test_54.png",
+      "image_width": 2872,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_55.json",
+      "sha256": "a9380a6f00036b3f2d335d94f23efc2f6ba275c018af407c9dcab7189035862d",
+      "bytes": 3322,
+      "shapes": 13,
+      "image_path": "test_55.png",
+      "image_width": 2889,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_56.json",
+      "sha256": "eb90c9f1af14449cc68393ba6ced929f32978193745c83229f0be2ae8b316cdc",
+      "bytes": 4855,
+      "shapes": 6,
+      "image_path": "test_56.png",
+      "image_width": 2953,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_57.json",
+      "sha256": "9d60d06b4c3f1e53b5c33b0b86bfb31bd7ae84887075310183b9ef732b3bf60a",
+      "bytes": 2205,
+      "shapes": 7,
+      "image_path": "test_57.png",
+      "image_width": 2772,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_58.json",
+      "sha256": "1ff9d3e81c928a2f037daf1701d73e88a4b05a26027b02e03aec8ce847b2a43a",
+      "bytes": 622,
+      "shapes": 2,
+      "image_path": "test_58.png",
+      "image_width": 2985,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_59.json",
+      "sha256": "17bad5deceb62512bffa5ddc52a83501a42334c6d68ebdfe07d99ab77a730937",
+      "bytes": 967,
+      "shapes": 3,
+      "image_path": "test_59.png",
+      "image_width": 2872,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_6.json",
+      "sha256": "5109279e1b19d70f7076edefbc48bf609de1b75842bae62d0bff23d5ca77acea",
+      "bytes": 1290,
+      "shapes": 4,
+      "image_path": "test_6.png",
+      "image_width": 2872,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_60.json",
+      "sha256": "e6efc222eca31f26a26321ee58813343f2d7ad1b176f3036b57c810b59003546",
+      "bytes": 2410,
+      "shapes": 7,
+      "image_path": "test_60.png",
+      "image_width": 2872,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_61.json",
+      "sha256": "8ffe9de0b464ac4e449caefba3feff41d212eabf12668770e4a3268b5ead9ad3",
+      "bytes": 7073,
+      "shapes": 8,
+      "image_path": "test_61.png",
+      "image_width": 2967,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_62.json",
+      "sha256": "054b8ca108b7e84278c913b019d255dcc525167407b263901b529ead8d1db9ff",
+      "bytes": 2292,
+      "shapes": 7,
+      "image_path": "test_62.png",
+      "image_width": 2872,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_63.json",
+      "sha256": "b88fa5fa0a5bbedf4e7e4c040512af53f659532893b8d271078ef37019c95e25",
+      "bytes": 1170,
+      "shapes": 3,
+      "image_path": "test_63.png",
+      "image_width": 2831,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_64.json",
+      "sha256": "c7e1bb7de6b1fe02aabba075a302040b3df4104566cff0001073a7798e21f635",
+      "bytes": 922,
+      "shapes": 1,
+      "image_path": "test_64.png",
+      "image_width": 2946,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_65.json",
+      "sha256": "84ddd974a732d7ce7e4135ecf365da47cb326bf5af89224f3072a6c1990b2579",
+      "bytes": 2997,
+      "shapes": 8,
+      "image_path": "test_65.png",
+      "image_width": 2872,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_66.json",
+      "sha256": "7ba41f501b6016eb19b9e52a261090494f2251d58eb2fd9fd7784db403b10a48",
+      "bytes": 1953,
+      "shapes": 3,
+      "image_path": "test_66.png",
+      "image_width": 2808,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_67.json",
+      "sha256": "01981b190c9415b7e15f46326220836e32c1555bf51c0c83fa6d3800374c3842",
+      "bytes": 7200,
+      "shapes": 14,
+      "image_path": "test_67.png",
+      "image_width": 2911,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_68.json",
+      "sha256": "86fe21f24306e9bdfc160826c6ba516d396e285235af0bad51aa2cc4e1435c11",
+      "bytes": 1859,
+      "shapes": 5,
+      "image_path": "test_68.png",
+      "image_width": 2654,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_69.json",
+      "sha256": "0e2ec5efc5f5be63969294db392e34215aab67b59c06b1d534f94ab7fc181ee0",
+      "bytes": 2916,
+      "shapes": 9,
+      "image_path": "test_69.png",
+      "image_width": 2872,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_7.json",
+      "sha256": "dc862ee312bf9696d6f5eb7d9843b7798dda3dbd19454a923d85687eb25dc67c",
+      "bytes": 1727,
+      "shapes": 6,
+      "image_path": "test_7.png",
+      "image_width": 2798,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_70.json",
+      "sha256": "83e3c9c37d67561e9f9614d125892b17bd0d8f501f6da0d93cf2fd412cb5bd03",
+      "bytes": 1569,
+      "shapes": 5,
+      "image_path": "test_70.png",
+      "image_width": 2901,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_71.json",
+      "sha256": "1c63c44c450991366bf22e218c912dc0b47eb28a116e064c8f201274921c593d",
+      "bytes": 2079,
+      "shapes": 4,
+      "image_path": "test_71.png",
+      "image_width": 2812,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_72.json",
+      "sha256": "e646f0c087054235f98ed244c5f0737d8d48d116eadddbf80da7181c7dc5a5ca",
+      "bytes": 1610,
+      "shapes": 6,
+      "image_path": "test_72.png",
+      "image_width": 2927,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_73.json",
+      "sha256": "cc544bf8c864147200ad14a1d98934cb170c035c0060c0866ec0d5db0d21ab67",
+      "bytes": 2544,
+      "shapes": 3,
+      "image_path": "test_73.png",
+      "image_width": 2904,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_74.json",
+      "sha256": "4bd6768d86e38a428793f3eaa9851a7617d7aafbb1ebe8c06f799528926ee0d8",
+      "bytes": 4246,
+      "shapes": 8,
+      "image_path": "test_74.png",
+      "image_width": 2859,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_75.json",
+      "sha256": "88f0520fab0c51246b7ff43556099f33589353f422714392e929be934ae716e6",
+      "bytes": 933,
+      "shapes": 3,
+      "image_path": "test_75.png",
+      "image_width": 2648,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_76.json",
+      "sha256": "16bf5074e5d18528e2aa4f7a616526da5e9b7dc4feb1a751755ffd5336184318",
+      "bytes": 829,
+      "shapes": 2,
+      "image_path": "test_76.png",
+      "image_width": 2872,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_77.json",
+      "sha256": "d4c8d79446d6e9a922c4948076d846adcc14f8bdaad2621290d8550c80f73ae1",
+      "bytes": 4441,
+      "shapes": 10,
+      "image_path": "test_77.png",
+      "image_width": 2958,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_78.json",
+      "sha256": "1c653fe7b2e548ee44ae21d070c3a55c49411ca1ac1fbae473d506cf6828b8e1",
+      "bytes": 16279,
+      "shapes": 29,
+      "image_path": "test_78.png",
+      "image_width": 2842,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_79.json",
+      "sha256": "a1978b637cba8e533654505b1649b5f564c32473388e7e06e8a8da05c2ee3629",
+      "bytes": 3018,
+      "shapes": 5,
+      "image_path": "test_79.png",
+      "image_width": 2873,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_8.json",
+      "sha256": "d0332966a6ba339f131adfb7d41b7e9dddca602f95d51d07a1ba25bfd43f4164",
+      "bytes": 4442,
+      "shapes": 14,
+      "image_path": "test_8.png",
+      "image_width": 2872,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_80.json",
+      "sha256": "36c9bf49e782bf374a5802d6ed1f7cbc92dee54c6f115168a7219d9ec39967c7",
+      "bytes": 1497,
+      "shapes": 4,
+      "image_path": "test_80.png",
+      "image_width": 2921,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_81.json",
+      "sha256": "41c380dec10e2bc2a1c22f5eef5f6eb15f4cddd04d14281f46b1e5bfa0ca0044",
+      "bytes": 685,
+      "shapes": 2,
+      "image_path": "test_81.png",
+      "image_width": 2854,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_82.json",
+      "sha256": "ddbc5004efb2d7cc7a85401851541c6f86c6a50222c6fe0dad7a46e2e50f905a",
+      "bytes": 4191,
+      "shapes": 10,
+      "image_path": "test_82.png",
+      "image_width": 3001,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_83.json",
+      "sha256": "aa27285aff912b67fc00eb4f3071ccd0738f6338dd5719552363d313c35cbc0f",
+      "bytes": 1299,
+      "shapes": 5,
+      "image_path": "test_83.png",
+      "image_width": 2936,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_84.json",
+      "sha256": "6d8e595d10ad59693d790862f6986cbdd4829288ad6269fcb0354ec86d2630e5",
+      "bytes": 1281,
+      "shapes": 4,
+      "image_path": "test_84.png",
+      "image_width": 2868,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_85.json",
+      "sha256": "85373b42d1175bae5f80931c9b185c83615e50b23732e781f7ae10fbb281be03",
+      "bytes": 7200,
+      "shapes": 14,
+      "image_path": "test_85.png",
+      "image_width": 2828,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_86.json",
+      "sha256": "5a98bfefb0623a579539e045e0d8fdd76470148d3aa61a494098b17dbb95b217",
+      "bytes": 3604,
+      "shapes": 6,
+      "image_path": "test_86.png",
+      "image_width": 1976,
+      "image_height": 976
+    },
+    {
+      "file": "disease/label/test_87.json",
+      "sha256": "b9023d46998f124006e764448589583f92f8216fa95beb18ec16fc480284b260",
+      "bytes": 9563,
+      "shapes": 14,
+      "image_path": "test_87.png",
+      "image_width": 2928,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_88.json",
+      "sha256": "cbac670f8319cf0ba11634ece37fc68f2dcc736c8cfa27ba0a94a3d3bec7f26a",
+      "bytes": 1019,
+      "shapes": 2,
+      "image_path": "test_88.png",
+      "image_width": 2965,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_89.json",
+      "sha256": "3539c84ebedbde0e4b4b5fd2ae04b9d49701051455977445835cbc6e4c630fc7",
+      "bytes": 2143,
+      "shapes": 7,
+      "image_path": "test_89.png",
+      "image_width": 2872,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_9.json",
+      "sha256": "492e9f12a1c1aea45f17fbadc2731b3f5547ead455b92271f358aeab72b68950",
+      "bytes": 1556,
+      "shapes": 5,
+      "image_path": "test_9.png",
+      "image_width": 2872,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_90.json",
+      "sha256": "d197a801e088791d4597b64ee3a43fc7f9ed89c8d3ddf3e1f441e8dac055b5db",
+      "bytes": 2376,
+      "shapes": 7,
+      "image_path": "test_90.png",
+      "image_width": 2872,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_91.json",
+      "sha256": "bf087412c23ade7cfa792d301ae7ca2d4fbbad58f43571e5e41b726984058e94",
+      "bytes": 2311,
+      "shapes": 8,
+      "image_path": "test_91.png",
+      "image_width": 2872,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_92.json",
+      "sha256": "fee0000e68d6552d65d9106b4de2b181010bf345e6a834ed8639957ed84220f6",
+      "bytes": 3882,
+      "shapes": 13,
+      "image_path": "test_92.png",
+      "image_width": 2796,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_93.json",
+      "sha256": "39dc9450ab8fd528a3f5d303cbdbca4668a15408e38d2679769ca83b7bdd4c6b",
+      "bytes": 2900,
+      "shapes": 4,
+      "image_path": "test_93.png",
+      "image_width": 2765,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_94.json",
+      "sha256": "d2d3735d768e9f46a3cf3c75faab52256edf7c6ce46ad39ced35f4e8e0b59c30",
+      "bytes": 1294,
+      "shapes": 4,
+      "image_path": "test_94.png",
+      "image_width": 2918,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_95.json",
+      "sha256": "9bed0d5551a91f6a90725fe714009cf8c2cbf7b9ee8c58cd82c7780e4862f096",
+      "bytes": 1007,
+      "shapes": 3,
+      "image_path": "test_95.png",
+      "image_width": 2872,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_96.json",
+      "sha256": "3f00761f79f4402b8dc9db7c794066eabdc6bf679e2e7a43ba3f4bd1d59b5c2f",
+      "bytes": 1307,
+      "shapes": 4,
+      "image_path": "test_96.png",
+      "image_width": 2872,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_97.json",
+      "sha256": "6dd41a9730a8db78e04a9a6d0ed88cd162b6db48f467d447a311c8969337badc",
+      "bytes": 5752,
+      "shapes": 13,
+      "image_path": "test_97.png",
+      "image_width": 2872,
+      "image_height": 1504
+    },
+    {
+      "file": "disease/label/test_98.json",
+      "sha256": "0d6702f3d92bfbba990cee0ac8aceb44bfeeefd6ba4f1adc57514b0870e24f02",
+      "bytes": 1779,
+      "shapes": 2,
+      "image_path": "test_98.png",
+      "image_width": 2940,
+      "image_height": 1316
+    },
+    {
+      "file": "disease/label/test_99.json",
+      "sha256": "f9770dddb6af7fac2d499da541be185aa9757f72c1fede9a8ed056d989a27346",
+      "bytes": 1331,
+      "shapes": 4,
+      "image_path": "test_99.png",
+      "image_width": 2817,
+      "image_height": 1316
+    }
+  ]
+}

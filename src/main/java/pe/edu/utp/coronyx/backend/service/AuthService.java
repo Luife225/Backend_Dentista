@@ -79,8 +79,8 @@ public class AuthService {
     @Transactional(readOnly = true)
     public List<UserDto> getAllUsers(UserPrincipal principal) {
         if (principal == null || principal.getClinicaId() == null
-                || !"ADMIN_CLINICA".equals(principal.getRol())) {
-            throw new AccessDeniedException("Solo ADMIN_CLINICA puede consultar el directorio de su clínica");
+                || (!"ADMIN_CLINICA".equals(principal.getRol()) && !"SUPER_ADMIN".equals(principal.getRol()))) {
+            throw new AccessDeniedException("Solo ADMIN_CLINICA o SUPER_ADMIN puede consultar el directorio de su clínica");
         }
         return memberships.findByClinicaId(principal.getClinicaId()).stream().map(membership -> {
             User user = membership.getUsuario();

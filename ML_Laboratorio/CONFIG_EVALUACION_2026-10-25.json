@@ -1,0 +1,103 @@
+{
+  "version": 1,
+  "date": "2026-10-25",
+  "status": "design_defined_not_executed",
+  "source_revision": "7b27ccc8e342dcb774f69adc6ca5e6c09fefce93",
+  "task": {
+    "unit": "diagnostically_annotated_tooth_bbox",
+    "source_class_ids": {
+      "1": "Caries",
+      "3": "Deep Caries"
+    },
+    "clinical_validation_claim": false
+  },
+  "official_test": {
+    "images_listed": 250,
+    "json_files_inspected": 250,
+    "schema": "LabelMe",
+    "mapping_to_training_classes_verified": false,
+    "use_for_primary_evaluation": false,
+    "use_for_training_or_tuning": false,
+    "image_payloads_obtained": false
+  },
+  "split_policy": {
+    "status": "not_generated_pending_quality_duplicates_and_groups",
+    "development_validation": "official_validation_subject_to_quality_and_group_checks",
+    "internal_test_source": "eligible_original_diagnostic_training_images",
+    "internal_test_fraction_approximate": 0.2,
+    "seed": 20261025,
+    "split_unit": "patient_or_study_if_available_otherwise_identified_related_image_group",
+    "patient_independence_verified": false,
+    "all_augmentations_after_split": true,
+    "internal_not_official_benchmark": true,
+    "already_inspected_images_excluded_from_internal_test": [
+      "train_377.png",
+      "train_481.png",
+      "train_440.png",
+      "train_204.png",
+      "train_622.png",
+      "train_4.png",
+      "train_185.png",
+      "train_251.png"
+    ]
+  },
+  "metrics": {
+    "report_per_class": true,
+    "operating_point_iou": 0.5,
+    "names": [
+      "precision",
+      "recall",
+      "F1",
+      "AP50",
+      "AP50-95",
+      "TP",
+      "FP",
+      "FN",
+      "reference_support"
+    ],
+    "aggregate": "unweighted_mean_AP_across_target_classes",
+    "matching": "one_to_one_within_image_and_category",
+    "class_without_positive_reference": "not_evaluable",
+    "keep_valid_multiple_labels": true
+  },
+  "selection": {
+    "checkpoint": "max_validation_mean_AP50-95",
+    "configuration_tie_break": "prefer_reference_experiment",
+    "confidence": "single_global_threshold_max_validation_macro_F1_at_IoU_0.50",
+    "confidence_tie_break": [
+      "higher_macro_recall",
+      "lower_threshold"
+    ],
+    "numeric_confidence_selected": null,
+    "max_additional_controlled_comparisons": 1,
+    "test_used_for_selection": false
+  },
+  "latency": {
+    "source": "validation",
+    "images_target": 30,
+    "warmups": 5,
+    "batch_images": 1,
+    "report": [
+      "cold_start_separately",
+      "p50",
+      "p95",
+      "hardware_and_resolution",
+      "processing_stages"
+    ],
+    "measurements_executed": false
+  },
+  "acceptance": {
+    "academic_minimum_percentage_agreed": null,
+    "clinical_threshold_agreed": null,
+    "no_detection_reference_precision": "undefined",
+    "no_detection_reference_recall_with_positives": 0,
+    "no_detection_reference_AP_with_positives": 0,
+    "clinical_utility_inferred_from_AP": false
+  },
+  "execution": {
+    "partition_manifests_created": false,
+    "model_trained": false,
+    "metrics_measured": false,
+    "predictions_generated": false
+  }
+}

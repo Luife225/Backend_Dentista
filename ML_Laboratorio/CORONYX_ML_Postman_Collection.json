@@ -1,0 +1,321 @@
+{
+  "info": {
+    "name": "CORONYX - Laboratorio y Flujo Integrado ML (YOLOv8n)",
+    "_postman_id": "coronyx-ml-mvp-v1-collection",
+    "description": "Colección completa para probar la detección de caries y caries profunda en radiografías panorámicas: tanto directo contra el motor Python (:8091) como el flujo clínico completo en Spring Boot (:8081) con login, subida, inferencia y revisión odontológica automatizada.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "mlBaseUrl",
+      "value": "http://127.0.0.1:8091",
+      "type": "string"
+    },
+    {
+      "key": "backendBaseUrl",
+      "value": "http://localhost:8081",
+      "type": "string"
+    },
+    {
+      "key": "jwtTokenOdontologo",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "attachmentId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "pacienteId",
+      "value": "1",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Servicio Python Directo (:8091)",
+      "item": [
+        {
+          "name": "1.1 Estado del Modelo y GPU (GET /health)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{mlBaseUrl}}/health",
+              "host": ["{{mlBaseUrl}}"],
+              "path": ["health"]
+            },
+            "description": "Comprueba que el modelo YOLOv8n (best.pt) esté cargado y corriendo sobre la GPU NVIDIA RTX 5060."
+          }
+        },
+        {
+          "name": "1.2 Detectar Hallazgos en JSON (POST /predict)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "",
+                  "description": "Selecciona original_val_10.png desde ML_Laboratorio/outputs/demo_docente/"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{mlBaseUrl}}/predict?threshold=0.25",
+              "host": ["{{mlBaseUrl}}"],
+              "path": ["predict"],
+              "query": [
+                {
+                  "key": "threshold",
+                  "value": "0.25",
+                  "description": "Umbral de confianza (0.05 a 0.95)"
+                }
+              ]
+            },
+            "description": "Devuelve el contrato versionado coronyx.ml.panoramic_caries.v1 con cajas, confianza y tiempos en ms."
+          }
+        },
+        {
+          "name": "1.3 Ver Radiografía con Cajas (POST /predict/preview)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "",
+                  "description": "Selecciona original_val_10.png o original_val_16.png"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{mlBaseUrl}}/predict/preview?threshold=0.25",
+              "host": ["{{mlBaseUrl}}"],
+              "path": ["predict", "preview"],
+              "query": [
+                {
+                  "key": "threshold",
+                  "value": "0.25"
+                }
+              ]
+            },
+            "description": "Retorna directamente la imagen PNG renderizada con cajas amarillas (caries) y rojas (caries profunda)."
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Flujo Completo Backend Spring Boot (:8081)",
+      "item": [
+        {
+          "name": "2.1 Login como Odontólogo (Auto-guarda Token)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var data = pm.response.json();",
+                  "    if (data.token) {",
+                  "        pm.collectionVariables.set('jwtTokenOdontologo', data.token);",
+                  "        console.log('✅ Token JWT guardado automáticamente en jwtTokenOdontologo');",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"odontologo@coronyx.pe\",\n  \"clave\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "{{backendBaseUrl}}/api/v1/auth/login",
+              "host": ["{{backendBaseUrl}}"],
+              "path": ["api", "v1", "auth", "login"]
+            },
+            "description": "Inicia sesión con el odontólogo semillero. Su test script guarda automáticamente el token en la variable jwtTokenOdontologo."
+          }
+        },
+        {
+          "name": "2.2 Subir Radiografía al Paciente (Auto-guarda ID)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201 || pm.response.code === 200) {",
+                  "    var data = pm.response.json();",
+                  "    if (data.id) {",
+                  "        pm.collectionVariables.set('attachmentId', data.id);",
+                  "        console.log('✅ ID del adjunto guardado automáticamente en attachmentId: ' + data.id);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtTokenOdontologo}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "",
+                  "description": "Selecciona una radiografía, ej. original_val_10.png"
+                },
+                {
+                  "key": "pacienteId",
+                  "value": "{{pacienteId}}",
+                  "type": "text"
+                },
+                {
+                  "key": "tipoArchivo",
+                  "value": "RADIOGRAFIA",
+                  "type": "text"
+                },
+                {
+                  "key": "regionAnatomica",
+                  "value": "PANORAMICA",
+                  "type": "text"
+                },
+                {
+                  "key": "esVisiblePaciente",
+                  "value": "false",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{backendBaseUrl}}/api/v1/attachments",
+              "host": ["{{backendBaseUrl}}"],
+              "path": ["api", "v1", "attachments"]
+            },
+            "description": "Carga la radiografía en el expediente del paciente. Su script guarda automáticamente el id retornado en attachmentId."
+          }
+        },
+        {
+          "name": "2.3 Analizar Radiografía con ML",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtTokenOdontologo}}"
+              }
+            ],
+            "url": {
+              "raw": "{{backendBaseUrl}}/api/v1/attachments/{{attachmentId}}/analyze-ml?threshold=0.25",
+              "host": ["{{backendBaseUrl}}"],
+              "path": ["api", "v1", "attachments", "{{attachmentId}}", "analyze-ml"],
+              "query": [
+                {
+                  "key": "threshold",
+                  "value": "0.25",
+                  "description": "Umbral de inferencia (opcional)"
+                }
+              ]
+            },
+            "description": "El backend lee la radiografía de su storage durable, consulta al motor Python y guarda ia_estado_revision='PENDIENTE' preservando intacta la predicción original en originalModelOutput."
+          }
+        },
+        {
+          "name": "2.4 Consultar Radiografía y Hallazgos Guardados",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtTokenOdontologo}}"
+              }
+            ],
+            "url": {
+              "raw": "{{backendBaseUrl}}/api/v1/attachments/{{attachmentId}}",
+              "host": ["{{backendBaseUrl}}"],
+              "path": ["api", "v1", "attachments", "{{attachmentId}}"]
+            },
+            "description": "Retorna la metadata del adjunto con iaNombreModelo, iaVersionModelo, iaEstadoRevision, iaHallazgos (con findings y originalModelOutput) e iaRevisadoPor."
+          }
+        },
+        {
+          "name": "2.5 Odontólogo Corrige Hallazgo (Clase / Caja)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtTokenOdontologo}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"findingId\": \"hallazgo-1\",\n  \"decision\": \"CORREGIDO\",\n  \"correctedClassName\": \"caries_profunda\",\n  \"clinicalNote\": \"Compromiso dentinario profundo evidenciado en examen radiográfico y clínico.\"\n}"
+            },
+            "url": {
+              "raw": "{{backendBaseUrl}}/api/v1/attachments/{{attachmentId}}/review-ml",
+              "host": ["{{backendBaseUrl}}"],
+              "path": ["api", "v1", "attachments", "{{attachmentId}}", "review-ml"]
+            },
+            "description": "El odontólogo corrige la clasificación o delimitación. originalModelOutput permanece intacto y el estado de la radiografía pasa a CORREGIDO."
+          }
+        },
+        {
+          "name": "2.6 Odontólogo Acepta Resto de Hallazgos",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtTokenOdontologo}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"overallDecision\": \"ACEPTADO\",\n  \"overallClinicalNote\": \"Hallazgos validados de conformidad con inspección clínica.\"\n}"
+            },
+            "url": {
+              "raw": "{{backendBaseUrl}}/api/v1/attachments/{{attachmentId}}/review-ml",
+              "host": ["{{backendBaseUrl}}"],
+              "path": ["api", "v1", "attachments", "{{attachmentId}}", "review-ml"]
+            },
+            "description": "Marca todos los hallazgos que seguían pendientes como ACEPTADO y registra la auditoría del odontólogo."
+          }
+        }
+      ]
+    }
+  ]
+}

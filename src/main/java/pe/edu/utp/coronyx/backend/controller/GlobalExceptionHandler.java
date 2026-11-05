@@ -10,6 +10,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import pe.edu.utp.coronyx.backend.service.MlServiceUnavailableException;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
@@ -65,10 +66,23 @@ public class GlobalExceptionHandler {
                 .body(buildErrorResponse(HttpStatus.CONFLICT, "Los datos entran en conflicto con un registro existente", req.getRequestURI()));
     }
 
+    @ExceptionHandler(org.springframework.dao.ConcurrencyFailureException.class)
+    public ResponseEntity<Map<String, Object>> handleConcurrentUpdate(org.springframework.dao.ConcurrencyFailureException ex, HttpServletRequest req) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(buildErrorResponse(HttpStatus.CONFLICT, "Otro usuario está modificando este registro. Actualice e intente de nuevo.", req.getRequestURI()));
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, Object>> handleBadRequest(IllegalArgumentException ex, HttpServletRequest req) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), req.getRequestURI()));
+    }
+
+    @ExceptionHandler(MlServiceUnavailableException.class)
+    public ResponseEntity<Map<String, Object>> handleMlServiceUnavailable(MlServiceUnavailableException ex, HttpServletRequest req) {
+        log.warn("[ML-EX] 503 en {}: {}", req.getRequestURI(), ex.getMessage());
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(buildErrorResponse(HttpStatus.SERVICE_UNAVAILABLE, ex.getMessage(), req.getRequestURI()));
     }
 
     @ExceptionHandler(org.springframework.web.multipart.MaxUploadSizeExceededException.class)
@@ -95,5 +109,13 @@ public class GlobalExceptionHandler {
                 .body(buildErrorResponse(HttpStatus.UNSUPPORTED_MEDIA_TYPE,
                         "El formato de la petición no es soportado. Se requiere cabecera 'Content-Type: application/json'.",
                         req.getRequestURI()));
+    }
+
+    @ExceptionHandler(Throwable.class)
+    public ResponseEntity<Map<String, Object>> handleGeneral(Throwable ex, HttpServletRequest req) {
+        log.error("[SERVER-EX] 500 en {}: {}", req.getRequestURI(), ex.getMessage(), ex);
+        Map<String, Object> body = buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), req.getRequestURI());
+        body.put("exception", ex.getClass().getName());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
     }
 }

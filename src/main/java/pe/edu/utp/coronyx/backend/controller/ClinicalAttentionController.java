@@ -59,8 +59,9 @@ public class ClinicalAttentionController {
     @PutMapping({"/{id}/versions/{versionId}/confirm", "/{id}/versiones/{versionId}/confirmar"})
     public ResponseEntity<ClinicalEncounterResponseDto> confirmSpecificVersion(
             @PathVariable("id") Long id,
-            @PathVariable("versionId") Long versionId) {
-        ConfirmVersionDto dto = new ConfirmVersionDto(versionId, null);
+            @PathVariable("versionId") Long versionId,
+            @RequestBody ConfirmVersionDto dto) {
+        dto.setVersionId(versionId);
         ClinicalEncounterResponseDto confirmed = clinicalAttentionService.confirmVersion(id, dto);
         return ResponseEntity.ok(confirmed);
     }

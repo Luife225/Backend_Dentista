@@ -1,0 +1,2 @@
+# Preparación de datos y pruebas; no instala un framework de entrenamiento.
+Pillow==12.3.0

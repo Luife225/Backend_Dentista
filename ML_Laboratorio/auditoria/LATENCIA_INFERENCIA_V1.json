@@ -1,0 +1,36 @@
+{
+  "measured_at_utc": "2026-10-29T00:29:43.993610+00:00",
+  "source_partition": "validation",
+  "warmups_count": 5,
+  "images_measured": 30,
+  "batch_size_per_request": 1,
+  "cold_start_load_ms": 1277.7,
+  "device": "NVIDIA GeForce RTX 5060 Laptop GPU",
+  "input_imgsz": 640,
+  "stages": {
+    "preprocess_ms": {
+      "p50_ms": 1.27,
+      "p95_ms": 1.5,
+      "min_ms": 0.81,
+      "max_ms": 1.58
+    },
+    "inference_ms": {
+      "p50_ms": 9.03,
+      "p95_ms": 11.88,
+      "min_ms": 5.26,
+      "max_ms": 28.04
+    },
+    "postprocess_ms": {
+      "p50_ms": 2.35,
+      "p95_ms": 2.94,
+      "min_ms": 1.48,
+      "max_ms": 3.01
+    },
+    "total_wall_ms": {
+      "p50_ms": 69.84,
+      "p95_ms": 85.75,
+      "min_ms": 29.12,
+      "max_ms": 86.5
+    }
+  }
+}

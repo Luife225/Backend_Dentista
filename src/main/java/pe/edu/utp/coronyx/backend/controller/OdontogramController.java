@@ -17,9 +17,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/odontograma")
-@CrossOrigin(origins = "*", allowedHeaders = "*", methods = {
-        RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.PATCH, RequestMethod.DELETE, RequestMethod.OPTIONS
-})
 public class OdontogramController {
 
     private final OdontogramService odontogramService;
