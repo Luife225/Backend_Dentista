@@ -1,7 +1,7 @@
 {
   "info": {
-    "name": "Coronyx F09 HTTP Verification Suite",
-    "description": "Colección oficial de pruebas de integración HTTP de Coronyx Dental System con assertions y validación completa de 34 casos funcionales (A01-A11, R01-R10, D01-D08, P01-P05) y principios generales (G01-G05).",
+    "name": "Coronyx Dental System - API Suite Completa (Railway & Local)",
+    "description": "Colección oficial completa de pruebas HTTP e integración de Coronyx Dental System desplegado en Railway (Backend Spring Boot 3 + PostgreSQL + Microservicio FastAPI YOLOv8n). Incluye los 5 roles (ADMIN_CLINICA, RECEPCIONISTA, ODONTOLOGO, PACIENTE, SOPORTE_TECNICO/SUPER_ADMIN), Mesa de Ayuda ITIL 4 (Matriz 3x3 + Bitácora), IA Radiográfica YOLOv8n, Teleodontología (Google Meet + Sesiones), Inicio de Atención Clínica, Caja e Inventario.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -53,7 +53,8 @@
                   "    pm.expect(json.usuarioId).to.be.a('string');",
                   "    pm.expect(json.clinicaId).to.be.a('string');",
                   "});",
-                  "pm.environment.set(\"adminToken\", json.token);"
+                  "pm.environment.set(\"adminToken\", json.token);",
+                  "pm.collectionVariables.set(\"adminToken\", json.token);"
                 ],
                 "type": "text/javascript"
               }
@@ -100,7 +101,8 @@
                 "exec": [
                   "pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });",
                   "const json = pm.response.json();",
-                  "pm.environment.set(\"recepToken\", json.token);"
+                  "pm.environment.set(\"recepToken\", json.token);",
+                  "pm.collectionVariables.set(\"recepToken\", json.token);"
                 ],
                 "type": "text/javascript"
               }
@@ -147,7 +149,8 @@
                 "exec": [
                   "pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });",
                   "const json = pm.response.json();",
-                  "pm.environment.set(\"odontoToken\", json.token);"
+                  "pm.environment.set(\"odontoToken\", json.token);",
+                  "pm.collectionVariables.set(\"odontoToken\", json.token);"
                 ],
                 "type": "text/javascript"
               }
@@ -196,7 +199,9 @@
                   "const json = pm.response.json();",
                   "pm.test(\"Long precision: pacienteId como string\", function () { pm.expect(json.pacienteId).to.be.a('string'); });",
                   "pm.environment.set(\"pacienteToken\", json.token);",
-                  "if (json.pacienteId) { pm.environment.set(\"pacienteId\", json.pacienteId); }"
+                  "pm.collectionVariables.set(\"pacienteToken\", json.token);",
+                  "if (json.pacienteId) { pm.environment.set(\"pacienteId\", json.pacienteId); }",
+                  "if (json.pacienteId) { pm.collectionVariables.set(\"pacienteId\", json.pacienteId); }"
                 ],
                 "type": "text/javascript"
               }
@@ -242,6 +247,55 @@
               "script": {
                 "exec": [
                   "pm.test(\"Status code is 201 Created or 200 OK\", function () { pm.expect([200, 201]).to.include(pm.response.code); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "00.6 Login SOPORTE_TECNICO (SUPER_ADMIN)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"usernameOrEmail\": \"{{soporteEmail}}\",\n  \"password\": \"{{soportePassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test(\"Token JWT recibido para Soporte TI\", function () { pm.expect(json.token).to.be.a('string'); });",
+                  "pm.environment.set(\"soporteToken\", json.token);",
+                  "pm.collectionVariables.set(\"soporteToken\", json.token);"
                 ],
                 "type": "text/javascript"
               }
@@ -646,7 +700,8 @@
                 "exec": [
                   "pm.test(\"A08: Agendamiento administrativo retornó 201 Created\", function () { pm.response.to.have.status(201); });",
                   "const json = pm.response.json();",
-                  "pm.environment.set(\"citaId\", json.id);"
+                  "pm.environment.set(\"citaId\", json.id);",
+                  "pm.collectionVariables.set(\"citaId\", json.id);"
                 ],
                 "type": "text/javascript"
               }
@@ -1011,7 +1066,8 @@
                 "exec": [
                   "pm.test(\"R04: Agendamiento retornó 201 Created\", function () { pm.response.to.have.status(201); });",
                   "const json = pm.response.json();",
-                  "pm.environment.set(\"citaId\", json.id);"
+                  "pm.environment.set(\"citaId\", json.id);",
+                  "pm.collectionVariables.set(\"citaId\", json.id);"
                 ],
                 "type": "text/javascript"
               }
@@ -1384,7 +1440,8 @@
                   "pm.test(\"D02: Creación de atención retornó 201 Created\", function () { pm.response.to.have.status(201); });",
                   "const json = pm.response.json();",
                   "pm.test(\"D02: Encuentro en BORRADOR\", function () { pm.expect(json.estado).to.eql(\"BORRADOR\"); });",
-                  "pm.environment.set(\"encounterId\", json.id);"
+                  "pm.environment.set(\"encounterId\", json.id);",
+                  "pm.collectionVariables.set(\"encounterId\", json.id);"
                 ],
                 "type": "text/javascript"
               }
@@ -1618,7 +1675,8 @@
                 "exec": [
                   "pm.test(\"D07: Odontograma actual retornó 200 OK\", function () { pm.response.to.have.status(200); });",
                   "const json = pm.response.json();",
-                  "pm.environment.set(\"odontogramaVersionId\", json.id);"
+                  "pm.environment.set(\"odontogramaVersionId\", json.id);",
+                  "pm.collectionVariables.set(\"odontogramaVersionId\", json.id);"
                 ],
                 "type": "text/javascript"
               }
@@ -2233,6 +2291,1275 @@
           ]
         }
       ]
+    },
+    {
+      "name": "07. Mesa de Ayuda ITIL 4 y Gestion de Incidencias (H01 - H07)",
+      "item": [
+        {
+          "name": "H01: Listar Catalogo Oficial de Incidencias (16 items)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/helpdesk/catalog",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "helpdesk",
+                "catalog"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"H01: Catálogo ITIL 4 retornado con 200 OK\", function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test(\"H01: Catálogo contiene motivos tipificados\", function () { pm.expect(json.length).to.be.at.least(10); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "H02: Filtrar Catalogo de Incidencias por Rol (PACIENTE)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{pacienteToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/helpdesk/catalog?rol=PACIENTE",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "helpdesk",
+                "catalog"
+              ],
+              "query": [
+                {
+                  "key": "rol",
+                  "value": "PACIENTE"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"H02: Catálogo filtrado para PACIENTE con 200 OK\", function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "H03: Listar Tablero Operativo de Tickets (Orden Matriz 3x3)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/helpdesk/tickets",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "helpdesk",
+                "tickets"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"H03: Tablero de tickets retornado con 200 OK\", function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test(\"H03: Respuesta es una lista de tickets\", function () { pm.expect(json).to.be.an('array'); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "H04: Crear Ticket de Incidencia con Calculo Matriz 3x3",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{pacienteToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/helpdesk/tickets",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "helpdesk",
+                "tickets"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"catalogoId\": \"INC-PAC-001\",\n  \"solicitud\": \"Reprogramación de cita odontológica por imprevisto (con 24 horas de anticipación)\",\n  \"solicitante\": \"Roberto Gómez\",\n  \"solicitanteRol\": \"PACIENTE\",\n  \"impacto\": 3,\n  \"probabilidad\": 2,\n  \"tipoItil\": \"Asistencia\",\n  \"descripcionDetallada\": \"Solicito reprogramar mi cita para el turno de la tarde por motivo laboral.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"H04: Ticket creado exitosamente con 200 OK\", function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test(\"H04: Prioridad calculada ALTO (Impacto 3 x Probabilidad 2 = 6) y estado PENDIENTE\", function () {",
+                  "    pm.expect(json.prioridad).to.eql(\"ALTO\");",
+                  "    pm.expect(json.estado).to.eql(\"PENDIENTE\");",
+                  "});",
+                  "if (json.id) {",
+                  "    pm.environment.set(\"ticketId\", json.id);",
+                  "    pm.collectionVariables.set(\"ticketId\", json.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "H05: Iniciar Atencion de Ticket (PENDIENTE -> EN_PROCESO)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{recepToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/helpdesk/tickets/{{ticketId}}/status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "helpdesk",
+                "tickets",
+                "{{ticketId}}",
+                "status"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"EN_PROCESO\",\n  \"usuarioNombre\": \"Paula Suárez\",\n  \"usuarioRol\": \"RECEPCIONISTA\",\n  \"evidencia\": \"Se inicia verificación de disponibilidad de sillón dental en agenda.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"H05: Ticket pasa a EN_PROCESO con 200 OK\", function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test(\"H05: Estado actualizado a EN_PROCESO\", function () { pm.expect(json.estado).to.eql(\"EN_PROCESO\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "H06: Resolver Ticket con Evidencia Obligatoria (EN_PROCESO -> ATENDIDO)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{recepToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/helpdesk/tickets/{{ticketId}}/status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "helpdesk",
+                "tickets",
+                "{{ticketId}}",
+                "status"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"ATENDIDO\",\n  \"usuarioNombre\": \"Paula Suárez\",\n  \"usuarioRol\": \"RECEPCIONISTA\",\n  \"evidencia\": \"Cita reprogramada en Sillón 1 y confirmada con el paciente.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"H06: Ticket resuelto a ATENDIDO con 200 OK\", function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test(\"H06: Estado ATENDIDO y evidencia registrada\", function () {",
+                  "    pm.expect(json.estado).to.eql(\"ATENDIDO\");",
+                  "    pm.expect(json.evidencia).to.be.a(\"string\");",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "H07: Consultar Bitacora de Auditoria del Ticket",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/helpdesk/tickets/{{ticketId}}/bitacora",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "helpdesk",
+                "tickets",
+                "{{ticketId}}",
+                "bitacora"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"H07: Bitácora retornada con 200 OK\", function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test(\"H07: Bitácora registra eventos de trazabilidad\", function () { pm.expect(json.length).to.be.at.least(1); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "08. IA Radiografica YOLOv8n y Microservicio ML (M01 - M05)",
+      "item": [
+        {
+          "name": "M01: Healthcheck Directo Microservicio ML FastAPI (Railway)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{mlUrl}}/health",
+              "host": [
+                "{{mlUrl}}"
+              ],
+              "path": [
+                "health"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"M01: Microservicio ML activo (200 OK)\", function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test(\"M01: Estado ok y clases caries/caries_profunda cargadas\", function () {",
+                  "    pm.expect(json.status).to.eql(\"ok\");",
+                  "    pm.expect(json.classes).to.include(\"caries\");",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "M02: Inferencia Directa YOLOv8n (/predict en Microservicio ML)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{mlUrl}}/predict?threshold=0.25",
+              "host": [
+                "{{mlUrl}}"
+              ],
+              "path": [
+                "predict"
+              ],
+              "query": [
+                {
+                  "key": "threshold",
+                  "value": "0.25"
+                }
+              ]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "",
+                  "description": "Seleccione una radiografía dental (.png / .jpg)"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"M02: Inferencia YOLOv8n ejecutada\", function () { pm.expect([200, 400, 422]).to.include(pm.response.code); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "M03: Vista Previa PNG Anotada (/predict/preview en Microservicio ML)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{mlUrl}}/predict/preview?threshold=0.25",
+              "host": [
+                "{{mlUrl}}"
+              ],
+              "path": [
+                "predict",
+                "preview"
+              ],
+              "query": [
+                {
+                  "key": "threshold",
+                  "value": "0.25"
+                }
+              ]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "",
+                  "description": "Seleccione una radiografía dental (.png / .jpg)"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"M03: Endpoint de preview disponible\", function () { pm.expect([200, 400, 422]).to.include(pm.response.code); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "M04: Analizar Radiografia con IA desde Backend Coronyx",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{odontoToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/attachments/{{attachmentId}}/analyze-ml?threshold=0.25",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "attachments",
+                "{{attachmentId}}",
+                "analyze-ml"
+              ],
+              "query": [
+                {
+                  "key": "threshold",
+                  "value": "0.25"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"M04: Análisis IA procesado por Backend\", function () { pm.expect([200, 404]).to.include(pm.response.code); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "M05: Revision Odontologica de Hallazgos IA (ACEPTADO / CORREGIDO)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{odontoToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/attachments/{{attachmentId}}/review-ml",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "attachments",
+                "{{attachmentId}}",
+                "review-ml"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"overallDecision\": \"ACEPTADO\",\n  \"overallClinicalNote\": \"Hallazgos radiográficos validados clínicamente por el odontólogo tratante.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"M05: Revisión clínica registrada\", function () { pm.expect([200, 400, 404]).to.include(pm.response.code); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "09. Teleodontologia (Google Meet / Sesiones) e Inicio de Atencion (T01 - T05)",
+      "item": [
+        {
+          "name": "T01: Iniciar Atencion Clinica desde Cita (Cita -> EN_ATENCION + Borrador)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{odontoToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/citas/{{citaId}}/iniciar-atencion",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "citas",
+                "{{citaId}}",
+                "iniciar-atencion"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"T01: Inicio de atención procesado\", function () { pm.expect([200, 201, 400, 409]).to.include(pm.response.code); });",
+                  "if (pm.response.code === 200 || pm.response.code === 201) {",
+                  "    const json = pm.response.json();",
+                  "    if (json.id) {",
+                  "        pm.environment.set(\"encounterId\", json.id);",
+                  "        pm.collectionVariables.set(\"encounterId\", json.id);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "T02: Asignar Enlace Google Meet a Cita Virtual",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{odontoToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/citas/{{citaId}}/teleconsulta",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "citas",
+                "{{citaId}}",
+                "teleconsulta"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"enlace\": \"https://meet.google.com/cor-onyx-utp\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"T02: Enlace de Google Meet vinculado\", function () { pm.expect([200, 400, 404]).to.include(pm.response.code); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "T03: Abrir o Unirse a Sesion de Teleconsulta",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{odontoToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/teleconsulta/sesion/{{citaId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "teleconsulta",
+                "sesion",
+                "{{citaId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"T03: Sesión de teleconsulta gestionada\", function () { pm.expect([200, 400, 404]).to.include(pm.response.code); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "T04: Consultar Estado de Sesion de Teleconsulta",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{odontoToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/teleconsulta/sesion/{{citaId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "teleconsulta",
+                "sesion",
+                "{{citaId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"T04: Estado de teleconsulta consultado\", function () { pm.expect([200, 404]).to.include(pm.response.code); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "T05: Cerrar Sesion de Teleconsulta",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{odontoToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/teleconsulta/sesion/{{citaId}}/cerrar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "teleconsulta",
+                "sesion",
+                "{{citaId}}",
+                "cerrar"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"T05: Cierre de teleconsulta procesado\", function () { pm.expect([200, 400, 404]).to.include(pm.response.code); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "10. Caja, Inventario y Configuracion de Clinica (B01 - B08)",
+      "item": [
+        {
+          "name": "B01: Consultar Perfil de la Clinica",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/clinic/profile",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "clinic",
+                "profile"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"B01: Perfil de clínica retornado con 200 OK\", function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "B02: Actualizar Perfil de la Clinica",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/clinic/profile",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "clinic",
+                "profile"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Centro Odontológico Especializado Coronyx\",\n  \"razonSocial\": \"CORONYX DENTAL S.A.C.\",\n  \"ruc\": \"20601234567\",\n  \"telefono\": \"01-445-8899\",\n  \"correo\": \"contacto@coronyx.pe\",\n  \"ciudad\": \"Lima\",\n  \"direccion\": \"Av. Arequipa 2450, Lince\",\n  \"zonaHoraria\": \"America/Lima\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"B02: Perfil actualizado con 200 OK\", function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "B03: Listar Cargos de Caja",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{recepToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/caja/cargos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "caja",
+                "cargos"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"B03: Cargos de caja listados con 200 OK\", function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "B04: Emitir Nuevo Cargo en Caja",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{recepToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/caja/cargos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "caja",
+                "cargos"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pacienteId\": {{pacienteId}},\n  \"concepto\": \"Profilaxis dental y destartraje ultrasónico\",\n  \"importe\": 120.00,\n  \"solicitudId\": \"{{$guid}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"B04: Cargo emitido exitosamente\", function () { pm.expect([200, 201]).to.include(pm.response.code); });",
+                  "const json = pm.response.json();",
+                  "if (json.id) {",
+                  "    pm.environment.set(\"cargoId\", json.id);",
+                  "    pm.collectionVariables.set(\"cargoId\", json.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "B05: Registrar Pago de Cargo en Caja",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{recepToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/caja/cargos/{{cargoId}}/pagos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "caja",
+                "cargos",
+                "{{cargoId}}",
+                "pagos"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"importe\": 60.00,\n  \"medio\": \"YAPE\",\n  \"referencia\": \"OP-982341\",\n  \"solicitudId\": \"{{$guid}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"B05: Pago parcial registrado con 200 OK\", function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "B06: Anular Cargo en Caja (Exclusivo ADMIN_CLINICA)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/caja/cargos/{{cargoId}}/anular",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "caja",
+                "cargos",
+                "{{cargoId}}",
+                "anular"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"motivo\": \"Anulación autorizada por solicitud de Mesa de Ayuda (INC-REC-001).\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"B06: Cargo anulado por Administrador\", function () { pm.expect([200, 400]).to.include(pm.response.code); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "B07: Listar Insumos de Inventario",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/inventario/insumos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "inventario",
+                "insumos"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"B07: Inventario de insumos listado con 200 OK\", function () { pm.response.to.have.status(200); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "B08: Registrar Insumo Odontologico",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/inventario/insumos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "inventario",
+                "insumos"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"codigo\": \"INS-RES-3M\",\n  \"nombre\": \"Resina Filtek Z350 XT Tonos A2\",\n  \"categoria\": \"Restauración\",\n  \"unidad\": \"JERINGA\",\n  \"presentacion\": \"UNIDAD\",\n  \"clasificacion\": \"CONSUMIBLE\",\n  \"contenidoDescriptivo\": \"Jeringa de 4g\",\n  \"stockMinimo\": 5,\n  \"costoUnitario\": 145,\n  \"proveedor\": \"3M Perú Dental\",\n  \"activo\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"B08: Insumo registrado en inventario\", function () { pm.expect([200, 201, 409]).to.include(pm.response.code); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://backenddentista-production.up.railway.app",
+      "type": "string"
+    },
+    {
+      "key": "mlUrl",
+      "value": "https://ml-service-production-5da0.up.railway.app",
+      "type": "string"
+    },
+    {
+      "key": "frontendUrl",
+      "value": "https://frontenddentista-production.up.railway.app",
+      "type": "string"
+    },
+    {
+      "key": "adminEmail",
+      "value": "admin@coronyx.pe",
+      "type": "string"
+    },
+    {
+      "key": "adminPassword",
+      "value": "123456",
+      "type": "string"
+    },
+    {
+      "key": "recepEmail",
+      "value": "recepcion@coronyx.pe",
+      "type": "string"
+    },
+    {
+      "key": "recepPassword",
+      "value": "123456",
+      "type": "string"
+    },
+    {
+      "key": "odontoEmail",
+      "value": "odontologo@coronyx.pe",
+      "type": "string"
+    },
+    {
+      "key": "odontoPassword",
+      "value": "123456",
+      "type": "string"
+    },
+    {
+      "key": "pacienteEmail",
+      "value": "paciente@coronyx.pe",
+      "type": "string"
+    },
+    {
+      "key": "pacientePassword",
+      "value": "123456",
+      "type": "string"
+    },
+    {
+      "key": "soporteEmail",
+      "value": "superadmin@coronyx.pe",
+      "type": "string"
+    },
+    {
+      "key": "soportePassword",
+      "value": "123456",
+      "type": "string"
+    },
+    {
+      "key": "adminToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "recepToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "odontoToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "pacienteToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "soporteToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "pacienteId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "citaId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "encounterId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "odontogramaVersionId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "attachmentId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "ticketId",
+      "value": "TKT-001",
+      "type": "string"
+    },
+    {
+      "key": "cargoId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "solicitudId",
+      "value": "",
+      "type": "string"
     }
   ]
 }
