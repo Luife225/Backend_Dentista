@@ -19,10 +19,13 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * Cliente HTTP desacoplado hacia el servicio local de inferencia ML (Fase H / Fase I).
+ * Cliente HTTP desacoplado hacia el servicio local de inferencia ML (Fase H /
+ * Fase I).
  * Distingue claramente entre:
- * - Imagen inválida o formato no soportado (HTTP 400 -> IllegalArgumentException)
- * - Servicio apagado, timeout o pesos no disponibles (HTTP 503/500 -> MlServiceUnavailableException)
+ * - Imagen inválida o formato no soportado (HTTP 400 ->
+ * IllegalArgumentException)
+ * - Servicio apagado, timeout o pesos no disponibles (HTTP 503/500 ->
+ * MlServiceUnavailableException)
  */
 @Component
 public class MlInferenceClient {
@@ -36,14 +39,14 @@ public class MlInferenceClient {
     private final ObjectMapper objectMapper;
 
     public MlInferenceClient() {
-        this("http://127.0.0.1:8091", 0.25, 60000L);
+        this("http://127.0.0.1:8091", 0.25, 120000L);
     }
 
     @Autowired
     public MlInferenceClient(
             @Value("${coronyx.ml.base-url:http://127.0.0.1:8091}") String baseUrl,
             @Value("${coronyx.ml.default-threshold:0.25}") double defaultThreshold,
-            @Value("${coronyx.ml.timeout-ms:60000}") long timeoutMs) {
+            @Value("${coronyx.ml.timeout-ms:120000}") long timeoutMs) {
         this.baseUrl = baseUrl != null && baseUrl.endsWith("/")
                 ? baseUrl.substring(0, baseUrl.length() - 1)
                 : (baseUrl != null ? baseUrl : "http://127.0.0.1:8091");
@@ -71,19 +74,23 @@ public class MlInferenceClient {
             Map<String, Object> body = parseJsonMap(response.body());
             if (response.statusCode() != 200 || !Boolean.TRUE.equals(body.get("model_ready"))) {
                 throw new MlServiceUnavailableException(
-                        "El servicio ML respondió, pero el modelo no está listo para inferencia (HTTP " + response.statusCode() + ").");
+                        "El servicio ML respondió, pero el modelo no está listo para inferencia (HTTP "
+                                + response.statusCode() + ").");
             }
             return body;
         } catch (MlServiceUnavailableException ex) {
             throw ex;
         } catch (HttpTimeoutException ex) {
-            throw new MlServiceUnavailableException("Tiempo de espera agotado al consultar el estado del servicio ML.", ex);
+            throw new MlServiceUnavailableException("Tiempo de espera agotado al consultar el estado del servicio ML.",
+                    ex);
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
             throw new MlServiceUnavailableException("Consulta al servicio ML interrumpida.", ex);
         } catch (IOException ex) {
             throw new MlServiceUnavailableException(
-                    "No se pudo conectar con el servicio local de inferencia ML en " + baseUrl + ". Verifique que servicio_http_ml esté activo.", ex);
+                    "No se pudo conectar con el servicio local de inferencia ML en " + baseUrl
+                            + ". Verifique que servicio_http_ml esté activo.",
+                    ex);
         }
     }
 
@@ -118,7 +125,8 @@ public class MlInferenceClient {
             String status = payload.get("status") != null ? String.valueOf(payload.get("status")) : "";
 
             if (statusCode == 400 || "invalid_image_error".equals(status)) {
-                String errorMessage = extractErrorMessage(payload, "La imagen enviada no es una radiografía PNG/JPEG válida.");
+                String errorMessage = extractErrorMessage(payload,
+                        "La imagen enviada no es una radiografía PNG/JPEG válida.");
                 throw new IllegalArgumentException(errorMessage);
             }
 
@@ -131,7 +139,8 @@ public class MlInferenceClient {
             }
 
             if (statusCode != 200) {
-                throw new MlServiceUnavailableException("Respuesta inesperada del servicio ML (HTTP " + statusCode + ").");
+                throw new MlServiceUnavailableException(
+                        "Respuesta inesperada del servicio ML (HTTP " + statusCode + ").");
             }
 
             log.info("[ML-CLIENT] Inferencia completada para '{}': status={}, findings_count={}",
@@ -148,7 +157,9 @@ public class MlInferenceClient {
             throw new MlServiceUnavailableException("La petición al servicio ML fue interrumpida.", ex);
         } catch (IOException ex) {
             throw new MlServiceUnavailableException(
-                    "El servicio de inferencia ML no está disponible en " + baseUrl + ". Inicie el servicio local antes de analizar.", ex);
+                    "El servicio de inferencia ML no está disponible en " + baseUrl
+                            + ". Inicie el servicio local antes de analizar.",
+                    ex);
         }
     }
 
@@ -156,7 +167,8 @@ public class MlInferenceClient {
         if (rawJson == null || rawJson.isBlank()) {
             throw new IOException("El servicio ML devolvió una respuesta vacía.");
         }
-        return objectMapper.readValue(rawJson, new TypeReference<Map<String, Object>>() {});
+        return objectMapper.readValue(rawJson, new TypeReference<Map<String, Object>>() {
+        });
     }
 
     @SuppressWarnings("unchecked")
@@ -174,4 +186,3 @@ public class MlInferenceClient {
         return fallback;
     }
 }
-
