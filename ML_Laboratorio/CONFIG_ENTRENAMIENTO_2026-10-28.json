@@ -1,0 +1,58 @@
+{
+  "version": 1,
+  "date": "2026-10-28",
+  "experiment_id": "coronyx_dentex_yolov8n_ref_v1",
+  "source_revision": "7b27ccc8e342dcb774f69adc6ca5e6c09fefce93",
+  "policy_path": "preparacion/POLITICA_MVP_V1.json",
+  "policy_sha256": "476ea2d6f5d0d18559657d8070e550c74d8ae5c594e3e3d296480df5559dcd7a",
+  "partitions_path": "preparacion/PARTICIONES_DENTEX_V1.json",
+  "model": {
+    "family": "YOLOv8",
+    "variant": "yolov8n",
+    "pretrained_weights_name": "yolov8n.pt",
+    "license": "AGPL-3.0",
+    "num_classes": 2,
+    "class_names": {
+      "0": "caries",
+      "1": "caries_profunda"
+    }
+  },
+  "training_hyperparameters": {
+    "seed": 20261025,
+    "deterministic": true,
+    "imgsz": 640,
+    "batch": 2,
+    "smoke_epochs": 2,
+    "reference_epochs": 40,
+    "patience": 15,
+    "optimizer": "auto",
+    "lr0": 0.01,
+    "lrf": 0.01,
+    "workers": 0,
+    "device": "0",
+    "val_split": "val",
+    "test_partition_excluded_from_training_and_tuning": true
+  },
+  "preprocessing_and_augmentations": {
+    "letterbox_aspect_ratio_preserved": true,
+    "applied_only_to_train_after_split": true,
+    "mosaic": 0.0,
+    "mixup": 0.0,
+    "copy_paste": 0.0,
+    "degrees": 0.0,
+    "flipud": 0.0,
+    "fliplr": 0.0,
+    "translate": 0.05,
+    "scale": 0.1,
+    "hsv_h": 0.0,
+    "hsv_s": 0.0,
+    "hsv_v": 0.1,
+    "erasing": 0.0,
+    "rationale": "Se desactivan mosaicos de 4 mandibulas, giros e inversiones anatomicas para preservar la geometria panoramica dental; solo se permite traslacion/escala leve y variacion minima de brillo durante entrenamiento."
+  },
+  "selection_criteria": {
+    "checkpoint_metric": "max_validation_mean_AP50-95",
+    "tie_break": "prefer_reference_experiment"
+  }
+}
+

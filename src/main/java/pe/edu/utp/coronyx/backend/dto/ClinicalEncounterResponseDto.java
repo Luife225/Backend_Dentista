@@ -6,13 +6,13 @@ import java.util.List;
 
 public class ClinicalEncounterResponseDto {
 
-    private Long id;
-    private Long clinicaId;
-    private Long pacienteId;
+    private String id;
+    private String clinicaId;
+    private String pacienteId;
     private String pacienteNombreCompleto;
     private String pacienteNumeroDocumento;
-    private Long citaId;
-    private Long odontologoId;
+    private String citaId;
+    private String odontologoId;
     private String odontologoNombreCompleto;
     private String estado;
     private OffsetDateTime fechaCreacion;
@@ -24,28 +24,28 @@ public class ClinicalEncounterResponseDto {
     public ClinicalEncounterResponseDto() {
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
     public void setId(Long id) {
-        this.id = id;
+        this.id = id == null ? null : id.toString();
     }
 
-    public Long getClinicaId() {
+    public String getClinicaId() {
         return clinicaId;
     }
 
     public void setClinicaId(Long clinicaId) {
-        this.clinicaId = clinicaId;
+        this.clinicaId = clinicaId == null ? null : clinicaId.toString();
     }
 
-    public Long getPacienteId() {
+    public String getPacienteId() {
         return pacienteId;
     }
 
     public void setPacienteId(Long pacienteId) {
-        this.pacienteId = pacienteId;
+        this.pacienteId = pacienteId == null ? null : pacienteId.toString();
     }
 
     public String getPacienteNombreCompleto() {
@@ -64,20 +64,20 @@ public class ClinicalEncounterResponseDto {
         this.pacienteNumeroDocumento = pacienteNumeroDocumento;
     }
 
-    public Long getCitaId() {
+    public String getCitaId() {
         return citaId;
     }
 
     public void setCitaId(Long citaId) {
-        this.citaId = citaId;
+        this.citaId = citaId == null ? null : citaId.toString();
     }
 
-    public Long getOdontologoId() {
+    public String getOdontologoId() {
         return odontologoId;
     }
 
     public void setOdontologoId(Long odontologoId) {
-        this.odontologoId = odontologoId;
+        this.odontologoId = odontologoId == null ? null : odontologoId.toString();
     }
 
     public String getOdontologoNombreCompleto() {

@@ -23,6 +23,8 @@ import java.util.List;
 @EnableMethodSecurity
 public class SecurityConfig {
 
+    @org.springframework.beans.factory.annotation.Value("${cors.allowed-origins:http://localhost:5173,http://127.0.0.1:5173}")
+    private String allowedOrigins;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final RestAuthenticationEntryPoint authenticationEntryPoint;
     private final RestAccessDeniedHandler accessDeniedHandler;
@@ -109,6 +111,10 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/clinic/profile/**", "/api/v1/clinic/**", "/clinic/**")
                         .hasAnyRole("ADMIN_CLINICA", "RECEPCIONISTA", "ODONTOLOGO")
 
+                        .requestMatchers("/api/v1/caja/**").hasAnyRole("ADMIN_CLINICA", "RECEPCIONISTA", "ODONTOLOGO")
+                        .requestMatchers("/api/v1/inventario/**").hasAnyRole("ADMIN_CLINICA", "RECEPCIONISTA")
+                        .requestMatchers("/api/v1/teleconsulta/**").hasAnyRole("ADMIN_CLINICA", "ODONTOLOGO", "PACIENTE")
+
                         // Cualquier otra ruta exige autenticación
                         .anyRequest().authenticated()
                 )
@@ -120,7 +126,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOriginPatterns(List.of("*"));
+        config.setAllowedOrigins(java.util.Arrays.stream(allowedOrigins.split(",")).map(String::trim).filter(v -> !v.isEmpty()).toList());
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(false);

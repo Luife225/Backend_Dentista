@@ -16,6 +16,9 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select p from Patient p where p.id = :id")
     Optional<Patient> findLockedById(@Param("id") Long id);
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select p from Patient p where p.clinica.id = :clinicId and p.id = (select v.paciente.id from VersionOdontograma v where v.id = :versionId)")
+    Optional<Patient> lockByOdontogramVersion(@Param("versionId") Long versionId, @Param("clinicId") Long clinicId);
     List<Patient> findAllByOrderByFechaCreacionDesc();
     List<Patient> findByClinicaIdOrderByFechaCreacionDesc(Long clinicaId);
     Optional<Patient> findByIdAndClinicaId(Long id, Long clinicaId);

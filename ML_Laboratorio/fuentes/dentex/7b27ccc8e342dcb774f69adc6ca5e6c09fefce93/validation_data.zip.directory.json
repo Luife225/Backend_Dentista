@@ -1,0 +1,445 @@
+{
+  "archive_bytes": 149512256,
+  "entries": [
+    {
+      "name": "validation_data/",
+      "uncompressed": 0,
+      "compressed": 0,
+      "offset": 0,
+      "method": 0,
+      "crc32": 0
+    },
+    {
+      "name": "validation_data/quadrant_enumeration_disease/",
+      "uncompressed": 0,
+      "compressed": 0,
+      "offset": 74,
+      "method": 0,
+      "crc32": 0
+    },
+    {
+      "name": "validation_data/quadrant_enumeration_disease/xrays/",
+      "uncompressed": 0,
+      "compressed": 0,
+      "offset": 177,
+      "method": 0,
+      "crc32": 0
+    },
+    {
+      "name": "validation_data/quadrant_enumeration_disease/xrays/val_44.png",
+      "uncompressed": 3164890,
+      "compressed": 2367186,
+      "offset": 286,
+      "method": 8,
+      "crc32": 4167912965
+    },
+    {
+      "name": "validation_data/quadrant_enumeration_disease/xrays/val_18.png",
+      "uncompressed": 3969723,
+      "compressed": 2888386,
+      "offset": 2367591,
+      "method": 8,
+      "crc32": 229939875
+    },
+    {
+      "name": "validation_data/quadrant_enumeration_disease/xrays/val_32.png",
+      "uncompressed": 3639058,
+      "compressed": 2687084,
+      "offset": 5256096,
+      "method": 8,
+      "crc32": 4581564
+    },
+    {
+      "name": "validation_data/quadrant_enumeration_disease/xrays/val_41.png",
+      "uncompressed": 4491869,
+      "compressed": 3260435,
+      "offset": 7943299,
+      "method": 8,
+      "crc32": 1181475176
+    },
+    {
+      "name": "validation_data/quadrant_enumeration_disease/xrays/val_27.png",
+      "uncompressed": 4858892,
+      "compressed": 3599908,
+      "offset": 11203853,
+      "method": 8,
+      "crc32": 2684697952
+    },
+    {
+      "name": "validation_data/quadrant_enumeration_disease/xrays/val_15.png",
+      "uncompressed": 3808224,
+      "compressed": 2793992,
+      "offset": 14803880,
+      "method": 8,
+      "crc32": 2001825420
+    },
+    {
+      "name": "validation_data/quadrant_enumeration_disease/xrays/val_26.png",
+      "uncompressed": 2969586,
+      "compressed": 2216889,
+      "offset": 17597991,
+      "method": 8,
+      "crc32": 3611241608
+    },
+    {
+      "name": "validation_data/quadrant_enumeration_disease/xrays/.ipynb_checkpoints/",
+      "uncompressed": 0,
+      "compressed": 0,
+      "offset": 19814999,
+      "method": 0,
+      "crc32": 0
+    },
+    {
+      "name": "validation_data/quadrant_enumeration_disease/xrays/.ipynb_checkpoints/val_0-checkpoint.png",
+      "uncompressed": 5127345,
+      "compressed": 3778976,
+      "offset": 19815127,
+      "method": 8,
+      "crc32": 1309627097
+    },
+    {
+      "name": "validation_data/quadrant_enumeration_disease/xrays/val_34.png",
+      "uncompressed": 4407365,
+      "compressed": 3185707,
+      "offset": 23594251,
+      "method": 8,
+      "crc32": 2167462918
+    },
+    {
+      "name": "validation_data/quadrant_enumeration_disease/xrays/val_45.png",
+      "uncompressed": 5344741,
+      "compressed": 3944416,
+      "offset": 26780077,
+      "method": 8,
+      "crc32": 3126849280
+    },
+    {
+      "name": "validation_data/quadrant_enumeration_disease/xrays/val_28.png",
+      "uncompressed": 5356590,
+      "compressed": 3967810,
+      "offset": 30724612,
+      "method": 8,
+      "crc32": 2551621064
+    },
+    {
+      "name": "validation_data/quadrant_enumeration_disease/xrays/val_22.png",
+      "uncompressed": 3807073,
+      "compressed": 2820299,
+      "offset": 34692541,
+      "method": 8,
+      "crc32": 3028499142
+    },
+    {
+      "name": "validation_data/quadrant_enumeration_disease/xrays/val_40.png",
+      "uncompressed": 3364084,
+      "compressed": 2496738,
+      "offset": 37512959,
+      "method": 8,
+      "crc32": 1140185857
+    },
+    {
+      "name": "validation_data/quadrant_enumeration_disease/xrays/val_24.png",
+      "uncompressed": 3567871,
+      "compressed": 2654013,
+      "offset": 40009816,
+      "method": 8,
+      "crc32": 1334302297
+    },
+    {
+      "name": "validation_data/quadrant_enumeration_disease/xrays/val_13.png",
+      "uncompressed": 3544439,
+      "compressed": 2641645,
+      "offset": 42663948,
+      "method": 8,
+      "crc32": 3145378605
+    },
+    {
+      "name": "validation_data/quadrant_enumeration_disease/xrays/val_46.png",
+      "uncompressed": 3582848,
+      "compressed": 2674368,
+      "offset": 45305712,
+      "method": 8,
+      "crc32": 4118339955
+    },
+    {
+      "name": "validation_data/quadrant_enumeration_disease/xrays/val_6.png",
+      "uncompressed": 3602320,
+      "compressed": 2660588,
+      "offset": 47980199,
+      "method": 8,
+      "crc32": 871184179
+    },
+    {
+      "name": "validation_data/quadrant_enumeration_disease/xrays/val_31.png",
+      "uncompressed": 4915876,
+      "compressed": 3612509,
+      "offset": 50640905,
+      "method": 8,
+      "crc32": 2974439142
+    },
+    {
+      "name": "validation_data/quadrant_enumeration_disease/xrays/val_33.png",
+      "uncompressed": 4157471,
+      "compressed": 3020143,
+      "offset": 54253533,
+      "method": 8,
+      "crc32": 2960276316
+    },
+    {
+      "name": "validation_data/quadrant_enumeration_disease/xrays/val_10.png",
+      "uncompressed": 3472106,
+      "compressed": 2602780,
+      "offset": 57273795,
+      "method": 8,
+      "crc32": 1087955781
+    },
+    {
+      "name": "validation_data/quadrant_enumeration_disease/xrays/val_2.png",
+      "uncompressed": 2275752,
+      "compressed": 1796678,
+      "offset": 59876694,
+      "method": 8,
+      "crc32": 2516118860
+    },
+    {
+      "name": "validation_data/quadrant_enumeration_disease/xrays/val_14.png",
+      "uncompressed": 3493801,
+      "compressed": 2587507,
+      "offset": 61673490,
+      "method": 8,
+      "crc32": 2759290599
+    },
+    {
+      "name": "validation_data/quadrant_enumeration_disease/xrays/val_1.png",
+      "uncompressed": 2977970,
+      "compressed": 2393212,
+      "offset": 64261116,
+      "method": 8,
+      "crc32": 4199499593
+    },
+    {
+      "name": "validation_data/quadrant_enumeration_disease/xrays/val_20.png",
+      "uncompressed": 3774885,
+      "compressed": 2808991,
+      "offset": 66654446,
+      "method": 8,
+      "crc32": 2730880158
+    },
+    {
+      "name": "validation_data/quadrant_enumeration_disease/xrays/val_30.png",
+      "uncompressed": 5583595,
+      "compressed": 4145425,
+      "offset": 69463556,
+      "method": 8,
+      "crc32": 3016809966
+    },
+    {
+      "name": "validation_data/quadrant_enumeration_disease/xrays/val_5.png",
+      "uncompressed": 3974099,
+      "compressed": 2914583,
+      "offset": 73609100,
+      "method": 8,
+      "crc32": 3843172619
+    },
+    {
+      "name": "validation_data/quadrant_enumeration_disease/xrays/val_9.png",
+      "uncompressed": 3456416,
+      "compressed": 2571345,
+      "offset": 76523801,
+      "method": 8,
+      "crc32": 883537356
+    },
+    {
+      "name": "validation_data/quadrant_enumeration_disease/xrays/val_49.png",
+      "uncompressed": 3403253,
+      "compressed": 2537422,
+      "offset": 79095264,
+      "method": 8,
+      "crc32": 1038615358
+    },
+    {
+      "name": "validation_data/quadrant_enumeration_disease/xrays/val_4.png",
+      "uncompressed": 2861586,
+      "compressed": 2110448,
+      "offset": 81632805,
+      "method": 8,
+      "crc32": 3750489483
+    },
+    {
+      "name": "validation_data/quadrant_enumeration_disease/xrays/val_37.png",
+      "uncompressed": 4423920,
+      "compressed": 3184995,
+      "offset": 83743371,
+      "method": 8,
+      "crc32": 3923030008
+    },
+    {
+      "name": "validation_data/quadrant_enumeration_disease/xrays/val_48.png",
+      "uncompressed": 3344767,
+      "compressed": 2517640,
+      "offset": 86928485,
+      "method": 8,
+      "crc32": 2458819186
+    },
+    {
+      "name": "validation_data/quadrant_enumeration_disease/xrays/val_21.png",
+      "uncompressed": 3139314,
+      "compressed": 2340097,
+      "offset": 89446244,
+      "method": 8,
+      "crc32": 3306645517
+    },
+    {
+      "name": "validation_data/quadrant_enumeration_disease/xrays/val_16.png",
+      "uncompressed": 3238869,
+      "compressed": 2436034,
+      "offset": 91786460,
+      "method": 8,
+      "crc32": 1814994833
+    },
+    {
+      "name": "validation_data/quadrant_enumeration_disease/xrays/val_35.png",
+      "uncompressed": 4030467,
+      "compressed": 2969927,
+      "offset": 94222613,
+      "method": 8,
+      "crc32": 3483775449
+    },
+    {
+      "name": "validation_data/quadrant_enumeration_disease/xrays/val_25.png",
+      "uncompressed": 4117516,
+      "compressed": 3002922,
+      "offset": 97192659,
+      "method": 8,
+      "crc32": 3797120081
+    },
+    {
+      "name": "validation_data/quadrant_enumeration_disease/xrays/val_12.png",
+      "uncompressed": 2960203,
+      "compressed": 2187140,
+      "offset": 100195700,
+      "method": 8,
+      "crc32": 128031966
+    },
+    {
+      "name": "validation_data/quadrant_enumeration_disease/xrays/val_11.png",
+      "uncompressed": 4938903,
+      "compressed": 3621302,
+      "offset": 102382959,
+      "method": 8,
+      "crc32": 1213375847
+    },
+    {
+      "name": "validation_data/quadrant_enumeration_disease/xrays/val_23.png",
+      "uncompressed": 3112960,
+      "compressed": 2341367,
+      "offset": 106004380,
+      "method": 8,
+      "crc32": 1892727311
+    },
+    {
+      "name": "validation_data/quadrant_enumeration_disease/xrays/val_17.png",
+      "uncompressed": 4517541,
+      "compressed": 3387845,
+      "offset": 108345866,
+      "method": 8,
+      "crc32": 1797835786
+    },
+    {
+      "name": "validation_data/quadrant_enumeration_disease/xrays/val_47.png",
+      "uncompressed": 3661979,
+      "compressed": 2717826,
+      "offset": 111733830,
+      "method": 8,
+      "crc32": 1762131676
+    },
+    {
+      "name": "validation_data/quadrant_enumeration_disease/xrays/val_7.png",
+      "uncompressed": 3577874,
+      "compressed": 2631715,
+      "offset": 114451775,
+      "method": 8,
+      "crc32": 3137574152
+    },
+    {
+      "name": "validation_data/quadrant_enumeration_disease/xrays/val_36.png",
+      "uncompressed": 1843637,
+      "compressed": 1427143,
+      "offset": 117083608,
+      "method": 8,
+      "crc32": 190166893
+    },
+    {
+      "name": "validation_data/quadrant_enumeration_disease/xrays/val_29.png",
+      "uncompressed": 3822925,
+      "compressed": 2863264,
+      "offset": 118510870,
+      "method": 8,
+      "crc32": 4027958072
+    },
+    {
+      "name": "validation_data/quadrant_enumeration_disease/xrays/val_3.png",
+      "uncompressed": 6534460,
+      "compressed": 5166960,
+      "offset": 121374253,
+      "method": 8,
+      "crc32": 1904548947
+    },
+    {
+      "name": "validation_data/quadrant_enumeration_disease/xrays/val_8.png",
+      "uncompressed": 3362971,
+      "compressed": 2503352,
+      "offset": 126541331,
+      "method": 8,
+      "crc32": 323313118
+    },
+    {
+      "name": "validation_data/quadrant_enumeration_disease/xrays/val_38.png",
+      "uncompressed": 3741660,
+      "compressed": 2780453,
+      "offset": 129044801,
+      "method": 8,
+      "crc32": 4168112695
+    },
+    {
+      "name": "validation_data/quadrant_enumeration_disease/xrays/val_39.png",
+      "uncompressed": 4654494,
+      "compressed": 3438716,
+      "offset": 131825373,
+      "method": 8,
+      "crc32": 1279331495
+    },
+    {
+      "name": "validation_data/quadrant_enumeration_disease/xrays/val_0.png",
+      "uncompressed": 5127345,
+      "compressed": 3778976,
+      "offset": 135264208,
+      "method": 8,
+      "crc32": 1309627097
+    },
+    {
+      "name": "validation_data/quadrant_enumeration_disease/xrays/val_19.png",
+      "uncompressed": 5554286,
+      "compressed": 4090565,
+      "offset": 139043302,
+      "method": 8,
+      "crc32": 1482687337
+    },
+    {
+      "name": "validation_data/quadrant_enumeration_disease/xrays/val_42.png",
+      "uncompressed": 2865050,
+      "compressed": 2282759,
+      "offset": 143133986,
+      "method": 8,
+      "crc32": 2542618269
+    },
+    {
+      "name": "validation_data/quadrant_enumeration_disease/xrays/val_43.png",
+      "uncompressed": 5520076,
+      "compressed": 4088089,
+      "offset": 145416864,
+      "method": 8,
+      "crc32": 3253570456
+    }
+  ]
+}

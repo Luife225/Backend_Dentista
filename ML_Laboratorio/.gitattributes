@@ -1,0 +1,3 @@
+# Conservar los bytes originales de los metadatos públicos verificados.
+fuentes/**/*.json -text whitespace=cr-at-eol
+preparacion/** -text

@@ -10,6 +10,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import pe.edu.utp.coronyx.backend.dto.AttachmentMlDtos.MlReviewRequestDto;
 import pe.edu.utp.coronyx.backend.dto.AttachmentResponseDto;
 import pe.edu.utp.coronyx.backend.dto.UpdateVisibilityRequestDto;
 import pe.edu.utp.coronyx.backend.model.Attachment;
@@ -150,5 +151,36 @@ public class AttachmentController {
         }
         List<AttachmentResponseDto> list = attachmentService.listByPatient(principal.getPacienteId(), principal);
         return ResponseEntity.ok(list);
+    }
+
+    /**
+     * Fase I: Ejecuta el análisis asistido de caries y caries_profunda en la radiografía adjunta.
+     * Exclusivo para ODONTOLOGO de la misma clínica.
+     */
+    @PostMapping({"/{id}/analyze-ml", "/{id}/analizar-ia"})
+    public ResponseEntity<AttachmentResponseDto> analyzeMl(
+            @PathVariable("id") Long id,
+            @RequestParam(value = "threshold", required = false) Double threshold,
+            @AuthenticationPrincipal UserPrincipal principal) {
+
+        AttachmentResponseDto dto = attachmentService.analyzeRadiographWithMl(id, threshold, principal);
+        return ResponseEntity.ok(dto);
+    }
+
+    /**
+     * Fase I: Registra la revisión del odontólogo (ACEPTADO, RECHAZADO, CORREGIDO) sobre los hallazgos ML,
+     * preservando siempre intacta la predicción original del modelo.
+     */
+    @RequestMapping(
+            value = {"/{id}/review-ml", "/{id}/revisar-ia"},
+            method = {RequestMethod.PATCH, RequestMethod.POST}
+    )
+    public ResponseEntity<AttachmentResponseDto> reviewMl(
+            @PathVariable("id") Long id,
+            @RequestBody MlReviewRequestDto request,
+            @AuthenticationPrincipal UserPrincipal principal) {
+
+        AttachmentResponseDto dto = attachmentService.reviewRadiographMl(id, request, principal);
+        return ResponseEntity.ok(dto);
     }
 }
