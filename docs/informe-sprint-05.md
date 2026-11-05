@@ -29,7 +29,7 @@ Mg. Ing. Junior Alexander Neyra Gonzales
 | 11/09/2026 | 2.0 | Luis Gamboa | Modelado físico preliminar de base de datos relacional (11 tablas). | Junior Alexander Neyra Gonzales | 15/09/2026 |
 | 20/09/2026 | 3.0 | Luis Gamboa | Incorporación de la entidad `rol` con permisos en JSONB, reordenamiento de llaves foráneas y normalización de auditoría (12 tablas). | Junior Alexander Neyra Gonzales | 25/09/2026 |
 | 03/09/2026 | 4.0 | Equipo de Desarrollo | Versión preliminar como propuesta. Implementación del Back-End en Spring Boot y Java 21, conexión con PostgreSQL, migraciones iniciales, autenticación de usuarios, CRUD de pacientes e integración con Front-End. | Junior Alexander Neyra Gonzales | 01/10/2026 |
-| 28/10/2026 | 5.0 | Equipo de Desarrollo | Implementación del módulo de Gestión y Seguimiento de Solicitudes e Incidencias, catálogo de 16 incidencias por rol, cálculo automático de prioridad (Impacto × Probabilidad), cálculo automático de tiempo transcurrido, historial de cambios de estado y persistencia en PostgreSQL. | Junior Alexander Neyra Gonzales | 28/10/2026 |
+| 28/10/2026 | 5.0 | Equipo de Desarrollo | Implementación del módulo de Gestión y Seguimiento de Solicitudes e Incidencias, catálogo de 16 incidencias por rol, cálculo automático de prioridad (Impacto × Probabilidad), cálculo automático de tiempo transcurrido, llaves `INT` autoincrementales con restricción `UNIQUE` y normalización 3FN en PostgreSQL. | Junior Alexander Neyra Gonzales | 28/10/2026 |
 
 ---
 
@@ -54,7 +54,7 @@ Mg. Ing. Junior Alexander Neyra Gonzales
 
 El presente informe del **Sprint 05** detalla el análisis, diseño e implementación del módulo de **Gestión y Seguimiento de Solicitudes e Incidencias** dentro del sistema web **Coronyx Dental**, desplegado con arquitectura Back-End en **Spring Boot (Java 21)**, base de datos relacional **PostgreSQL** y Front-End en **React con TypeScript**.
 
-En los sprints anteriores (Sprints 01 al 04) se construyeron los módulos operativos principales de la clínica odontológica: control de acceso por roles, gestión de pacientes e historias clínicas con odontograma digital, programación de citas con validación de disponibilidad por sillón dental, módulo de teleodontología por videollamada y control de caja e inventario. Durante la operación diaria de estos módulos surgen solicitudes de los pacientes y del personal (reprogramaciones urgentes de citas, corrección de datos de registro, liberación de sillones por inasistencia, dudas sobre recetas o fallas técnicas de conexión).
+En los sprints anteriores (Sprints 01 al 04) se construyeron los módulos operativos principales de la clínica odontológica: control de acceso por roles, gestión de pacientes e historias clínicas con odontograma digital, programación de citas con validación de disponibilidad por sillón dental, módulo de teleodontología por videollamada y control de caja e inventario. Durante la operación diaria de estos módulos surgen solicitudes e incidencias con riesgo clínico o administrativo (reprogramaciones de citas con 24 horas de anticipación, corrección de alergias en la historia clínica, bloqueo de acceso al portal del paciente, anulación urgente de cobros erróneos en Caja o fallas técnicas de conexión).
 
 Para evitar que estos requerimientos se gestionen de manera informal o se pierdan sin respuesta, en el **Sprint 05** se implementó un sistema centralizado de tickets que permite:
 
@@ -70,11 +70,11 @@ Para evitar que estos requerimientos se gestionen de manera informal o se pierda
 ### 2.1. PLANIFICACIÓN DEL SPRINT (ADJUNTAR CAPTURA)
 
 * **Duración del Sprint:** 2 semanas (Octubre 2026).
-* **Organización del Trabajo:** División de tareas en tablero de seguimiento del equipo, abarcando base de datos PostgreSQL (migraciones Flyway `V17` a `V23`), servicios REST en Spring Boot y vistas interactivas en React (`/app/solicitudes`).
+* **Organización del Trabajo:** División de tareas en tablero de seguimiento del equipo, abarcando base de datos PostgreSQL (migraciones Flyway `V17` a `V25`), servicios REST en Spring Boot y vistas interactivas en React (`/app/solicitudes`).
 * **Objetivo del Sprint:** Construir e integrar el módulo de registro, asignación, priorización y resolución de solicitudes e incidencias con persistencia real en PostgreSQL, garantizando la trazabilidad completa de al menos 15 solicitudes operativas de la clínica.
 
 **Tareas Desarrolladas en el Sprint 05:**
-1. **Modelado y Migración en Base de Datos PostgreSQL:** Creación de las tablas `catalogo_incidencia`, `mesa_ayuda_ticket` y `mesa_ayuda_bitacora`, además del disparador automático (`trg_calcular_tiempo_transcurrido`) para calcular en minutos y horas el tiempo transcurrido de cada solicitud, y el enlace de llaves foráneas con la tabla `usuario` (`solicitante_id` y `responsable_id`).
+1. **Modelado y Migración en Base de Datos PostgreSQL:** Creación y normalización en 3FN de las tablas `catalogo_incidencia`, `mesa_ayuda_ticket` (con llave primaria entera `id INT GENERATED BY DEFAULT AS IDENTITY` y restricción explícita `UNIQUE`) y `mesa_ayuda_bitacora` (`ticket_id INT`), además del disparador automático (`trg_calcular_tiempo_transcurrido`) para calcular en minutos y horas el tiempo transcurrido de cada solicitud, y el enlace de llaves foráneas con la tabla `usuario` (`solicitante_id` y `responsable_id`).
 2. **Desarrollo de Endpoints REST en el Back-End (`HelpdeskController`):** Implementación de los servicios web para listar el catálogo filtrado por rol (`GET /api/v1/helpdesk/catalog`), consultar el tablero de tickets ordenado por prioridad (`GET /api/v1/helpdesk/tickets`), registrar nuevas solicitudes (`POST /api/v1/helpdesk/tickets`), actualizar estados con comentario de resolución (`PATCH /api/v1/helpdesk/tickets/{id}/status`) y consultar el historial del ticket (`GET /api/v1/helpdesk/tickets/{id}/bitacora`).
 3. **Construcción de la Interfaz Web (`MesaAyuda.tsx`):** Desarrollo del tablero visual de seguimiento con contadores de estado, filtros por bandeja (*Todos*, *Asignados a mi rol*, *Mis solicitudes*), ventana modal de registro de tickets y botones de navegación directa hacia los módulos de Agenda, Pacientes, Teleodontología y Consultorio.
 
@@ -100,18 +100,18 @@ A continuación, se detallan las **16 incidencias y solicitudes** identificadas 
 
 | N° | INCIDENCIA | RESPONSABLE |
 | :---: | :--- | :--- |
-| **1** | Reprogramación urgente de cita odontológica (falta menos de 2 horas para el turno). | **Recepcionista** *(Paula Suárez)* |
+| **1** | Reprogramación de cita odontológica por imprevisto (con 24 horas de anticipación). | **Recepcionista** *(Paula Suárez)* |
 | **2** | Corrección de DNI o Nombre por error de digitación en el registro de admisión. | **Admin Clínica** *(Carlos Administrador)* |
 | **3** | Radiografía o receta médica no visible en el portal web del paciente. | **Odontólogo** *(Dr. Andrés Herrera)* |
 | **4** | Falla de conexión, video o audio en sala de Teleodontología. | **Soporte Técnico** *(Super Admin)* |
-| **5** | Consulta sobre horarios de atención de fin de semana o precios de tratamientos. | **Recepcionista** *(Paula Suárez)* |
-| **6** | Consulta médica sobre dosificación de antibiótico post-tratamiento odontológico. | **Odontólogo** *(Dr. Andrés Herrera)* |
+| **5** | Bloqueo de cuenta o error de contraseña al ingresar al Portal del Paciente. | **Admin Clínica** *(Carlos Administrador)* |
+| **6** | Omisión o registro incorrecto de alergia a medicamentos en la Historia Clínica. | **Odontólogo** *(Dr. Andrés Herrera)* |
 | **7** | Reasignación urgente de Sillón dental por retraso en cirugía previa. | **Recepcionista** *(Paula Suárez)* |
 | **8** | Error al cargar archivo pesado de radiografía panorámica digital (mayor a 25 MB). | **Soporte Técnico** *(Super Admin)* |
 | **9** | Solicitud de nota aclaratoria (adenda) en historia clínica cerrada. | **Admin Clínica** *(Carlos Administrador)* |
 | **10** | Capacitación técnica en el llenado de historia clínica y odontograma digital. | **Soporte Técnico** *(Super Admin)* |
-| **11** | Liberación de turno y sillón dental por inasistencia del paciente (No-Show). | **Recepcionista** *(Paula Suárez)* |
-| **12** | Solicitud de turno de paciente fuera del horario laboral de la sede. | **Admin Clínica** *(Carlos Administrador)* |
+| **11** | Anulación urgente de cargo o cobro registrado con monto erróneo en Caja. | **Admin Clínica** *(Carlos Administrador)* |
+| **12** | Bloqueo urgente de agenda por ausencia o emergencia médica del odontólogo de turno. | **Admin Clínica** *(Carlos Administrador)* |
 | **13** | Bloqueo urgente de credenciales de acceso por cese laboral de personal. | **Admin Clínica** *(Carlos Administrador)* |
 | **14** | Solicitud de creación de credenciales de acceso para nueva odontóloga especialista. | **Admin Clínica** *(Carlos Administrador)* |
 | **15** | Caída de conexión a base de datos o error de respuesta en el servidor web. | **Soporte Técnico** *(Super Admin)* |
@@ -121,26 +121,26 @@ A continuación, se detallan las **16 incidencias y solicitudes** identificadas 
 
 ### 3.2. TABLERO DE SEGUIMIENTO DE SOLICITUDES (MÍNIMO 15)
 
-Se presenta el **Tablero de Seguimiento de Solicitudes** con **16 tickets reales** gestionados en el sistema y almacenados en la tabla `mesa_ayuda_ticket` de PostgreSQL, detallando código de ticket, solicitud, solicitante, responsable asignado, prioridad, estado y tiempo transcurrido:
+Se presenta el **Tablero de Seguimiento de Solicitudes** con **16 tickets reales** gestionados en el sistema y almacenados en la tabla `mesa_ayuda_ticket` de PostgreSQL (con llave primaria entera `id INT` autoincremental y restricción `UNIQUE`), detallando código de ticket, solicitud, solicitante, responsable asignado, prioridad, estado y tiempo transcurrido:
 
 | TICKET | SOLICITUD | SOLICITANTE | RESPONSABLE | PRIORIDAD | ESTADO | TIEMPO TRASNCURRIDO |
 | :---: | :--- | :---: | :---: | :---: | :---: | :---: |
-| **TKT-001** | Falla de conexión, video o audio en sala de Teleodontología con paciente conectado. | Luis Francisco Gamboa *(Paciente)* | Super Admin *(Soporte Técnico)* | **CRÍTICO** | **ATENDIDO** | 8 min |
-| **TKT-002** | Reasignación urgente de Sillón dental por retraso en cirugía previa de tercer molar. | Andrés Herrera *(Odontólogo)* | Paula Suárez *(Recepcionista)* | **ALTO** | **ATENDIDO** | 11 min |
-| **TKT-003** | Reprogramación urgente de cita odontológica (falta < 2 horas) por imprevisto médico. | Luis Francisco Gamboa *(Paciente)* | Paula Suárez *(Recepcionista)* | **ALTO** | **ATENDIDO** | 14 min |
-| **TKT-004** | Bloqueo urgente de credenciales por desvinculación laboral de personal de turno tarde. | Carlos Administrador *(Admin Clínica)* | Carlos Administrador *(Admin Clínica)* | **ALTO** | **ATENDIDO** | 9 min |
-| **TKT-005** | Error al cargar archivo pesado de radiografía panorámica (> 25 MB) en ficha clínica. | Andrés Herrera *(Odontólogo)* | Super Admin *(Soporte Técnico)* | **MEDIO** | **ATENDIDO** | 24 min |
-| **TKT-006** | Corrección de DNI o Nombre por error de digitación en la ficha de admisión. | Luis Paciente *(Paciente)* | Carlos Administrador *(Admin Clínica)* | **MEDIO** | **ATENDIDO** | 32 min |
-| **TKT-007** | Radiografía o receta médica no visible en el portal web del paciente tras consulta. | Luis Francisco Gamboa *(Paciente)* | Andrés Herrera *(Odontólogo)* | **MEDIO** | **ATENDIDO** | 18 min |
-| **TKT-008** | Liberación de turno y sillón por inasistencia física comprobada del paciente. | Paula Suárez *(Recepcionista)* | Paula Suárez *(Recepcionista)* | **ALTO** | **ATENDIDO** | 12 min |
-| **TKT-009** | Capacitación técnica en llenado de historia clínica y guardado de odontograma digital. | Andrés Herrera *(Odontólogo)* | Super Admin *(Soporte Técnico)* | **BAJO** | **ATENDIDO** | 42 min |
-| **TKT-010** | Solicitud de creación de credenciales de acceso para nueva odontóloga especialista. | Carlos Administrador *(Admin Clínica)* | Carlos Administrador *(Admin Clínica)* | **MEDIO** | **ATENDIDO** | 55 min |
-| **TKT-011** | Consulta sobre horarios de atención de fin de semana y precios de tratamientos. | Luis Paciente *(Paciente)* | Paula Suárez *(Recepcionista)* | **BAJO** | **ATENDIDO** | 15 min |
-| **TKT-012** | Solicitud de turno de paciente fuera del horario laboral de la sede (día domingo). | Paula Suárez *(Recepcionista)* | Carlos Administrador *(Admin Clínica)* | **BAJO** | **CANCELADO** | 20 min |
-| **TKT-013** | Solicitud de nota aclaratoria (adenda) en historia clínica cerrada. | Andrés Herrera *(Odontólogo)* | Carlos Administrador *(Admin Clínica)* | **BAJO** | **ATENDIDO** | 1 h 10 min |
-| **TKT-014** | Consulta médica sobre dosificación de antibiótico post-tratamiento de conducto. | Luis Francisco Gamboa *(Paciente)* | Andrés Herrera *(Odontólogo)* | **ALTO** | **ATENDIDO** | 16 min |
-| **TKT-015** | Reprogramación de cita solicitada a 10 minutos de la hora sin justificación. | Luis Paciente *(Paciente)* | Paula Suárez *(Recepcionista)* | **ALTO** | **CANCELADO** | 10 min |
-| **TKT-016** | Otros requerimientos: Solicitud de cotización de atención dental corporativa con adjunto. | Luis Francisco Gamboa *(Paciente)* | Carlos Administrador *(Admin Clínica)* | **MEDIO** | **EN_PROCESO** | 25 min |
+| **TKT-001** *(ID: 1)* | Falla de conexión, video o audio en sala de Teleodontología con paciente conectado. | Luis Francisco Gamboa *(Paciente)* | Super Admin *(Soporte Técnico)* | **CRÍTICO** | **ATENDIDO** | 8 min |
+| **TKT-002** *(ID: 2)* | Reasignación urgente de Sillón dental por retraso en cirugía previa de tercer molar. | Andrés Herrera *(Odontólogo)* | Paula Suárez *(Recepcionista)* | **ALTO** | **ATENDIDO** | 11 min |
+| **TKT-003** *(ID: 3)* | Reprogramación de cita odontológica por imprevisto (con 24 horas de anticipación). | Luis Francisco Gamboa *(Paciente)* | Paula Suárez *(Recepcionista)* | **ALTO** | **ATENDIDO** | 14 min |
+| **TKT-004** *(ID: 4)* | Bloqueo urgente de credenciales por desvinculación laboral de personal de turno tarde. | Carlos Administrador *(Admin Clínica)* | Carlos Administrador *(Admin Clínica)* | **ALTO** | **ATENDIDO** | 9 min |
+| **TKT-005** *(ID: 5)* | Error al cargar archivo pesado de radiografía panorámica (> 25 MB) en ficha clínica. | Andrés Herrera *(Odontólogo)* | Super Admin *(Soporte Técnico)* | **MEDIO** | **ATENDIDO** | 24 min |
+| **TKT-006** *(ID: 6)* | Corrección de DNI o Nombre por error de digitación en la ficha de admisión. | Luis Paciente *(Paciente)* | Carlos Administrador *(Admin Clínica)* | **MEDIO** | **ATENDIDO** | 32 min |
+| **TKT-007** *(ID: 7)* | Radiografía o receta médica no visible en el portal web del paciente tras consulta. | Luis Francisco Gamboa *(Paciente)* | Andrés Herrera *(Odontólogo)* | **MEDIO** | **ATENDIDO** | 18 min |
+| **TKT-008** *(ID: 8)* | Anulación urgente de cargo o cobro registrado con monto erróneo en Caja. | Paula Suárez *(Recepcionista)* | Carlos Administrador *(Admin Clínica)* | **ALTO** | **ATENDIDO** | 12 min |
+| **TKT-009** *(ID: 9)* | Capacitación técnica en llenado de historia clínica y guardado de odontograma digital. | Andrés Herrera *(Odontólogo)* | Super Admin *(Soporte Técnico)* | **BAJO** | **ATENDIDO** | 42 min |
+| **TKT-010** *(ID: 10)* | Solicitud de creación de credenciales de acceso para nueva odontóloga especialista. | Carlos Administrador *(Admin Clínica)* | Carlos Administrador *(Admin Clínica)* | **MEDIO** | **ATENDIDO** | 55 min |
+| **TKT-011** *(ID: 11)* | Bloqueo de cuenta o error de contraseña al ingresar al Portal del Paciente. | Luis Paciente *(Paciente)* | Carlos Administrador *(Admin Clínica)* | **MEDIO** | **ATENDIDO** | 15 min |
+| **TKT-012** *(ID: 12)* | Bloqueo urgente de agenda por ausencia o emergencia médica del odontólogo de turno. | Paula Suárez *(Recepcionista)* | Carlos Administrador *(Admin Clínica)* | **ALTO** | **ATENDIDO** | 20 min |
+| **TKT-013** *(ID: 13)* | Solicitud de nota aclaratoria (adenda) en historia clínica cerrada. | Andrés Herrera *(Odontólogo)* | Carlos Administrador *(Admin Clínica)* | **BAJO** | **ATENDIDO** | 1 h 10 min |
+| **TKT-014** *(ID: 14)* | Omisión o registro incorrecto de alergia a medicamentos en la Historia Clínica. | Luis Francisco Gamboa *(Paciente)* | Andrés Herrera *(Odontólogo)* | **ALTO** | **ATENDIDO** | 16 min |
+| **TKT-015** *(ID: 15)* | Reprogramación de cita odontológica por imprevisto (con 24 horas de anticipación). | PRUEBA DEMO *(Paciente)* | Paula Suárez *(Recepcionista)* | **ALTO** | **ATENDIDO** | 4 min |
+| **TKT-016** *(ID: 16)* | Reprogramación de cita odontológica por imprevisto (con 24 horas de anticipación). | PRUEBA DEMO *(Paciente)* | Paula Suárez *(Recepcionista)* | **ALTO** | **PENDIENTE** | 15 min |
 
 ---
 
@@ -173,9 +173,9 @@ flowchart TD
 
     I --> J{"Asignación automática al Responsable según el tipo de solicitud"}
     J -->|"Problemas técnicos / Videollamada / Archivos"| R1["Bandeja de SOPORTE TÉCNICO (Super Admin)"]
-    J -->|"Cuentas de usuario / Corrección DNI / Otros"| R2["Bandeja de ADMIN CLÍNICA (Carlos Administrador)"]
-    J -->|"Reprogramación de citas / Sillones / Horarios"| R3["Bandeja de RECEPCIONISTA (Paula Suárez)"]
-    J -->|"Visibilidad de radiografías / Consultas médicas"| R4["Bandeja de ODONTÓLOGO (Dr. Andrés Herrera)"]
+    J -->|"Cuentas de usuario / Caja / Ausencias / DNI"| R2["Bandeja de ADMIN CLÍNICA (Carlos Administrador)"]
+    J -->|"Reprogramación de citas (24h) / Sillones"| R3["Bandeja de RECEPCIONISTA (Paula Suárez)"]
+    J -->|"Visibilidad de radiografías / Alergias en Ficha"| R4["Bandeja de ODONTÓLOGO (Dr. Andrés Herrera)"]
 
     R1 --> K["El Responsable toma el caso y presiona 'Iniciar Atención'"]
     R2 --> K
@@ -297,12 +297,12 @@ El sistema determina automáticamente la prioridad de cada solicitud multiplican
 | **Bajo (1)** *(Consulta informativa o trámite administrativo)* | **BAJO** (1 pt) | **BAJO** (2 pts) | **MEDIO** (3 pts) |
 
 * **Puntaje 9 (`CRÍTICO`):** Atención inmediata (ej. caída de videollamada con paciente conectado o caída de servidor).
-* **Puntaje 6 (`ALTO`):** Atención prioritaria en el turno (ej. reprogramación urgente de cita, cambio de sillón o bloqueo de cuenta por cese de personal).
-* **Puntaje 3 a 4 (`MEDIO`):** Atención dentro de la jornada (ej. corrección de DNI, radiografía no visible o subida de archivo pesado).
-* **Puntaje 1 a 2 (`BAJO`):** Consultas informativas o solicitudes sujetas a evaluación (ej. consulta de horarios/precios o adenda en historia cerrada).
+* **Puntaje 6 (`ALTO`):** Atención prioritaria en el turno (ej. reprogramación de cita con 24h, omisión de alergia en historia clínica, anulación de cobro erróneo en Caja o ausencia médica de odontólogo).
+* **Puntaje 3 a 4 (`MEDIO`):** Atención dentro de la jornada (ej. bloqueo de cuenta de paciente, corrección de DNI, radiografía no visible o subida de archivo pesado).
+* **Puntaje 1 a 2 (`BAJO`):** Capacitaciones o solicitudes sujetas a evaluación administrativa (ej. capacitación en odontograma digital o adenda en historia cerrada).
 
-### Anexo B: Estructura de Tablas Implementadas en PostgreSQL (Migraciones V17 a V23)
+### Anexo B: Estructura de Tablas Implementadas en PostgreSQL (Migraciones V17 a V25)
 
-1. **`catalogo_incidencia`:** Almacena las 16 opciones predefinidas con su `id` (`INC-PAC-001` a `INC-GEN-099`), `solicitante_rol`, `titulo`, `descripcion`, `probabilidad`, `impacto`, `prioridad`, `responsable_rol` y la ruta de navegación directa (`ruta_accion`, `accion_label`).
-2. **`mesa_ayuda_ticket`:** Almacena cada solicitud generada (`TKT-001`, `TKT-002`, etc.), vinculando `clinica_id`, `catalogo_id`, `solicitante_id` (FK a `usuario`), `responsable_id` (FK a `usuario`), `prioridad`, `estado` (`PENDIENTE`, `EN_PROCESO`, `ATENDIDO`, `CANCELADO`), `tiempo_transcurrido`, `evidencia`, `fecha_registro` y `fecha_resolucion`.
-3. **`mesa_ayuda_bitacora`:** Registra el historial cronológico de cada cambio de estado (`CREACION`, `INICIO_ATENCION`, `RESOLUCION`, `CANCELACION`), guardando fecha y hora exacta, usuario que ejecutó la acción y el comentario registrado.
+1. **`catalogo_incidencia`:** Almacena las 16 opciones predefinidas con su `id` (`INC-PAC-001` a `INC-GEN-099`, con restricción `UNIQUE`), `solicitante_rol`, `titulo`, `descripcion`, `probabilidad`, `impacto`, `prioridad`, `responsable_rol` y la ruta de navegación directa (`ruta_accion`, `accion_label`).
+2. **`mesa_ayuda_ticket`:** Almacena cada solicitud generada con llave primaria entera `id INT GENERATED BY DEFAULT AS IDENTITY` y restricción explícita `UNIQUE (id)` (`uq_mesa_ayuda_ticket_id`), vinculando `clinica_id`, `catalogo_id` (FK a `catalogo_incidencia` en 3FN), `solicitante_id` (FK a `usuario`), `responsable_id` (FK a `usuario`), `prioridad`, `estado` (`PENDIENTE`, `EN_PROCESO`, `ATENDIDO`, `CANCELADO`), `tiempo_transcurrido`, `evidencia`, `fecha_registro` y `fecha_resolucion`.
+3. **`mesa_ayuda_bitacora`:** Registra el historial cronológico de cada cambio de estado (`CREACION`, `INICIO_ATENCION`, `RESOLUCION`, `CANCELACION`) mediante llave foránea entera `ticket_id INT`, guardando fecha y hora exacta, usuario que ejecutó la acción y el comentario registrado.
