@@ -33,7 +33,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"usernameOrEmail\": \"{{adminEmail}}\",\n  \"password\": \"{{adminPassword}}\"\n}",
+              "raw": "{\n  \"correo\": \"{{adminEmail}}\",\n  \"clave\": \"{{adminPassword}}\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -86,7 +86,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"usernameOrEmail\": \"{{recepEmail}}\",\n  \"password\": \"{{recepPassword}}\"\n}",
+              "raw": "{\n  \"correo\": \"{{recepEmail}}\",\n  \"clave\": \"{{recepPassword}}\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -134,7 +134,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"usernameOrEmail\": \"{{odontoEmail}}\",\n  \"password\": \"{{odontoPassword}}\"\n}",
+              "raw": "{\n  \"correo\": \"{{odontoEmail}}\",\n  \"clave\": \"{{odontoPassword}}\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -182,7 +182,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"usernameOrEmail\": \"{{pacienteEmail}}\",\n  \"password\": \"{{pacientePassword}}\"\n}",
+              "raw": "{\n  \"correo\": \"{{pacienteEmail}}\",\n  \"clave\": \"{{pacientePassword}}\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -278,7 +278,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"usernameOrEmail\": \"{{soporteEmail}}\",\n  \"password\": \"{{soportePassword}}\"\n}",
+              "raw": "{\n  \"correo\": \"{{soporteEmail}}\",\n  \"clave\": \"{{soportePassword}}\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -3448,52 +3448,52 @@
     },
     {
       "key": "adminEmail",
-      "value": "admin@coronyx.pe",
+      "value": "admin@coronyx-demo.example",
       "type": "string"
     },
     {
       "key": "adminPassword",
-      "value": "123456",
+      "value": "mrx5tCsvwz2oA1!",
       "type": "string"
     },
     {
       "key": "recepEmail",
-      "value": "recepcion@coronyx.pe",
+      "value": "recepcion@coronyx-demo.example",
       "type": "string"
     },
     {
       "key": "recepPassword",
-      "value": "123456",
+      "value": "FjTxGE7b!ZGrA1!",
       "type": "string"
     },
     {
       "key": "odontoEmail",
-      "value": "odontologo@coronyx.pe",
+      "value": "odontologo1@coronyx-demo.example",
       "type": "string"
     },
     {
       "key": "odontoPassword",
-      "value": "123456",
+      "value": "xWEcm8o%DzQMA1!",
       "type": "string"
     },
     {
       "key": "pacienteEmail",
-      "value": "paciente@coronyx.pe",
+      "value": "paciente1@coronyx-demo.example",
       "type": "string"
     },
     {
       "key": "pacientePassword",
-      "value": "123456",
+      "value": "2YLao94#KhN9A1!",
       "type": "string"
     },
     {
       "key": "soporteEmail",
-      "value": "superadmin@coronyx.pe",
+      "value": "admin@coronyx-demo.example",
       "type": "string"
     },
     {
       "key": "soportePassword",
-      "value": "123456",
+      "value": "mrx5tCsvwz2oA1!",
       "type": "string"
     },
     {
@@ -3543,7 +3543,7 @@
     },
     {
       "key": "attachmentId",
-      "value": "1",
+      "value": "28",
       "type": "string"
     },
     {
